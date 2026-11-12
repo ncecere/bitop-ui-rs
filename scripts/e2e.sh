@@ -29,7 +29,7 @@ for engine in ${E2E_ENGINES:-chromium firefox webkit}; do
   if [[ "${E2E_NATIVE:-}" == 1 ]]; then
     (cd e2e && node run.mjs "$base" "$engine" "$@") || status=1
   else
-    docker run --rm --network host --ipc=host -v "$PWD/e2e:/work" -w /work \
+    docker run --rm --network host --ipc=host ${E2E_DOCKER_ARGS:-} -v "$PWD/e2e:/work" -w /work \
       "mcr.microsoft.com/playwright:v$version-noble" node run.mjs "$base" "$engine" "$@" || status=1
   fi
 done

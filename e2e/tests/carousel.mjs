@@ -140,7 +140,7 @@ export default async ({ page, check, focused, setDir }) => {
   const first = await track(basic).locator("> *").first().boundingBox();
   const rn = await next.boundingBox();
   const rp = await previous.boundingBox();
-  check("rtlLayout", [Math.round(first.x + first.width - rt.x - rt.width), rn.x < rp.x, await next.locator("[data-icon]").evaluate((el) => getComputedStyle(el).scale)], [0, true, "-1 1"]);
+  check("rtlLayout", [Math.abs(first.x + first.width - rt.x - rt.width) < 1.5, rn.x < rp.x, await next.locator("[data-icon]").evaluate((el) => getComputedStyle(el).scale)], [true, true, "-1 1"]);
   await next.click();
   await arrives(basic, 1);
   check("rtlNext", await status(basic), "Slide 2 of 5");

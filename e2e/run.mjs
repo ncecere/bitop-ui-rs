@@ -98,7 +98,9 @@ for (const name of names) {
     check("errors", errors, []);
   } catch (error) {
     total += 1;
-    failures.push(`${name}: ${String(error).split("\n").slice(0, 6).join("\n    ")}`);
+    // Name the line in the test file, so a timeout on CI says which wait it was.
+    const where = String(error.stack ?? "").split("\n").find((line) => line.includes(`/tests/${name}.mjs`));
+    failures.push(`${name}: ${String(error).split("\n").slice(0, 6).join("\n    ")}${where ? `\n    ${where.trim()}` : ""}`);
   }
   await context.close();
 }
