@@ -46,59 +46,159 @@ macro_rules! entry {
 }
 
 /// Every page in the gallery. Add a component here and in `app/c.rs`.
-pub const GROUPS: &[Group] = &[Group {
-    title: "Base",
-    entries: &[
-        entry!("avatar", "Avatar", "A person's picture, or their initials."),
-        entry!("badge", "Badge", "A short label for a status or a count."),
-        entry!("button", "Button", "Starts an action."),
-        entry!(
-            "checkbox",
-            "Checkbox and switch",
-            "Turn one option on or off."
-        ),
-        entry!(
-            "combobox",
-            "Combobox",
-            "Choose one value from a list you can filter."
-        ),
-        entry!(
-            "command",
-            "Command palette",
-            "Search actions and pages from the keyboard."
-        ),
-        entry!(
-            "dialog",
-            "Dialog",
-            "A window over the page, and its alert variant."
-        ),
-        entry!(
-            "input",
-            "Input and field",
-            "Text inputs with a label, help text and errors."
-        ),
-        entry!(
-            "menu",
-            "Menu",
-            "A list of actions that opens from a button."
-        ),
-        entry!("popover", "Popover", "A small panel anchored to a button."),
-        entry!(
-            "scroll-area",
-            "Scroll area",
-            "A region that scrolls inside the page."
-        ),
-        entry!("select", "Select", "Choose one value from a short list."),
-        entry!(
-            "sidebar",
-            "Sidebar",
-            "The application shell with a navigation sidebar."
-        ),
-        entry!("tabs", "Tabs", "Switch between panels on one page."),
-        entry!("toast", "Toast", "A brief message that dismisses itself."),
-        entry!("tooltip", "Tooltip", "A hint shown on hover or focus."),
-    ],
-}];
+pub const GROUPS: &[Group] = &[
+    Group {
+        title: "Forms",
+        entries: &[
+            entry!("button", "Button", "Starts an action."),
+            entry!(
+                "checkbox",
+                "Checkbox and switch",
+                "Turn one option on or off."
+            ),
+            entry!(
+                "input",
+                "Input and field",
+                "Text inputs with a label, help text and errors."
+            ),
+            entry!("select", "Select", "Choose one value from a short list."),
+            entry!(
+                "combobox",
+                "Combobox",
+                "Choose one value from a list you can filter."
+            ),
+            entry!(
+                "button-group",
+                "Button group",
+                "Related buttons joined into one unit."
+            ),
+            entry!(
+                "radio-group",
+                "Radio group",
+                "Choose one option from a few."
+            ),
+            entry!("toggle", "Toggle", "A button that stays pressed."),
+            entry!(
+                "toggle-group",
+                "Toggle group",
+                "Toggles that share their pressed state."
+            ),
+            entry!(
+                "input-group",
+                "Input group",
+                "An input with text, icons or buttons inside it."
+            ),
+            entry!(
+                "number-input",
+                "Number input",
+                "An amount, with grouping and step buttons."
+            ),
+            entry!(
+                "input-otp",
+                "Input OTP",
+                "A one-time code, one character per box."
+            ),
+            entry!(
+                "slider",
+                "Slider",
+                "Choose a value from a range by dragging."
+            ),
+            entry!(
+                "color-field",
+                "Color field",
+                "A hex colour with a picker and a contrast check."
+            ),
+            entry!(
+                "copy-button",
+                "Copy button",
+                "Copies text to the clipboard."
+            ),
+            entry!(
+                "copy-field",
+                "Copy field",
+                "A read-only value with a copy button."
+            ),
+        ],
+    },
+    Group {
+        title: "Overlays",
+        entries: &[
+            entry!(
+                "dialog",
+                "Dialog",
+                "A window over the page, and its alert variant."
+            ),
+            entry!("popover", "Popover", "A small panel anchored to a button."),
+            entry!("tooltip", "Tooltip", "A hint shown on hover or focus."),
+            entry!(
+                "menu",
+                "Menu",
+                "A list of actions that opens from a button."
+            ),
+            entry!(
+                "command",
+                "Command palette",
+                "Search actions and pages from the keyboard."
+            ),
+            entry!("toast", "Toast", "A brief message that dismisses itself."),
+        ],
+    },
+    Group {
+        title: "Navigation and layout",
+        entries: &[
+            entry!(
+                "sidebar",
+                "Sidebar",
+                "The application shell with a navigation sidebar."
+            ),
+            entry!("tabs", "Tabs", "Switch between panels on one page."),
+            entry!(
+                "separator",
+                "Separator",
+                "A line between sections or items."
+            ),
+            entry!(
+                "scroll-area",
+                "Scroll area",
+                "A region that scrolls inside the page."
+            ),
+            entry!(
+                "aspect-ratio",
+                "Aspect ratio",
+                "A box that keeps its proportions."
+            ),
+        ],
+    },
+    Group {
+        title: "Display",
+        entries: &[
+            entry!("avatar", "Avatar", "A person's picture, or their initials."),
+            entry!("badge", "Badge", "A short label for a status or a count."),
+            entry!("card", "Card", "A surface that groups related content."),
+            entry!("alert", "Alert", "An inline message about the page."),
+            entry!("kbd", "Kbd", "A key cap, and a key combination."),
+            entry!("text-link", "Text link", "A link in running text."),
+            entry!(
+                "empty-state",
+                "Empty state",
+                "What to show when there is nothing yet."
+            ),
+            entry!("icon", "Icon", "The small icon set the components use."),
+        ],
+    },
+    Group {
+        title: "Feedback",
+        entries: &[
+            entry!("spinner", "Spinner", "A sign that work is in progress."),
+            entry!(
+                "skeleton",
+                "Skeleton",
+                "A placeholder for content that is loading."
+            ),
+            entry!("progress", "Progress", "How far a task has got."),
+        ],
+    },
+];
 
 pub fn router() -> RouterBuilder {
     module_router!()

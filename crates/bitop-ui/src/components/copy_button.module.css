@@ -1,0 +1,25 @@
+/* The button, its tooltip and its live region; the wrapper takes no box of its own. */
+.root {
+  display: contents;
+}
+
+.button {
+  &[data-size="icon"] {
+    --button-height: var(--control-height-sm);
+  }
+
+  & [data-icon] {
+    inline-size: 1rem;
+    block-size: 1rem;
+  }
+
+  /* The copy icon, or the check mark once copied. */
+  &[data-state="copied"] [data-icon="copy"],
+  &:not([data-state="copied"]) [data-icon="check"] {
+    display: none;
+  }
+
+  &[data-state="copied"] {
+    color: var(--color-success-text);
+  }
+}

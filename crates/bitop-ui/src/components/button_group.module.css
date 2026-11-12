@@ -1,0 +1,103 @@
+/*
+ * Joined children: inner corners are squared and neighbours overlap by 1px,
+ * so the 1px control borders collapse into one shared line. Hovered and
+ * focused children are raised so their border or focus outline is never
+ * covered.
+ */
+.group {
+  display: inline-flex;
+  align-items: stretch;
+  inline-size: fit-content;
+  isolation: isolate;
+
+  & > * {
+    position: relative;
+  }
+
+  & > :hover {
+    z-index: 1;
+  }
+
+  & > :focus-visible,
+  & > :focus-within {
+    z-index: 2;
+  }
+
+  & > input,
+  & > [data-grow] {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+  }
+
+  &[data-orientation="vertical"] {
+    flex-direction: column;
+  }
+
+  &[data-spaced] {
+    gap: var(--space-2);
+  }
+}
+
+.group:not([data-spaced]) {
+  &[data-orientation="horizontal"] {
+    & > :not(:first-child) {
+      border-start-start-radius: 0;
+      border-end-start-radius: 0;
+    }
+
+    & > :not(:last-child) {
+      border-start-end-radius: 0;
+      border-end-end-radius: 0;
+    }
+
+    & > * + :not(.separator):not(.separator + *) {
+      margin-inline-start: -1px;
+    }
+  }
+
+  &[data-orientation="vertical"] {
+    & > :not(:first-child) {
+      border-start-start-radius: 0;
+      border-start-end-radius: 0;
+    }
+
+    & > :not(:last-child) {
+      border-end-start-radius: 0;
+      border-end-end-radius: 0;
+    }
+
+    & > * + :not(.separator):not(.separator + *) {
+      margin-block-start: -1px;
+    }
+  }
+}
+
+.text {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: var(--control-height-md);
+  padding: 0 0.875rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  background-color: var(--color-surface-sunken);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+
+  & [data-icon] {
+    inline-size: 1rem;
+    block-size: 1rem;
+  }
+}
+
+/* Doubled up with .group so it wins over the separator's own rules. */
+.group > .separator[data-orientation] {
+  z-index: 3;
+  align-self: stretch;
+  min-block-size: 0;
+  margin: 0;
+  background-color: var(--color-border-emphasis);
+}

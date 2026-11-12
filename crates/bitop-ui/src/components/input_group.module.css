@@ -1,0 +1,198 @@
+/*
+ * The group draws the control boundary (--color-border-strong, >= 3:1), the
+ * focus ring and the error border; the inner input or textarea is made
+ * borderless. The :is(*, …) selector below lifts specificity above every
+ * state rule in input.module.css, so the reset holds on hover, focus,
+ * invalid and read-only.
+ */
+.group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  inline-size: 100%;
+  min-inline-size: 0;
+  min-block-size: var(--control-height-md);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  background-color: var(--color-control);
+  box-shadow: var(--shadow-0);
+  color: var(--color-text);
+  transition:
+    border-color var(--motion-duration-fast) var(--motion-ease-out),
+    box-shadow var(--motion-duration-fast) var(--motion-ease-out);
+
+  @media (hover: hover) {
+    &:hover:not(:focus-within, :has([data-group-control]:disabled)) {
+      border-color: var(--color-border-hover);
+    }
+  }
+
+  &:has([data-group-control]:focus) {
+    border-color: var(--color-focus-ring);
+    box-shadow: var(--shadow-focus-field);
+  }
+
+  &:has([data-group-control][aria-invalid="true"]) {
+    border-color: var(--color-danger);
+
+    &:has([data-group-control]:focus) {
+      box-shadow:
+        0 0 0 1px var(--color-danger),
+        0 0 0 4px color-mix(in srgb, var(--color-danger) 18%, transparent);
+    }
+  }
+
+  &:has([data-group-control]:disabled) {
+    background-color: var(--color-control-disabled);
+    color: var(--color-text-subtle);
+    cursor: not-allowed;
+  }
+
+  &:has([data-group-control]:read-only:not(:disabled)) {
+    background-color: var(--color-surface-sunken);
+  }
+
+  &:has(> .addon[data-align^="block"]) {
+    flex-wrap: wrap;
+  }
+
+  &:has(> .textarea) {
+    align-items: stretch;
+  }
+
+  &[data-size="sm"] {
+    min-block-size: var(--control-height-sm);
+  }
+}
+
+.group .control[data-group-control]:is(*, :hover, :focus, :focus-visible, :disabled, :read-only, [aria-invalid="true"]) {
+  flex: 1 1 0;
+  inline-size: auto;
+  min-inline-size: 0;
+  block-size: calc(var(--control-height-md) - 2px);
+  min-block-size: 0;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  box-shadow: none;
+  outline: none;
+  opacity: 1;
+}
+
+.group .control[data-group-control]:disabled {
+  color: var(--color-text-subtle);
+}
+
+.group[data-size="sm"] .control[data-group-control] {
+  block-size: calc(var(--control-height-sm) - 2px);
+  padding-inline: 0.625rem;
+  font-size: var(--font-size-sm);
+}
+
+.group .textarea[data-group-control]:is(*, :focus) {
+  block-size: auto;
+  min-block-size: 4.5rem;
+  padding-block: var(--space-2);
+  resize: none;
+}
+
+/* Tighten the control's padding next to an inline addon. */
+.group:has(> .addon[data-align="start"]) .control[data-group-control] {
+  padding-inline-start: var(--space-2);
+}
+
+.group:has(> .addon[data-align="end"]) .control[data-group-control] {
+  padding-inline-end: var(--space-2);
+}
+
+.addon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-subtle);
+  font-size: var(--font-size-md);
+  cursor: text;
+  user-select: none;
+
+  & > [data-icon] {
+    inline-size: 1rem;
+    block-size: 1rem;
+  }
+
+  &[data-align="start"] {
+    order: -1;
+    padding-inline-start: var(--space-3);
+  }
+
+  &[data-align="end"] {
+    order: 1;
+    padding-inline-end: var(--space-3);
+  }
+
+  &[data-align="block-start"],
+  &[data-align="block-end"] {
+    inline-size: 100%;
+    padding: var(--space-2) var(--space-3);
+  }
+
+  &[data-align="block-start"] {
+    order: -1;
+    border-block-end: 1px solid var(--color-border);
+  }
+
+  &[data-align="block-end"] {
+    order: 1;
+    border-block-start: 1px solid var(--color-border);
+  }
+
+  /* A button flush with the group edge gets a smaller inset. */
+  &[data-align="start"]:has(> .button:first-child) {
+    padding-inline-start: var(--space-1);
+  }
+
+  &[data-align="end"]:has(> .button:last-child) {
+    padding-inline-end: var(--space-1);
+  }
+
+  .group[data-size="sm"] & {
+    font-size: var(--font-size-sm);
+
+    &[data-align="start"] {
+      padding-inline-start: 0.625rem;
+    }
+
+    &[data-align="end"] {
+      padding-inline-end: 0.625rem;
+    }
+  }
+}
+
+.text {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+
+  & [data-icon] {
+    inline-size: 1rem;
+    block-size: 1rem;
+  }
+}
+
+/* Addon buttons: shorter than the group so they sit inside its boundary. */
+.addon > .button[data-size] {
+  --button-height: calc(var(--control-height-md) - 0.5rem);
+  --button-padding: var(--space-2);
+
+  border-radius: var(--radius-2);
+}
+
+.addon > .button[data-size="icon"] {
+  --button-padding: 0;
+}
+
+.group[data-size="sm"] .addon > .button[data-size] {
+  --button-height: calc(var(--control-height-sm) - 0.5rem);
+}

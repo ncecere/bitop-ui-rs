@@ -10,6 +10,8 @@ export default async ({ page, check, axe, button, settled, visible }) => {
   check("focus", await page.evaluate(() => document.activeElement.getAttribute("role")), "combobox");
   check("firstActive", await active(), ["Home"]);
   await settled(palette);
+  const box = await palette.boundingBox();
+  check("centredAcross", Math.abs(box.x * 2 + box.width - page.viewportSize().width) < 2);
   check("axeOpen", await axe(), []);
   await page.keyboard.type("comp");
   check("keywords", await options(), ["Button"]);
