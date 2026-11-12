@@ -16,6 +16,15 @@ its design tokens and themes, so a Rust site and a React site can look the same.
 Status: early. 79 of 120 components are built; see the [roadmap](docs/roadmap.md) for the rest.
 Topcoat itself is experimental, and this library pins one exact version of it.
 
+## See it
+
+The gallery, with every component on its own page: **https://ncecere.github.io/bitop-ui-rs/**
+
+It is a static copy, rebuilt on every push to `main` by `scripts/static-site.sh`. Everything that
+runs in the browser works there. What needs a live server does not: a search typed into the
+filter bar, the sidebar staying collapsed after a reload, and relative times, which show the
+moment the copy was made. Run the gallery locally (below) for those.
+
 ## Layers
 
 | Crate | Contents |

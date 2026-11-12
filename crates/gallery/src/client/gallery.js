@@ -2,9 +2,11 @@
 
 const root = document.documentElement;
 
-// Mark the current page in the sidebar.
+// Mark the current page in the sidebar. Paths are compared without a trailing
+// ".html", so this also works in the static copy, where /c/button is c/button.html.
+const page = (url) => new URL(url, location.href).pathname.replace(/\.html$/, "");
 for (const link of document.querySelectorAll("nav a[href]")) {
-  if (link.getAttribute("href") === location.pathname) link.setAttribute("aria-current", "page");
+  if (page(link.href) === page(location.href)) link.setAttribute("aria-current", "page");
 }
 
 const theme = document.querySelector('[data-gallery-set="theme"]');
