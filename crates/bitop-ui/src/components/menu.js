@@ -71,6 +71,9 @@ document.addEventListener(
 );
 
 // Opening a menu moves focus to its first item, as the ARIA menu pattern requires.
+// The toggle event is queued, so it can arrive after a script or the keyboard has
+// already moved focus into the menu; leave focus alone then, or keys typed in that
+// moment are undone.
 document.addEventListener(
   "toggle",
   (event) => {
@@ -78,7 +81,7 @@ document.addEventListener(
     if (!(popup instanceof HTMLElement) || event.newState !== "open") return;
     if (openedByPointer.delete(popup)) return;
     const menu = menuOf(popup);
-    if (menu) menuItems(menu)[0]?.focus();
+    if (menu && !menu.contains(document.activeElement)) menuItems(menu)[0]?.focus();
   },
   true,
 );

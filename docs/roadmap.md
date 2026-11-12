@@ -1,7 +1,7 @@
 # Roadmap
 
 The target is every component in [bitop-ui](https://github.com/ncecere/bitop-ui): 120 in all.
-75 are built. The base set comes first, then the AI set as its own crate.
+79 are built. The base set comes first, then the AI set as its own crate.
 
 Names are bitop-ui's. A few live together here, as they do there: `switch` is in the `checkbox`
 module, `textarea` in `input`, `alert dialog` in `dialog`, and `app-shell` is `sidebar`.
@@ -110,7 +110,7 @@ Crate: `bitop-ui`.
 - [x] `color-mode`
 - [x] `visually-hidden`
 
-## Data and charts (4 of 8)
+## Data and charts (8 of 8)
 
 Crate: `bitop-ui`.
 
@@ -118,10 +118,10 @@ Crate: `bitop-ui`.
 - [x] `data-table`
 - [x] `filter-bar`
 - [x] `diff-viewer`
-- [ ] `chart`
-- [ ] `bar-chart`
-- [ ] `line-chart`
-- [ ] `sparkline`
+- [x] `chart`
+- [x] `bar-chart`
+- [x] `line-chart`
+- [x] `sparkline`
 
 ## AI: chat (0 of 13)
 
@@ -207,3 +207,5 @@ Crate: `bitop-ui-ai`.
   URL); the presets beside the calendar are there.
 - Toasts sit below modal dialogs.
 - The sidebar drawer on narrow screens does not trap focus.
+- The charts' data table has no `onOpenChange` or controlled `open`; listen for the native
+  `toggle` event. A lone point between gaps in a `sparkline` is not drawn, as upstream.

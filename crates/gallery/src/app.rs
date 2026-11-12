@@ -368,6 +368,26 @@ pub const GROUPS: &[Group] = &[
                 "Diff viewer",
                 "Before and after, for text and JSON."
             ),
+            entry!(
+                "chart",
+                "Chart",
+                "Series colours and patterns, the legend and the data table that charts share."
+            ),
+            entry!(
+                "bar-chart",
+                "Bar chart",
+                "Bars per point, overlapping or stacked, with a readout and a data table."
+            ),
+            entry!(
+                "line-chart",
+                "Line chart",
+                "Lines or areas over ordered points, with gaps for missing data."
+            ),
+            entry!(
+                "sparkline",
+                "Sparkline",
+                "A tiny inline trend for stat cards and table cells."
+            ),
         ],
     },
 ];

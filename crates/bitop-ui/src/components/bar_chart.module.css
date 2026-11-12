@@ -1,0 +1,57 @@
+/* Sizes, the peak line, the readout and the axis are in chart.module.css. */
+.root {
+  min-width: 0;
+}
+
+/* The time axis runs from the right in right-to-left, as the slots and labels do. */
+.svg:dir(rtl) {
+  scale: -1 1;
+}
+
+/* A bar in its series' colour; striped and dotted bars are filled by a pattern. */
+.bar {
+  stroke: var(--chart-color);
+  stroke-width: 0;
+
+  [data-pattern="solid"] > & {
+    fill: var(--chart-color);
+  }
+
+  /* The pattern fills the inside; an outline shows the bar's edge. */
+  [data-pattern="dashed"] > &,
+  [data-pattern="dotted"] > & {
+    stroke-width: 2px;
+  }
+
+  /* Only the top of a stack, and every overlapping bar, has round corners. */
+  &[data-top] {
+    clip-path: inset(0 round var(--radius-1) var(--radius-1) 0 0);
+  }
+
+  &:not([data-top]) {
+    clip-path: inset(0);
+  }
+}
+
+/* The marks of a striped or dotted pattern. */
+.ink {
+  fill: var(--chart-color);
+}
+
+/*
+ * Overlapping series: the back one is paler, in the plot and in its legend
+ * swatch. A real colour (--chart-color-soft, >= 3:1 on surface and bg), not an
+ * opacity.
+ */
+.root[data-layout="overlap"] [data-series]:first-child[data-pattern="solid"] .bar,
+.root[data-layout="overlap"] [data-series]:first-child .ink {
+  fill: var(--chart-color-soft);
+}
+
+.root[data-layout="overlap"] [data-series]:first-child .bar {
+  stroke: var(--chart-color-soft);
+}
+
+.root[data-layout="overlap"] [data-chart-legend] > li:first-child > span {
+  --chart-swatch-color: var(--chart-color-soft);
+}

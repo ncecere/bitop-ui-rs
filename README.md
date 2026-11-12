@@ -13,7 +13,7 @@ its design tokens and themes, so a Rust site and a React site can look the same.
 - **Checked.** Every component has a gallery page and browser checks for keyboard behaviour,
   focus and accessibility (axe), run in Chromium, Firefox and WebKit.
 
-Status: early. 75 of 120 components are built; see the [roadmap](docs/roadmap.md) for the rest.
+Status: early. 79 of 120 components are built; see the [roadmap](docs/roadmap.md) for the rest.
 Topcoat itself is experimental, and this library pins one exact version of it.
 
 ## Layers

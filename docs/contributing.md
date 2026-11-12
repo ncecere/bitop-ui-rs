@@ -110,6 +110,9 @@ Topcoat's `view!` macro:
 - A view is built lazily and owns what it uses. A closure that borrows an argument cannot be
   called inside `view!`; call it before and use the strings. A slice written in place
   (`selected: &[day]`) is a temporary that is gone by then; bind it with `let` first.
+- A reference taken before `view!` to a local (`let pair = &series[..2];`) cannot be used in
+  it: the view outlives the function's locals. Write `&series` inside the view, or bind an
+  owned array.
 - A slot's `view!` takes what it uses by value, so a string used both in a slot and outside it
   is moved while borrowed. Give the slot its own: `let footer_id = id.clone();`.
 - A part that sits in running text, such as a hover card after a link, must be a phrasing
@@ -159,6 +162,11 @@ Styles:
   a disabled control fails; only the control and its `<label>` are exempt. Dim the control,
   not its wrapper. For the same reason a gallery page cannot show a colour pair that fails on
   purpose: reach that state in the check instead.
+- An SVG presentation attribute (`fill="url(#stripes)"`) loses to any stylesheet rule for
+  the same property. Scope the rule so it does not match those elements.
+- A drawing stretched with `viewBox` and `preserveAspectRatio="none"` stretches corner radii
+  and dashes too. Bars that need round corners are drawn without a `viewBox`, in percentages
+  (`x="12.5%"`), so that pixels stay pixels; lines use `vector-effect="non-scaling-stroke"`.
 
 Scripts:
 
@@ -243,6 +251,8 @@ Checks:
   every frame, and lengthen the transition for the check so that a slow machine sees it.
 - In Playwright's Firefox, a mouse that moves outside the viewport during a drag reports
   `clientX` 0 and its release never arrives. Keep a drag inside the window.
+- Firefox counts the stroke in `getBoundingClientRect()` of an SVG shape; the other engines
+  do not. Measure a shape's geometry with `getBBox()`.
 - In WebKit, after a click on a `<summary>`, Tab stays on it. Open a `<details>` from the
   keyboard before checking the tab order of what is inside.
 - `CSS.supports()` can say yes where the feature only half works (WebKit and
@@ -251,3 +261,7 @@ Checks:
 - To check that something waits before it happens, record `performance.now()` in the page at
   both events and compare. A check made "straight after" from the runner fails on a slow
   machine.
+- The `toggle` event of a popover is queued, not sent at once. A listener that moves focus
+  when a popup opens must first check that focus is not already inside it; otherwise, on a
+  slow machine, it undoes keys pressed in the meantime. Menus, the menubar and the date
+  picker had this bug.

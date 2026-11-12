@@ -1,0 +1,230 @@
+/*
+ * Series colours: --chart-color from the --color-chart-* tokens (>= 3:1 on
+ * surface and bg in every theme; see theme-neutral.css), and
+ * --chart-color-soft, a paler variant that is also >= 3:1.
+ */
+.tone {
+  --chart-color: var(--color-chart-primary);
+  --chart-color-soft: var(--color-chart-primary-soft, var(--color-chart-primary));
+
+  &[data-tone="info"] {
+    --chart-color: var(--color-chart-info);
+    --chart-color-soft: var(--color-chart-info-soft, var(--color-chart-info));
+  }
+
+  &[data-tone="success"] {
+    --chart-color: var(--color-chart-success);
+    --chart-color-soft: var(--color-chart-success-soft, var(--color-chart-success));
+  }
+
+  &[data-tone="warning"] {
+    --chart-color: var(--color-chart-warning);
+    --chart-color-soft: var(--color-chart-warning-soft, var(--color-chart-warning));
+  }
+
+  &[data-tone="danger"] {
+    --chart-color: var(--color-chart-danger);
+    --chart-color-soft: var(--color-chart-danger-soft, var(--color-chart-danger));
+  }
+
+  &[data-tone="neutral"] {
+    --chart-color: var(--color-chart-neutral);
+    --chart-color-soft: var(--color-chart-neutral-soft, var(--color-chart-neutral));
+  }
+
+  &[data-tone="accent"] {
+    --chart-color: var(--color-chart-accent, var(--color-chart-primary));
+    --chart-color-soft: var(
+      --color-chart-accent-soft,
+      var(--color-chart-accent, var(--color-chart-primary))
+    );
+  }
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.swatch {
+  --chart-swatch-color: var(--chart-color);
+
+  flex: none;
+
+  &[data-shape="square"] {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: var(--radius-1);
+    background-color: var(--chart-swatch-color);
+  }
+
+  /* Striped and dotted squares, as the bars of those series are drawn. */
+  &[data-shape="square"][data-pattern="dashed"] {
+    background: repeating-linear-gradient(
+      45deg,
+      var(--chart-swatch-color) 0 2px,
+      transparent 2px 4px
+    );
+    box-shadow: inset 0 0 0 1px var(--chart-swatch-color);
+  }
+
+  &[data-shape="square"][data-pattern="dotted"] {
+    background: radial-gradient(circle, var(--chart-swatch-color) 1px, transparent 1.5px) 0 0 /
+      4px 4px;
+    box-shadow: inset 0 0 0 1px var(--chart-swatch-color);
+  }
+
+  /* A short stroke in the series' line pattern. */
+  &[data-shape="line"] {
+    width: 1.25rem;
+    height: 0;
+    border-top: 2px solid var(--chart-swatch-color);
+  }
+
+  &[data-shape="line"][data-pattern="dashed"] {
+    border-top-style: dashed;
+  }
+
+  &[data-shape="line"][data-pattern="dotted"] {
+    border-top-style: dotted;
+  }
+}
+
+.data {
+  font-size: var(--font-size-sm);
+}
+
+/* The frame of a bar or line chart. */
+.root {
+  --chart-height: 10rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+
+  &[data-size="sm"] {
+    --chart-height: 6rem;
+  }
+
+  &[data-size="lg"] {
+    --chart-height: 14rem;
+  }
+}
+
+/* Holds the plot and the readout over it. */
+.frame {
+  position: relative;
+}
+
+.plot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: var(--chart-height);
+  padding-top: var(--space-5);
+  border-bottom: 1px solid var(--color-border-strong);
+}
+
+/* The peak value, on a faint line at the top of the scale. */
+.peak {
+  position: absolute;
+  inset: 0 0 auto;
+  padding-bottom: var(--space-1);
+  border-bottom: 1px dashed var(--color-border);
+  font-size: var(--font-size-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+
+/* Where the marks are drawn: the plot under the peak line. */
+.area {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+/* Hover targets: one column per point, under the marks. */
+.slots {
+  position: absolute;
+  inset: 0;
+  display: flex;
+}
+
+.slot {
+  flex: 1;
+  min-width: 0;
+
+  &[data-active] {
+    background-color: var(--color-surface-hover);
+  }
+}
+
+.empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* The values of the point under the pointer or the keyboard. The script places it. */
+.readout {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 1;
+  inline-size: max-content;
+  max-inline-size: 100%;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-1);
+  background: var(--color-text);
+  color: var(--color-surface);
+  font-size: var(--font-size-xs);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.4;
+  translate: -50% 0;
+  pointer-events: none;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.axis {
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+/* A chart whose time axis runs left to right in every direction (the line chart). */
+.root[data-ltr-axis] .slots,
+.root[data-ltr-axis] .axis {
+  direction: ltr;
+}

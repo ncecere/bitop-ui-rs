@@ -48,8 +48,9 @@ function openBarMenu(trigger, last = false) {
   if (!popup) return;
   trigger.focus();
   if (!popup.matches(":popover-open")) {
-    // menu.js moves focus to the first item when the menu has opened; the listener
-    // below moves it on to the last.
+    // Focus moves in at once, below. The toggle listeners here and in menu.js only
+    // place it if it is not already in the menu, for example when the button could
+    // not be focused.
     popup.toggleAttribute("data-menubar-last", last);
     trigger.click();
   }
@@ -77,7 +78,8 @@ document.addEventListener(
     if (!(popup instanceof HTMLElement) || !popup.matches("[data-menubar-popup]")) return;
     if (event.newState === "open" && popup.hasAttribute("data-menubar-last")) {
       popup.removeAttribute("data-menubar-last");
-      barItems(popup).at(-1)?.focus();
+      // The event is queued; keys pressed since the menu opened have already moved focus.
+      if (!popup.contains(document.activeElement)) barItems(popup).at(-1)?.focus();
     }
   },
   true,

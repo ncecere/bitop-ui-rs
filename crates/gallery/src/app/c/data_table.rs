@@ -169,9 +169,14 @@ const INVOICES: [Invoice; 12] = [
 
 const PAGE_SIZE: u32 = 5;
 
+/// Whole dollars, or dollars and two digits of cents: "$1,200", "$480.50".
+/// `format_number` drops trailing zeros, which suits counts but not money.
 fn money(cents: u32) -> String {
-    let text = format_number(f64::from(cents) / 100.0, 2, false);
-    format!("${text}")
+    let dollars = format_number(f64::from(cents / 100), 0, false);
+    match cents % 100 {
+        0 => format!("${dollars}"),
+        rest => format!("${dollars}.{rest:02}"),
+    }
 }
 
 /// One row, with the strings the view needs.

@@ -70,7 +70,10 @@ document.addEventListener(
   (event) => {
     const parts = pickerParts(event.target);
     if (!parts || event.target !== parts.popup || event.newState !== "open") return;
-    if (parts.popup.matches(":popover-open")) parts.calendar.querySelector('[data-day][tabindex="0"]')?.focus();
+    // The event is queued; keys pressed since the popup opened have already moved focus.
+    if (parts.popup.matches(":popover-open") && !parts.popup.contains(document.activeElement)) {
+      parts.calendar.querySelector('[data-day][tabindex="0"]')?.focus();
+    }
   },
   true,
 );
