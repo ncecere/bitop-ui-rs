@@ -1,0 +1,111 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-inline-size: 0;
+  /* Lets the panel's height run from 0 to auto where the browser can do that. */
+  interpolate-size: allow-keywords;
+}
+
+/* The panel opens through the box the browser puts around a <details>'s content. A
+   rule of its own: a browser that does not know the pseudo-element drops the rule. */
+.root::details-content {
+  inline-size: 100%;
+  block-size: 0;
+  overflow: clip;
+  transition:
+    block-size var(--motion-duration-normal) var(--motion-ease-out),
+    content-visibility var(--motion-duration-normal) allow-discrete;
+}
+
+.root[open]::details-content {
+  block-size: auto;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: var(--control-height-sm);
+  padding: 0 var(--space-2);
+  margin-inline-start: calc(var(--space-2) * -1);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color var(--motion-duration-fast) var(--motion-ease-out),
+    color var(--motion-duration-fast) var(--motion-ease-out);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--color-surface-hover);
+      color: var(--color-text);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+/* Safari draws the disclosure triangle with its own pseudo-element. */
+.trigger::-webkit-details-marker {
+  display: none;
+}
+
+.icon {
+  inline-size: 1rem;
+  block-size: 1rem;
+}
+
+.label {
+  min-inline-size: 0;
+}
+
+.chevron {
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+  transition: rotate var(--motion-duration-fast) var(--motion-ease-out);
+
+  .root[open] > .trigger & {
+    rotate: 180deg;
+  }
+}
+
+.panel {
+  inline-size: 100%;
+}
+
+/* Thinking text: muted, with a guide line. */
+.content {
+  margin-block-start: var(--space-2);
+  padding-inline-start: var(--space-4);
+  border-inline-start: 2px solid var(--color-border-emphasis);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-normal);
+}
+
+/* Two classes so that a nested response's own colour and size (one class) lose. */
+.root .content > * {
+  color: inherit;
+  font-size: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chevron {
+    transition: none;
+  }
+
+  .root::details-content {
+    transition: none;
+  }
+}

@@ -40,6 +40,23 @@ pub enum Icon {
     ArrowDown,
     ChevronsUpDown,
     Columns3,
+    File,
+    FileText,
+    Image,
+    Paperclip,
+    /// Filled, for a stop button.
+    Square,
+    BookOpen,
+    Brain,
+    ImageOff,
+    ThumbsUp,
+    ThumbsDown,
+    RefreshCw,
+    MessageSquare,
+    ExternalLink,
+    Globe,
+    SquarePen,
+    BookOpenText,
 }
 
 impl Icon {
@@ -73,6 +90,22 @@ impl Icon {
             Self::ArrowDown => "arrow-down",
             Self::ChevronsUpDown => "chevrons-up-down",
             Self::Columns3 => "columns-3",
+            Self::File => "file",
+            Self::FileText => "file-text",
+            Self::Image => "image",
+            Self::Paperclip => "paperclip",
+            Self::Square => "square",
+            Self::BookOpen => "book-open",
+            Self::Brain => "brain",
+            Self::ImageOff => "image-off",
+            Self::ThumbsUp => "thumbs-up",
+            Self::ThumbsDown => "thumbs-down",
+            Self::RefreshCw => "refresh-cw",
+            Self::MessageSquare => "message-square",
+            Self::ExternalLink => "external-link",
+            Self::Globe => "globe",
+            Self::SquarePen => "square-pen",
+            Self::BookOpenText => "book-open-text",
         }
     }
 }

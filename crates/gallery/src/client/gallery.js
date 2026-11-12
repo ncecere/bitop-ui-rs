@@ -5,7 +5,9 @@ const root = document.documentElement;
 // Mark the current page in the sidebar. Paths are compared without a trailing
 // ".html", so this also works in the static copy, where /c/button is c/button.html.
 const page = (url) => new URL(url, location.href).pathname.replace(/\.html$/, "");
-for (const link of document.querySelectorAll("nav a[href]")) {
+// Only the sidebar's links: a page's own navigation (breadcrumbs, pagination) links to
+// the same path with a query and marks its current item itself.
+for (const link of document.querySelectorAll('nav[aria-label="Components"] a[href]')) {
   if (page(link.href) === page(location.href)) link.setAttribute("aria-current", "page");
 }
 
@@ -29,4 +31,61 @@ document.addEventListener("click", (event) => {
     description: variant === "danger" ? "The server did not respond. Try again." : "",
     variant,
   });
+});
+
+// Buttons on the AI pages that stand in for a server streaming into the page: they set
+// or remove an attribute on another element (data-gallery-attr="name",
+// data-gallery-target="id", data-gallery-value="value" or none to remove it).
+document.addEventListener("click", (event) => {
+  const button = event.target instanceof Element && event.target.closest("[data-gallery-attr]");
+  if (!button) return;
+  const target = document.getElementById(button.dataset.galleryTarget);
+  if (!target) return;
+  const name = button.dataset.galleryAttr;
+  if (button.dataset.galleryValue === undefined) target.removeAttribute(name);
+  else target.setAttribute(name, button.dataset.galleryValue);
+});
+
+// The response page's replay: each <template data-replay-stage> holds the blocks that
+// changed at one step of a stream, as a server would send them.
+document.addEventListener("click", async (event) => {
+  const button = event.target instanceof Element && event.target.closest("[data-gallery-replay]");
+  if (!button) return;
+  const root = document.getElementById(button.dataset.galleryReplay);
+  const stages = [...root.parentElement.querySelectorAll(":scope > template[data-replay-stage]")];
+  button.disabled = true;
+  root.replaceChildren();
+  root.setAttribute("data-streaming", "");
+  for (const stage of stages) {
+    const patches = [...stage.content.children].filter((t) => t.matches("template[data-index]")).map((t) => ({
+      index: Number(t.dataset.index),
+      html: t.innerHTML,
+    }));
+    window.bitopUi.patchResponse(root, patches, Number(stage.dataset.len));
+    await new Promise((resolve) => setTimeout(resolve, 40));
+  }
+  root.removeAttribute("data-streaming");
+  root.dataset.replayed = "";
+  button.disabled = false;
+});
+
+// The conversation page's stand-in for a streamed reply: words are appended to an
+// element one at a time, and the announcer's status follows.
+document.addEventListener("click", async (event) => {
+  const button = event.target instanceof Element && event.target.closest("[data-gallery-stream]");
+  if (!button) return;
+  const target = document.getElementById(button.dataset.galleryStream);
+  const announcer = document.getElementById(button.dataset.galleryAnnouncer);
+  const words = (button.dataset.galleryWords ?? "").split(" ");
+  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  button.disabled = true;
+  if (announcer) announcer.dataset.status = "submitted";
+  await wait(300);
+  if (announcer) announcer.dataset.status = "streaming";
+  for (const word of words) {
+    target.append(`${word} `);
+    await wait(30);
+  }
+  if (announcer) announcer.dataset.status = "ready";
+  button.disabled = false;
 });

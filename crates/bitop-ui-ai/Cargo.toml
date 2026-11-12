@@ -10,6 +10,9 @@ publish.workspace = true
 
 [dependencies]
 bitop-ui.workspace = true
+# Markdown for `response`: GFM tables, strikethrough and task lists. The HTML is
+# written by `markdown.rs`, which sanitises it, so the crate's own writer is not used.
+pulldown-cmark = { version = "0.13", default-features = false }
 topcoat = { workspace = true }
 
 [build-dependencies]

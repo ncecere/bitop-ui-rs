@@ -16,6 +16,42 @@ use topcoat::{
 };
 
 pub mod components;
+pub mod markdown;
+
+/// The state of a chat, shared by
+/// [`conversation_announcer`](components::conversation::conversation_announcer) and
+/// [`prompt_input`](components::prompt_input::prompt_input). Rendered as
+/// `data-status`.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum ChatStatus {
+    /// Waiting for the person.
+    #[default]
+    Ready,
+    /// A message was sent; no answer has arrived yet.
+    Submitted,
+    /// The answer is arriving.
+    Streaming,
+    /// The answer failed.
+    Error,
+}
+
+impl ChatStatus {
+    #[must_use]
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Ready => "ready",
+            Self::Submitted => "submitted",
+            Self::Streaming => "streaming",
+            Self::Error => "error",
+        }
+    }
+
+    /// Whether an answer is on its way.
+    #[must_use]
+    pub fn is_busy(self) -> bool {
+        matches!(self, Self::Submitted | Self::Streaming)
+    }
+}
 
 /// Scoped class names generated from the `*.module.css` files.
 pub mod css {

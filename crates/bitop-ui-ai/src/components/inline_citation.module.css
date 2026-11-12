@@ -1,0 +1,265 @@
+/* The chip and its card, inside running text. */
+.root {
+  display: inline;
+}
+
+/* A compact number chip that sits on the text baseline, slightly raised. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 1.25rem;
+  block-size: 1.125rem;
+  margin-inline: 0.1875rem 0.0625rem;
+  padding: 0 0.3125rem;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-neutral-subtle);
+  color: var(--color-neutral-text);
+  font-family: var(--font-family-sans);
+  font-size: 0.6875rem;
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  vertical-align: 0.125em;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition:
+    background-color var(--motion-duration-fast) var(--motion-ease-out),
+    color var(--motion-duration-fast) var(--motion-ease-out);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--color-primary-subtle);
+      color: var(--color-primary-subtle-text);
+    }
+  }
+
+  &[aria-expanded="true"],
+  &[data-open] {
+    background-color: var(--color-primary-subtle);
+    color: var(--color-primary-subtle-text);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 1px;
+  }
+
+  /* A checked claim: a check when verified, a warning otherwise. */
+  &[data-verification="unsupported"] {
+    background-color: var(--color-warning-subtle);
+    color: var(--color-warning-text);
+  }
+
+  &[data-verification="contradicted"] {
+    background-color: var(--color-danger-subtle);
+    color: var(--color-danger-text);
+  }
+}
+
+.mark {
+  inline-size: 0.625rem;
+  block-size: 0.625rem;
+  margin-inline-start: 0.125rem;
+
+  [data-verification="verified"] > & {
+    color: var(--color-success-text);
+  }
+}
+
+.verification {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  align-self: flex-start;
+  margin-block-end: var(--space-1);
+  padding: 0.125rem var(--space-2);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+
+  &[data-verification="verified"] {
+    background-color: var(--color-success-subtle);
+    color: var(--color-success-text);
+  }
+
+  &[data-verification="unsupported"] {
+    background-color: var(--color-warning-subtle);
+    color: var(--color-warning-text);
+  }
+
+  &[data-verification="contradicted"] {
+    background-color: var(--color-danger-subtle);
+    color: var(--color-danger-text);
+  }
+}
+
+.verificationIcon {
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+}
+
+/* The script names the chip as the anchor (--bitop-citation) while its card is open.
+   Only one card is open at a time, so one name is enough. */
+.card[popover] {
+  position-anchor: --bitop-citation;
+  position-area: block-start;
+  position-try-fallbacks: flip-block;
+  margin: 6px 0;
+  flex-direction: column;
+  inline-size: min(22rem, calc(100vw - 2 * var(--space-4)));
+  max-inline-size: none;
+  padding: 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+  text-align: start;
+  white-space: normal;
+
+  &[data-side="bottom"] {
+    position-area: block-end;
+  }
+
+  /* Only when open: a display value here would show the closed popover. */
+  &:popover-open {
+    display: flex;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-1);
+  border-block-end: 1px solid var(--color-border);
+}
+
+.step[data-size] {
+  --button-height: var(--control-height-sm);
+
+  inline-size: var(--control-height-sm);
+  padding: 0;
+}
+
+.stepIcon {
+  inline-size: 1rem;
+  block-size: 1rem;
+
+  &:dir(rtl) {
+    scale: -1 1;
+  }
+}
+
+.pageIndex {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.source {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4) var(--space-4);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.site {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.title {
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+}
+
+.link {
+  color: inherit;
+  text-decoration: none;
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--color-link);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+  }
+
+  &:focus-visible {
+    border-radius: var(--radius-1);
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.linkIcon {
+  display: inline-block;
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+  margin-inline-start: 0.125rem;
+  vertical-align: -0.125em;
+  color: var(--color-text-muted);
+}
+
+.description {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+}
+
+.quote {
+  display: block;
+  margin-block-start: var(--space-1);
+  padding-inline-start: var(--space-3);
+  border-inline-start: 2px solid var(--color-border-emphasis);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-style: italic;
+  line-height: var(--line-height-normal);
+}
+
+/* The "go to source" button under the passage, styled as a link. */
+.sourceAction {
+  align-self: flex-start;
+  margin-block-start: var(--space-1);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-1);
+  background: none;
+  color: var(--color-link);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--color-link-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+}

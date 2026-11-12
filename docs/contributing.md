@@ -132,6 +132,13 @@ Topcoat's `view!` macro:
   is moved while borrowed. Give the slot its own: `let footer_id = id.clone();`.
 - A part that sits in running text, such as a hover card after a link, must be a phrasing
   element (`<span>`), and so must its children. The parser closes a `<p>` at a `<div>`.
+- A view's type nests every part it renders. A page holding several large parts (response
+  blocks with code blocks and citation cards, for example) overflowed the compiler's
+  recursion limit while it checked that the page is `Send`. A large part returns
+  `Ok(Child::new(view! { ... }))`, which boxes its view and ends the nesting there.
+- Markup that is already sanitised goes into a view as `(Unescaped::new_unchecked(html))`.
+  Only HTML built by code that escapes every piece of text may go there; see
+  `bitop-ui-ai`'s `markdown.rs`.
 
 Styles:
 
@@ -182,6 +189,13 @@ Styles:
 - A drawing stretched with `viewBox` and `preserveAspectRatio="none"` stretches corner radii
   and dashes too. Bars that need round corners are drawn without a `viewBox`, in percentages
   (`x="12.5%"`), so that pixels stay pixels; lines use `vector-effect="non-scaling-stroke"`.
+- A class that sets `display` wins over the browser's own rule for the `hidden`
+  attribute, so `hidden` on such an element shows it anyway. A part that a script or a
+  caller may hide with `hidden` adds `&[hidden] { display: none }`.
+- An inline-flex element makes blocks of its children, and the accessible name then has
+  spaces between them: `<span>Source</span> 1<span>:</span>` in a chip is read as
+  "Source 1 :". Put the whole spoken text in one `sr-only` span and hide the visible
+  number with `aria-hidden`.
 
 Scripts:
 
@@ -218,6 +232,17 @@ Scripts:
   `smooth`. To jump, say `"instant"`.
 - A script that rebuilds what the server rendered needs the scoped class names. Copy an
   element the server rendered (`cloneNode`), or have the server render a `<template>`.
+- Content of a `<details>` that has just been opened cannot take focus in Chromium until the
+  next frame, while the box around it (`::details-content`) starts its transition. A script
+  that opens one and focuses something inside tries again on the next frames.
+- `querySelectorAll(":scope > …")` on a `<template>`'s content (a document fragment)
+  matches nothing. Walk `content.children` instead.
+- A `<details>`'s `toggle` event is queued too. A script that must know whether the reader
+  opened or closed it (reasoning stops following the stream then) compares `open` with
+  the state it last set itself, rather than waiting for the event: a change made by a
+  server streaming into the page can arrive first.
+- The gallery marks the current page in the sidebar only. A page's own navigation links to
+  the same path with a query (`?page=2`) and marks its current item itself.
 
 Checks:
 
@@ -280,3 +305,23 @@ Checks:
   when a popup opens must first check that focus is not already inside it; otherwise, on a
   slow machine, it undoes keys pressed in the meantime. Menus, the menubar and the date
   picker had this bug.
+- axe's `label-content-name-mismatch` joins the text of a control's block children without
+  spaces before it looks for it in the `aria-label`: a card button showing "Travel policy"
+  and "Uploaded file" in two blocks must have "Travel policyUploaded file" in its label.
+  Keep an `aria-label` for a control whose visible text is one line.
+- A plain `<button>` on a gallery page keeps the browser's colours, which fail axe's contrast
+  rule in WebKit's dark theme. Use the base `button` part.
+- A request that fails, such as an image from a host that does not exist, logs a console
+  error and fails the page. Gallery pages load nothing from other hosts at load time. A check
+  that needs a remote image routes the request (`page.route`) and fulfils it; an image that
+  must not load before the route is set goes in a closed `<details>` with `loading="lazy"`.
+  Fetching a revoked object URL logs an error too: to check that a URL was revoked, wrap
+  `URL.revokeObjectURL` in the page and record the calls.
+- A copy of an `<img>` (`cloneNode`) starts loading its `src` at once; Firefox reports that
+  load even if the copy's `src` is changed straight after. Create a new `<img>` instead.
+- A `ClipboardEvent` made in script carries no files in Firefox either, and a check cannot
+  put files on the clipboard. Test whether the event kept its data and leave the paste out
+  where it did not.
+- Changing the page's direction resizes a log that follows its content, and its
+  `ResizeObserver` pins it to the bottom a frame later. A check that then scrolls the log
+  waits two frames first, or the pin undoes the scroll.

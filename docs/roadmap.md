@@ -1,7 +1,7 @@
 # Roadmap
 
 The target is every component in [bitop-ui](https://github.com/ncecere/bitop-ui): 120 in all.
-79 are built. The base set comes first, then the AI set as its own crate.
+92 are built. The base set comes first, then the AI set as its own crate.
 
 Names are bitop-ui's. A few live together here, as they do there: `switch` is in the `checkbox`
 module, `textarea` in `input`, `alert dialog` in `dialog`, and `app-shell` is `sidebar`.
@@ -123,23 +123,23 @@ Crate: `bitop-ui`.
 - [x] `line-chart`
 - [x] `sparkline`
 
-## AI: chat (0 of 13)
+## AI: chat (13 of 13)
 
 Crate: `bitop-ui-ai`.
 
-- [ ] `conversation`
-- [ ] `message`
-- [ ] `response`
-- [ ] `prompt-input`
-- [ ] `suggestion`
-- [ ] `model-selector`
-- [ ] `attachments`
-- [ ] `reasoning`
-- [ ] `sources`
-- [ ] `inline-citation`
-- [ ] `code-block`
-- [ ] `image`
-- [ ] `open-in-chat`
+- [x] `conversation`
+- [x] `message`
+- [x] `response`
+- [x] `prompt-input`
+- [x] `suggestion`
+- [x] `model-selector`
+- [x] `attachments`
+- [x] `reasoning`
+- [x] `sources`
+- [x] `inline-citation`
+- [x] `code-block`
+- [x] `image`
+- [x] `open-in-chat`
 
 ## AI: agents and tools (0 of 12)
 
@@ -209,3 +209,20 @@ Crate: `bitop-ui-ai`.
 - The sidebar drawer on narrow screens does not trap focus.
 - The charts' data table has no `onOpenChange` or controlled `open`; listen for the native
   `toggle` event. A lone point between gaps in a `sparkline` is not drawn, as upstream.
+- The AI chat set (`bitop-ui-ai`) renders on the server, so a few React-only parts of
+  upstream are other things here: callbacks (`onSelect`, `onSubmit`, `onStop`,
+  `onBranchChange`, `onOpen`, `onFileError`) are DOM events, form submissions or a status
+  line; `useConversation` is `bitopUi.conversation`; controlled `value`s are initial
+  values. Each module's documentation lists its differences.
+- `response` renders Markdown on the server with `pulldown-cmark`: there are no
+  `components`, `remarkPlugins`, `highlight` or `LazyResponse`. Relative and same-site
+  link and image URLs are refused, where upstream allows them.
+- `code-block` has no syntax highlighter, as upstream bundles none; the `<code>` has a
+  `language-…` class for one in the browser.
+- `model-selector` and `open-in-chat` have no provider icons, and `open-in-chat` no
+  custom trigger. `inline-citation`'s and `sources`' descriptions and quotes are text.
+- `message` branches are switched by the script among server-rendered versions; before
+  the script runs, CSS shows the chosen one only among the first ten.
+- `image` turns bytes into a `data:` URL on the server rather than an object URL. Its
+  loading placeholder is not shown on its gallery page, as nothing there loads slowly;
+  the check reaches it.

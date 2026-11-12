@@ -390,6 +390,81 @@ pub const GROUPS: &[Group] = &[
             ),
         ],
     },
+    Group {
+        title: "AI: chat",
+        entries: &[
+            entry!(
+                "code-block",
+                "Code block",
+                "Code with a language, a copy button and line numbers."
+            ),
+            entry!(
+                "suggestion",
+                "Suggestion",
+                "Prompt starters as pill buttons."
+            ),
+            entry!(
+                "attachments",
+                "Attachments",
+                "File chips with a preview, the size and the upload state."
+            ),
+            entry!(
+                "sources",
+                "Sources",
+                "A collapsible list of the sources an answer used."
+            ),
+            entry!(
+                "inline-citation",
+                "Inline citation",
+                "A numbered chip after a claim that opens its sources."
+            ),
+            entry!(
+                "image",
+                "Image",
+                "A generated image with a loading placeholder and a fallback."
+            ),
+            entry!(
+                "reasoning",
+                "Reasoning",
+                "The model's thinking, open while it streams."
+            ),
+            entry!(
+                "message",
+                "Message",
+                "One turn of a chat, with actions, feedback and versions."
+            ),
+            entry!(
+                "response",
+                "Response",
+                "Markdown answers, safe to stream and to render untrusted."
+            ),
+            entry!(
+                "conversation",
+                "Conversation",
+                "The message log, which keeps the latest message in view."
+            ),
+            entry!(
+                "model-selector",
+                "Model selector",
+                "A searchable model picker, grouped by provider."
+            ),
+            entry!(
+                "open-in-chat",
+                "Open in chat",
+                "Links that open a prompt in other chat products."
+            ),
+            entry!(
+                "prompt-input",
+                "Prompt input",
+                "The chat composer: a growing text box, files, tools and send or stop."
+            ),
+            entry!(
+                "chat-example",
+                "Chat example",
+                "A whole chat screen built from these parts, with a canned reply."
+            ),
+        ],
+    },
 ];
 
 pub fn router() -> RouterBuilder {
