@@ -27,6 +27,11 @@ pub enum Icon {
     Minus,
     Plus,
     Copy,
+    ChevronLeft,
+    Sun,
+    Moon,
+    CalendarDays,
+    Upload,
 }
 
 impl Icon {
@@ -47,6 +52,11 @@ impl Icon {
             Self::Minus => "minus",
             Self::Plus => "plus",
             Self::Copy => "copy",
+            Self::ChevronLeft => "chevron-left",
+            Self::Sun => "sun",
+            Self::Moon => "moon",
+            Self::CalendarDays => "calendar-days",
+            Self::Upload => "upload",
         }
     }
 }

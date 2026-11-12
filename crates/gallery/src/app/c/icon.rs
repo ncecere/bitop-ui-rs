@@ -31,6 +31,11 @@ async fn show(cx: &Cx) -> Result<impl View> {
                 icon(name: Icon::Minus)
                 icon(name: Icon::Plus)
                 icon(name: Icon::Copy)
+                icon(name: Icon::ChevronLeft)
+                icon(name: Icon::Sun)
+                icon(name: Icon::Moon)
+                icon(name: Icon::CalendarDays)
+                icon(name: Icon::Upload)
             </div>
         )
         example(

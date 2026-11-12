@@ -46,15 +46,26 @@ for (const name of names) {
     button: (label) => page.getByRole("button", { name: label, exact: true }),
     focused: () => page.evaluate(() => document.activeElement?.textContent?.trim()),
     // Waits for an entry transition to end. Headless WebKit starts transitions late,
-    // so a fixed wait is not reliable.
+    // so a fixed wait is not reliable, and neither is one look at the style: before the
+    // transition starts, the style already has its end values. The element must also
+    // have stayed in one place for several frames. Gives up after thirty seconds, on an
+    // element that is not shown for example, so that the run does not hang.
     settled: (locator) =>
       locator.evaluate(
         (element) =>
-          new Promise((resolve) => {
+          new Promise((resolve, reject) => {
+            const started = performance.now();
+            let place = "";
+            let frames = 0;
             const poll = () => {
               const style = getComputedStyle(element);
               const still = ["none", "0px", "0px 0px"].includes(style.translate);
-              if (style.opacity === "1" && still) resolve();
+              const box = element.getBoundingClientRect();
+              const now = [box.x, box.y, box.width, box.height].join();
+              frames = now === place ? frames + 1 : 0;
+              place = now;
+              if (style.opacity === "1" && still && frames >= 6) resolve();
+              else if (performance.now() - started > 30_000) reject(new Error("the element did not settle"));
               else requestAnimationFrame(poll);
             };
             poll();

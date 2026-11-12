@@ -1,0 +1,22 @@
+/* The right-click and long-press area. A long press must not start a text selection
+   or the iOS callout, so both are turned off on the trigger. */
+.trigger {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+
+  &[data-popup-open] {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+/* The popup is a popover placed by the script at the pointer, not anchored to an
+   element. The attribute selector outranks the popover module's rules. */
+.popup[popover] {
+  position: fixed;
+  position-area: none;
+  position-try-fallbacks: none;
+  inset: auto;
+  margin: 0;
+}

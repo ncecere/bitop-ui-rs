@@ -118,6 +118,26 @@ pub const GROUPS: &[Group] = &[
                 "Copy field",
                 "A read-only value with a copy button."
             ),
+            entry!(
+                "tag-input",
+                "Tag input",
+                "A list of short text tags with an inline input."
+            ),
+            entry!(
+                "calendar",
+                "Calendar",
+                "A month grid for a day, several days or a range."
+            ),
+            entry!(
+                "date-picker",
+                "Date picker",
+                "A button that opens a calendar in a popover."
+            ),
+            entry!(
+                "drop-zone",
+                "Drop zone",
+                "Drop files, or choose them with a button."
+            ),
         ],
     },
     Group {
@@ -141,6 +161,27 @@ pub const GROUPS: &[Group] = &[
                 "Search actions and pages from the keyboard."
             ),
             entry!("toast", "Toast", "A brief message that dismisses itself."),
+            entry!(
+                "sheet",
+                "Sheet",
+                "A dialog attached to an edge of the screen."
+            ),
+            entry!("drawer", "Drawer", "An edge panel that can be swiped away."),
+            entry!(
+                "hover-card",
+                "Hover card",
+                "A preview of a link, shown on hover or focus."
+            ),
+            entry!(
+                "context-menu",
+                "Context menu",
+                "A menu that opens at the pointer on right-click."
+            ),
+            entry!(
+                "menubar",
+                "Menubar",
+                "A row of menus, as in a desktop application."
+            ),
         ],
     },
     Group {
@@ -152,6 +193,11 @@ pub const GROUPS: &[Group] = &[
                 "The application shell with a navigation sidebar."
             ),
             entry!("tabs", "Tabs", "Switch between panels on one page."),
+            entry!(
+                "navigation-menu",
+                "Navigation menu",
+                "Site navigation with panels of links."
+            ),
             entry!(
                 "separator",
                 "Separator",
@@ -166,6 +212,11 @@ pub const GROUPS: &[Group] = &[
                 "aspect-ratio",
                 "Aspect ratio",
                 "A box that keeps its proportions."
+            ),
+            entry!(
+                "color-mode",
+                "Color mode",
+                "Switch between light, dark and the system setting."
             ),
         ],
     },

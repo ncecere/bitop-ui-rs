@@ -1,7 +1,7 @@
 # Roadmap
 
 The target is every component in [bitop-ui](https://github.com/ncecere/bitop-ui): 120 in all.
-41 are built. The base set comes first, then the AI set as its own crate.
+51 are built. The base set comes first, then the AI set as its own crate.
 
 Names are bitop-ui's. A few live together here, as they do there: `switch` is in the `checkbox`
 module, `textarea` in `input`, `alert dialog` in `dialog`, and `app-shell` is `sidebar`.
@@ -9,7 +9,7 @@ module, `textarea` in `input`, `alert dialog` in `dialog`, and `app-shell` is `s
 Order of work: forms, overlays, navigation and layout, display and feedback, data and charts,
 then AI chat, agents and tools, code, and voice.
 
-## Base: forms (16 of 20)
+## Base: forms (20 of 20)
 
 Crate: `bitop-ui`.
 
@@ -24,38 +24,38 @@ Crate: `bitop-ui`.
 - [x] `input-group`
 - [x] `input-otp`
 - [x] `number-input`
-- [ ] `tag-input`
+- [x] `tag-input`
 - [x] `color-field`
 - [x] `field`
 - [x] `select`
 - [x] `combobox`
 - [x] `slider`
-- [ ] `calendar`
-- [ ] `date-picker`
-- [ ] `drop-zone`
+- [x] `calendar`
+- [x] `date-picker`
+- [x] `drop-zone`
 
-## Base: overlays (6 of 11)
+## Base: overlays (11 of 11)
 
 Crate: `bitop-ui`.
 
 - [x] `dialog`
-- [ ] `sheet`
-- [ ] `drawer`
+- [x] `sheet`
+- [x] `drawer`
 - [x] `popover`
-- [ ] `hover-card`
+- [x] `hover-card`
 - [x] `tooltip`
 - [x] `menu`
-- [ ] `context-menu`
-- [ ] `menubar`
+- [x] `context-menu`
+- [x] `menubar`
 - [x] `command-palette`
 - [x] `toast`
 
-## Base: navigation and layout (5 of 13)
+## Base: navigation and layout (6 of 13)
 
 Crate: `bitop-ui`.
 
 - [x] `app-shell`
-- [ ] `navigation-menu`
+- [x] `navigation-menu`
 - [ ] `breadcrumbs`
 - [ ] `pagination`
 - [x] `tabs`
@@ -191,6 +191,11 @@ Crate: `bitop-ui-ai`.
 - There is also an `icon` component with a small set of Lucide icons, which bitop-ui gets from
   a React package.
 - `alert` has no `ErrorAlert` yet (the mapping from an HTTP status to a title and message).
-- `color-mode` has the script and `bitopUi.setColorMode()`, but no toggle component.
+- `menu` has no checkbox items, radio items, groups or submenus yet, so `context-menu` and
+  `menubar`, which share its items, have none either.
+- `drawer` has no snap points, and `navigation-menu` has one popup for each panel, not one
+  shared popup that changes size.
+- `date-picker` has no `DateRangePresets` (the toggle group that keeps a preset's ID for a
+  URL); the presets beside the calendar are there.
 - Toasts sit below modal dialogs.
 - The sidebar drawer on narrow screens does not trap focus.

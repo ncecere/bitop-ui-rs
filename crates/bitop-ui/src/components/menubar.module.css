@@ -1,0 +1,66 @@
+.menubar {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--radius-control);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-1);
+
+  &[data-orientation="vertical"] {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  block-size: 1.875rem;
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: var(--radius-2);
+  background-color: transparent;
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  white-space: nowrap;
+  cursor: default;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--motion-duration-fast) var(--motion-ease-out);
+
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      background-color: var(--color-surface-hover);
+    }
+  }
+
+  &[aria-expanded="true"] {
+    background-color: var(--color-surface-active);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: -2px;
+  }
+
+  &:disabled {
+    color: var(--color-text-subtle);
+    cursor: not-allowed;
+  }
+}
+
+/* The attribute selectors outrank the popover module's rules. */
+.popup[popover] {
+  --popover-gap: 6px;
+}
+
+.menubar[data-orientation="vertical"] .popup[popover] {
+  position-area: inline-end span-block-end;
+  position-try-fallbacks: flip-inline;
+  margin: 0 var(--popover-gap);
+}

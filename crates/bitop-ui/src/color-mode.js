@@ -21,6 +21,8 @@
   const apply = (mode) => {
     root.dataset.theme = mode === "system" ? (system.matches ? "dark" : "light") : mode;
     root.dataset.colorMode = mode;
+    // For controls that show the mode, such as the colour mode toggle.
+    document.dispatchEvent(new CustomEvent("bitop:color-mode", { detail: { mode, theme: root.dataset.theme } }));
   };
 
   let managed = !fixed;

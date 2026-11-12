@@ -1,0 +1,93 @@
+/* The script names the trigger as the anchor (--bitop-hover-card) while the card is
+   shown. Only one card is open at a time, so one name is enough. */
+.card {
+  --hover-card-gap: var(--space-2);
+
+  position-anchor: --bitop-hover-card;
+  position-area: block-end;
+  position-try-fallbacks: flip-block;
+  inset: auto;
+  margin: var(--hover-card-gap) 0;
+  flex-direction: column;
+  gap: var(--space-3);
+  inline-size: 20rem;
+  max-inline-size: calc(100vw - var(--space-8));
+  padding: var(--space-4);
+  border: 0;
+  border-radius: var(--radius-popover);
+  background-color: var(--color-surface-raised);
+  color: var(--color-text);
+  box-shadow: var(--shadow-3);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-normal);
+
+  opacity: 0;
+  translate: 0 -0.25rem;
+  transition:
+    opacity var(--motion-duration-normal) var(--motion-ease-out),
+    translate var(--motion-duration-normal) var(--motion-ease-out),
+    overlay var(--motion-duration-normal) allow-discrete,
+    display var(--motion-duration-normal) allow-discrete;
+
+  /* Only when open: a display value here would show the closed popover. */
+  &:popover-open {
+    display: flex;
+    opacity: 1;
+    translate: 0 0;
+
+    @starting-style {
+      opacity: 0;
+      translate: 0 -0.25rem;
+    }
+  }
+
+  &[data-align="start"] {
+    position-area: block-end span-inline-end;
+  }
+
+  &[data-align="end"] {
+    position-area: block-end span-inline-start;
+  }
+
+  &[data-side="top"] {
+    position-area: block-start;
+
+    &[data-align="start"] {
+      position-area: block-start span-inline-end;
+    }
+
+    &[data-align="end"] {
+      position-area: block-start span-inline-start;
+    }
+  }
+
+  &[data-side="left"],
+  &[data-side="right"] {
+    position-try-fallbacks: flip-inline;
+    margin: 0 var(--hover-card-gap);
+  }
+
+  &[data-side="left"] {
+    position-area: left;
+
+    &[data-align="start"] {
+      position-area: left span-bottom;
+    }
+
+    &[data-align="end"] {
+      position-area: left span-top;
+    }
+  }
+
+  &[data-side="right"] {
+    position-area: right;
+
+    &[data-align="start"] {
+      position-area: right span-bottom;
+    }
+
+    &[data-align="end"] {
+      position-area: right span-top;
+    }
+  }
+}
