@@ -1,7 +1,7 @@
 # Roadmap
 
 The target is every component in [bitop-ui](https://github.com/ncecere/bitop-ui): 120 in all.
-20 are built. The base set comes first, then the AI set as its own crate.
+30 are built. The base set comes first, then the AI set as its own crate.
 
 Names are bitop-ui's. A few live together here, as they do there: `switch` is in the `checkbox`
 module, `textarea` in `input`, `alert dialog` in `dialog`, and `app-shell` is `sidebar`.
@@ -50,7 +50,7 @@ Crate: `bitop-ui`.
 - [x] `command-palette`
 - [x] `toast`
 
-## Base: navigation and layout (3 of 13)
+## Base: navigation and layout (5 of 13)
 
 Crate: `bitop-ui`.
 
@@ -61,29 +61,29 @@ Crate: `bitop-ui`.
 - [x] `tabs`
 - [ ] `page-header`
 - [ ] `layout`
-- [ ] `separator`
+- [x] `separator`
 - [x] `scroll-area`
 - [ ] `resizable`
-- [ ] `aspect-ratio`
+- [x] `aspect-ratio`
 - [ ] `direction`
 - [ ] `save-bar`
 
-## Base: display (2 of 18)
+## Base: display (7 of 18)
 
 Crate: `bitop-ui`.
 
 - [x] `avatar`
 - [x] `badge`
-- [ ] `card`
-- [ ] `alert`
+- [x] `card`
+- [x] `alert`
 - [ ] `item`
-- [ ] `kbd`
+- [x] `kbd`
 - [ ] `marker`
-- [ ] `text-link`
+- [x] `text-link`
 - [ ] `time`
 - [ ] `description-list`
 - [ ] `stat-card`
-- [ ] `empty-state`
+- [x] `empty-state`
 - [ ] `checklist`
 - [ ] `accordion`
 - [ ] `disclosure`
@@ -91,14 +91,14 @@ Crate: `bitop-ui`.
 - [ ] `copy-button`
 - [ ] `copy-field`
 
-## Base: feedback (0 of 7)
+## Base: feedback (3 of 7)
 
 Crate: `bitop-ui`.
 
-- [ ] `spinner`
+- [x] `spinner`
 - [ ] `loader`
-- [ ] `skeleton`
-- [ ] `progress`
+- [x] `skeleton`
+- [x] `progress`
 - [ ] `meter`
 - [ ] `query-state`
 - [ ] `shimmer`
@@ -186,8 +186,11 @@ Crate: `bitop-ui-ai`.
 
 ## Known gaps in what is built
 
-- The 20 built components came from an earlier project and were mapped onto bitop-ui's tokens.
+- The first 20 components came from an earlier project and were mapped onto bitop-ui's tokens.
   Their look has not yet been compared part by part with bitop-ui's.
+- There is also an `icon` component with a small set of Lucide icons, which bitop-ui gets from
+  a React package.
+- `alert` has no `ErrorAlert` yet (the mapping from an HTTP status to a title and message).
 - `color-mode` has the script and `bitopUi.setColorMode()`, but no toggle component.
 - Toasts sit below modal dialogs.
 - The sidebar drawer on narrow screens does not trap focus.

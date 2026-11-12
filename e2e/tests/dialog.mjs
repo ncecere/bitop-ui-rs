@@ -2,6 +2,9 @@ export default async ({ page, check, button, focused }) => {
   const dialog = page.locator("dialog", { hasText: "Rename chat?" });
   await button("Rename chat").click();
   check("open", await dialog.evaluate((d) => d.open && d.matches(":modal")));
+  const box = await dialog.boundingBox();
+  const view = page.viewportSize();
+  check("centred", [Math.abs(box.x * 2 + box.width - view.width) < 2, Math.abs(box.y * 2 + box.height - view.height) < 2], [true, true]);
   check("name", await page.getByRole("dialog", { name: "Rename chat?" }).count(), 1);
   check("focus", await focused(), "Cancel");
   for (let i = 0; i < 3; i++) await page.keyboard.press("Tab");

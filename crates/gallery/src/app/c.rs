@@ -1,18 +1,29 @@
 //! One page per component, at `/c/{name}`.
 
+mod alert;
+mod aspect_ratio;
 mod avatar;
 mod badge;
 mod button;
+mod card;
 mod checkbox;
 mod combobox;
 mod command;
 mod dialog;
+mod empty_state;
+mod icon;
 mod input;
+mod kbd;
 mod menu;
 mod popover;
+mod progress;
 mod scroll_area;
 mod select;
+mod separator;
 mod sidebar;
+mod skeleton;
+mod spinner;
 mod tabs;
+mod text_link;
 mod toast;
 mod tooltip;
