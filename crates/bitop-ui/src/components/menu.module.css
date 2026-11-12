@@ -45,3 +45,72 @@
   border: 0;
   background: var(--color-border);
 }
+
+/* The text of a checkbox, radio or submenu item; it takes the room that is left. */
+.label {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+}
+
+.groupLabel {
+  padding: var(--space-2) var(--space-3) var(--space-1);
+  color: var(--color-text-subtle);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  cursor: default;
+  user-select: none;
+}
+
+/* Checkbox and radio items: a fixed indicator column keeps labels aligned whether or
+   not the item is checked. The state is also in aria-checked, so it is never conveyed
+   by the mark alone. */
+.indicator {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  inline-size: 1rem;
+  block-size: 1rem;
+
+  & > * {
+    visibility: hidden;
+  }
+
+  .item[aria-checked="true"] > & > * {
+    visibility: visible;
+  }
+}
+
+.radioDot {
+  inline-size: 0.4375rem;
+  block-size: 0.4375rem;
+  border-radius: var(--radius-full);
+  background-color: currentColor;
+}
+
+/* A submenu's item stays highlighted while its submenu is open. */
+.item[aria-expanded="true"] {
+  background: var(--color-surface-hover);
+}
+
+.chevron {
+  margin-inline-start: auto;
+  color: var(--color-text-muted);
+
+  &:dir(rtl) {
+    scale: -1 1;
+  }
+}
+
+/* A submenu opens beside its item, its first item level with it. The attribute
+   selector outranks the popover module's rules. */
+.submenu[popover] {
+  position-area: self-inline-end span-self-block-end;
+  position-try-fallbacks: flip-inline, flip-block, flip-inline flip-block;
+  margin: calc(-1 * var(--space-1) - 1px) 0;
+}

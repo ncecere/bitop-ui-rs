@@ -1,0 +1,162 @@
+.root {
+  position: relative;
+  inline-size: 100%;
+}
+
+.track {
+  --carousel-gap: var(--space-4);
+
+  display: flex;
+  gap: var(--carousel-gap);
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  border-radius: var(--radius-card);
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+
+  .root[data-orientation="vertical"] > & {
+    flex-direction: column;
+    block-size: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-x: auto;
+    overscroll-behavior-y: contain;
+    scroll-snap-type: y mandatory;
+  }
+}
+
+/* A rule of its own: an engine that does not know the pseudo-element drops it. */
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+/* N slides per view, minus the gaps between them. */
+.slide {
+  flex: 0 0 calc((100% - var(--carousel-gap) * (var(--carousel-per-view, 1) - 1)) / var(--carousel-per-view, 1));
+  min-inline-size: 0;
+  min-block-size: 0;
+  scroll-snap-align: start;
+
+  &[data-basis] {
+    flex-basis: var(--carousel-basis, 100%);
+  }
+}
+
+.button {
+  /* What the indicators under the track add to the root's height. */
+  --carousel-below: 0rem;
+
+  position: absolute;
+  z-index: 1;
+  border-radius: var(--radius-full);
+
+  /* At an end: dimmed, but still under the pointer, so that a click on it does not
+     fall through to the slide and take focus away. */
+  &[aria-disabled="true"] {
+    opacity: 0.45;
+    pointer-events: auto;
+    cursor: not-allowed;
+  }
+
+  /* Opaque, since it lies over the slides. */
+  &[data-variant] {
+    --button-bg: var(--color-surface);
+    --button-bg-hover: var(--color-surface-sunken);
+  }
+
+  .root:has(> .indicators) > & {
+    --carousel-below: calc(1.5rem + var(--space-3));
+  }
+
+  .root[data-orientation="horizontal"] > & {
+    inset-block-start: calc(50% - var(--carousel-below) / 2);
+    translate: 0 -50%;
+
+    &[data-carousel-step="prev"] {
+      inset-inline-start: var(--space-2);
+    }
+
+    &[data-carousel-step="next"] {
+      inset-inline-end: var(--space-2);
+    }
+
+    /* Chevrons point the reading direction. */
+    & [data-icon]:dir(rtl) {
+      scale: -1 1;
+    }
+  }
+
+  .root[data-orientation="vertical"] > & {
+    left: 50%;
+    translate: -50% 0;
+
+    &[data-carousel-step="prev"] {
+      inset-block-start: var(--space-2);
+    }
+
+    &[data-carousel-step="next"] {
+      inset-block-end: calc(var(--space-2) + var(--carousel-below));
+    }
+
+    /* The same chevrons, turned to point up and down. */
+    & [data-icon] {
+      rotate: 90deg;
+    }
+  }
+}
+
+/* One dot for each slide; the current one is darker. The button is larger than its
+   dot, so that it is easy to hit. */
+.indicators {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-block-start: var(--space-3);
+}
+
+.indicator {
+  display: grid;
+  place-items: center;
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: none;
+  cursor: pointer;
+
+  &::before {
+    content: "";
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    border-radius: var(--radius-full);
+    background-color: var(--color-border-strong);
+    transition: background-color var(--motion-duration-fast) var(--motion-ease-out);
+  }
+
+  &[aria-current="true"]::before {
+    background-color: var(--color-text);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: -2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    scroll-behavior: auto;
+  }
+
+  .indicator::before {
+    transition: none;
+  }
+}

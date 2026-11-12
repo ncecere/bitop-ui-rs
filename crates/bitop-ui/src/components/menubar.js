@@ -3,7 +3,13 @@
 
 const BAR = "[data-menubar]";
 const BAR_TRIGGER = "[data-menubar-trigger]";
-const BAR_ITEM = '[role="menuitem"]:not([aria-disabled="true"])';
+
+// The items of a top-level menu, as menu.js lists them: every kind of item, without
+// those of submenus.
+function barItems(popup) {
+  const menu = popup.querySelector('[role="menu"]');
+  return menu ? window.bitopUi.menu.items(menu) : [];
+}
 
 function barTriggers(bar) {
   return [...bar.querySelectorAll(BAR_TRIGGER)].filter((trigger) => !trigger.disabled);
@@ -47,8 +53,8 @@ function openBarMenu(trigger, last = false) {
     popup.toggleAttribute("data-menubar-last", last);
     trigger.click();
   }
-  const items = popup.querySelectorAll(BAR_ITEM);
-  (last ? items[items.length - 1] : items[0])?.focus();
+  const items = barItems(popup);
+  (last ? items.at(-1) : items[0])?.focus();
 }
 
 for (const bar of document.querySelectorAll(BAR)) setBarStop(bar);
@@ -71,7 +77,7 @@ document.addEventListener(
     if (!(popup instanceof HTMLElement) || !popup.matches("[data-menubar-popup]")) return;
     if (event.newState === "open" && popup.hasAttribute("data-menubar-last")) {
       popup.removeAttribute("data-menubar-last");
-      [...popup.querySelectorAll(BAR_ITEM)].at(-1)?.focus();
+      barItems(popup).at(-1)?.focus();
     }
   },
   true,
@@ -85,6 +91,8 @@ document.addEventListener("focusin", (event) => {
 
 document.addEventListener("keydown", (event) => {
   if (!(event.target instanceof Element) || event.ctrlKey || event.metaKey || event.altKey) return;
+  // menu.js runs first and has taken the keys that open and close a submenu.
+  if (event.defaultPrevented) return;
   const bar = event.target.closest(BAR);
   if (!bar) return;
   const keys = barKeys(bar);

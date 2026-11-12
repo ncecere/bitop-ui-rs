@@ -32,6 +32,8 @@ pub enum Icon {
     Moon,
     CalendarDays,
     Upload,
+    Ellipsis,
+    GripVertical,
 }
 
 impl Icon {
@@ -57,6 +59,8 @@ impl Icon {
             Self::Moon => "moon",
             Self::CalendarDays => "calendar-days",
             Self::Upload => "upload",
+            Self::Ellipsis => "ellipsis",
+            Self::GripVertical => "grip-vertical",
         }
     }
 }

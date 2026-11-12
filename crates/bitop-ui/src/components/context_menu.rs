@@ -9,8 +9,8 @@
 //! control too, because touch, keyboard and screen-reader users may never open it.
 //!
 //! Differences from upstream: the items are [`menu`](super::menu)'s, re-exported
-//! under `context_menu_*` names; checkbox items, radio items and submenus are not in
-//! the menu module yet, so they are not here either.
+//! under `context_menu_*` names, checkbox items, radio items, groups and submenus
+//! included.
 //!
 //! ```ignore
 //! let id = element_id(cx);
@@ -31,7 +31,10 @@ use topcoat::{
 };
 
 pub use super::menu::{
-    MenuItemVariant, menu_item as context_menu_item, menu_separator as context_menu_separator,
+    MenuItemVariant, menu_checkbox_item as context_menu_checkbox_item,
+    menu_group as context_menu_group, menu_item as context_menu_item,
+    menu_radio_group as context_menu_radio_group, menu_radio_item as context_menu_radio_item,
+    menu_separator as context_menu_separator, menu_submenu as context_menu_submenu,
 };
 use crate::css::{context_menu as css, menu as menu_css, popover as popover_css};
 
@@ -59,8 +62,10 @@ pub async fn context_menu_trigger(
     })
 }
 
-/// The menu popup. Pass [`context_menu_item`] and [`context_menu_separator`] as
-/// children. `label` names the menu for assistive technology.
+/// The menu popup. Pass [`context_menu_item`], [`context_menu_checkbox_item`],
+/// [`context_menu_radio_group`], [`context_menu_group`], [`context_menu_submenu`] and
+/// [`context_menu_separator`] as children. `label` names the menu for assistive
+/// technology.
 #[component]
 pub async fn context_menu(
     cx: &Cx,

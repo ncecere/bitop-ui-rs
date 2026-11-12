@@ -72,11 +72,15 @@ for (const name of names) {
           }),
       ),
     // Colours change through transitions on some components; the promise resolves when
-    // they have ended, so that axe does not measure a colour half way.
+    // they have ended, so that axe does not measure a colour half way. A transition on
+    // an element that is not rendered, such as a field in a closed <details>, is left
+    // out: Firefox starts it and never runs it, so it would never end.
     setTheme: (mode) =>
       page.evaluate((m) => {
         window.bitopUi.setColorMode(m);
-        const running = document.getAnimations().filter((a) => a instanceof CSSTransition);
+        const running = document
+          .getAnimations()
+          .filter((a) => a instanceof CSSTransition && a.effect?.target?.checkVisibility() !== false);
         return Promise.allSettled(running.map((a) => a.finished)).then(() => undefined);
       }, mode),
     setDir: (dir) => page.evaluate((d) => (document.documentElement.dir = d), dir),

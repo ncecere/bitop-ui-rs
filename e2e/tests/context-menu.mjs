@@ -100,6 +100,41 @@ export default async ({ page, check, axe, button, focused, settled, setDir }) =>
   await untilOpen(report, false);
   check("innerFocusReturned", await focused(), "Quarterly report");
 
+  // Checkbox items, radio items and a submenu are the menu's, and work here.
+  const layer = page.getByRole("group", { name: "Layer" });
+  const layerMenu = page.locator("[data-context-menu-popup]", { hasText: "Visible" });
+  const arrange = page.locator("[data-submenu]", { hasText: "Bring to front" });
+  const untilFocused = (text) => page.waitForFunction((t) => document.activeElement?.textContent.trim() === t, text);
+  await layer.click({ button: "right", position: { x: 30, y: 30 } });
+  await untilOpen(layerMenu, true);
+  await untilFocused("Visible");
+  const visibleItem = layerMenu.getByRole("menuitemcheckbox", { name: "Visible" });
+  await page.keyboard.press("Enter");
+  check("checkbox", [await visibleItem.getAttribute("aria-checked"), await open(layerMenu)], ["false", true]);
+  await layerMenu.getByRole("menuitemradio", { name: "Multiply" }).click();
+  check("radio", [await layerMenu.locator("[role=menuitemradio]").evaluateAll((all) => all.map((r) => r.getAttribute("aria-checked"))), await open(layerMenu)], [["false", "true"], true]);
+  check("group", await layerMenu.getByRole("group", { name: "Order" }).count(), 1);
+  await page.keyboard.press("End");
+  check("submenuItem", await focused(), "Arrange");
+  await page.keyboard.press("ArrowRight");
+  await untilOpen(arrange, true);
+  await untilFocused("Bring to front");
+  await settled(arrange);
+  const arrangeItem = await layerMenu.getByRole("menuitem", { name: "Arrange" }).boundingBox();
+  const arrangeBox = await arrange.boundingBox();
+  check("submenuBeside", { beside: arrangeBox.x >= arrangeItem.x + arrangeItem.width - 1, level: Math.abs(arrangeBox.y - arrangeItem.y) < 8 }, { beside: true, level: true });
+  check("axeSubmenu", await axe(), []);
+  await page.keyboard.press("ArrowLeft");
+  await untilOpen(arrange, false);
+  check("leftClosesSubmenu", [await open(layerMenu), await focused()], [true, "Arrange"]);
+  await page.keyboard.press("Enter");
+  await untilOpen(arrange, true);
+  await untilFocused("Bring to front");
+  await page.keyboard.press("Enter");
+  await untilOpen(layerMenu, false);
+  await page.waitForFunction(() => !document.querySelector("[data-popup-open]"));
+  check("chooseInSubmenuClosesAll", [await open(arrange), await layer.evaluate((el) => el.hasAttribute("data-popup-open"))], [false, false]);
+
   // Disabled: nothing of ours opens, and the event is left to the browser.
   const prevented = await page.getByText("Nothing of ours opens here").evaluate((el) => {
     const event = new MouseEvent("contextmenu", { bubbles: true, cancelable: true });

@@ -36,6 +36,8 @@ pub async fn badge(
 
 - One part renders one element and forwards `attrs` to it.
 - Variants and state are `data-*` and ARIA attributes, never extra classes.
+- A part that sets an inline style joins it with the caller's through `crate::merge_style`,
+  so that the element gets one `style` attribute.
 - Parts that refer to each other take IDs as arguments. Callers make IDs with `element_id(cx)`.
 - Every user-visible string is an argument with an English default.
 - Write a doc comment on every public item, with an example on the module.
@@ -136,6 +138,23 @@ Styles:
 - The parts of a native control have a different name in each engine
   (`::-webkit-slider-thumb`, `::-moz-range-thumb`). Write one rule for each: a selector list
   with a name the engine does not know drops the whole rule.
+- `position-area: inline-end` is the end of the page, not of the popup: the keywords follow
+  the containing block, which for a popover is the viewport. A popup that must follow the
+  direction of its own section, such as a submenu that ArrowLeft opens in a right-to-left
+  section, uses `self-inline-end` and `span-self-block-end`.
+- The button module turns off pointer events on `[aria-disabled="true"]`. A click on such a
+  button falls through to what lies under it, which takes the focus. A button that lies over
+  other content and must keep focus while disabled sets `pointer-events: auto` again.
+- A `<details>` animates through `::details-content`, in a rule of its own, with
+  `interpolate-size: allow-keywords` on an ancestor. Firefox has no `interpolate-size`, so the
+  panel opens at once there; WebKit animates opening but hides the content at once on closing.
+- Padding on a flex item is not part of what `flex-grow` shares out. Where sizes are flex
+  weights, as in `resizable`, the padding goes on the content.
+- axe wants the visible text of a control to be part of its `aria-label`
+  (`label-content-name-mismatch`): "Go to next page" for "Next". Keep that when translating
+  the two strings of a part.
+- A gallery example's title is an `<h2>`, so a component that renders headings must start at
+  `<h3>` there, or axe reports `heading-order`.
 - axe measures contrast on any text, `aria-hidden` or not. Text dimmed with `opacity` beside
   a disabled control fails; only the control and its `<label>` are exempt. Dim the control,
   not its wrapper. For the same reason a gallery page cannot show a colour pair that fails on
@@ -164,6 +183,16 @@ Scripts:
   button.
 - Moving focus back to a trigger from a script fires `focusin` on it. A popup that opens on
   focus opens again unless the script remembers that it was dismissed.
+- The scripts are joined in alphabetical order, so `menu.js` hears a key before `menubar.js`.
+  The first one calls `preventDefault()` on what it handles, and the later one returns when
+  `event.defaultPrevented` is set.
+- A timer started by a pointer event acts on what was true when it started. The menu's
+  hover timer once closed a submenu that the keyboard had opened while it ran; it now notes
+  which submenus are open when the pointer arrives and closes only those.
+- `scroll` does not bubble. To hear it from every scroller, listen on `document` with
+  `capture: true`.
+- `scrollBy({ behavior: "auto" })` follows the stylesheet's `scroll-behavior`, which may be
+  `smooth`. To jump, say `"instant"`.
 - A script that rebuilds what the server rendered needs the scoped class names. Copy an
   element the server rendered (`cloneNode`), or have the server render a `<template>`.
 
@@ -205,6 +234,20 @@ Checks:
   with a `timeStamp`.
 - WebKit tells the page about `emulateMedia` a moment after the call returns. Wait for what
   the page does with it.
+- Firefox starts a transition on an element that is not rendered, such as a field in a closed
+  `<details>`, and never runs it, so its `finished` promise never settles. `setTheme` leaves
+  those out; a check that waits for transitions in its own way must do the same
+  (`element.checkVisibility()`).
+- Neither `getAnimations()` nor the transition events report a transition on
+  `::details-content` in Chromium. To check that a panel opens gradually, read its height at
+  every frame, and lengthen the transition for the check so that a slow machine sees it.
+- In Playwright's Firefox, a mouse that moves outside the viewport during a drag reports
+  `clientX` 0 and its release never arrives. Keep a drag inside the window.
+- In WebKit, after a click on a `<summary>`, Tab stays on it. Open a `<details>` from the
+  keyboard before checking the tab order of what is inside.
+- `CSS.supports()` can say yes where the feature only half works (WebKit and
+  `interpolate-size` on closing). When no feature test tells engines apart, ask for the
+  engine (`page.context().browser().browserType().name()`) and say why in a comment.
 - To check that something waits before it happens, record `performance.now()` in the page at
   both events and compare. A check made "straight after" from the runner fails on a slow
   machine.

@@ -214,6 +214,41 @@ pub const GROUPS: &[Group] = &[
                 "A box that keeps its proportions."
             ),
             entry!(
+                "breadcrumbs",
+                "Breadcrumbs",
+                "The pages above the current one."
+            ),
+            entry!(
+                "pagination",
+                "Pagination",
+                "Links to the pages of a long list."
+            ),
+            entry!(
+                "page-header",
+                "Page header",
+                "The title, description and actions of a page."
+            ),
+            entry!(
+                "layout",
+                "Layout",
+                "Stack, inline and container: spacing from the scale."
+            ),
+            entry!(
+                "resizable",
+                "Resizable",
+                "Panels with handles that resize them."
+            ),
+            entry!(
+                "direction",
+                "Direction",
+                "A section with its own reading direction."
+            ),
+            entry!(
+                "save-bar",
+                "Save bar",
+                "A form's actions, in reach while it has unsaved changes."
+            ),
+            entry!(
                 "color-mode",
                 "Color mode",
                 "Switch between light, dark and the system setting."
@@ -233,6 +268,21 @@ pub const GROUPS: &[Group] = &[
                 "empty-state",
                 "Empty state",
                 "What to show when there is nothing yet."
+            ),
+            entry!(
+                "accordion",
+                "Accordion",
+                "Headings that each show and hide a panel."
+            ),
+            entry!(
+                "disclosure",
+                "Disclosure",
+                "A button that shows and hides a panel."
+            ),
+            entry!(
+                "carousel",
+                "Carousel",
+                "Slides on a track, with buttons and dots."
             ),
             entry!("icon", "Icon", "The small icon set the components use."),
         ],

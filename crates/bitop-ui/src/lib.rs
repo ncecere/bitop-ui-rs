@@ -38,6 +38,24 @@ pub const SCRIPT: Asset = asset!("{out_dir}/bitop-ui.js");
 /// before the page paints.
 pub const COLOR_MODE_SCRIPT: Asset = asset!("./color-mode.js");
 
+/// Joins a part's own inline style with the `style` a caller passed in `attrs`, which
+/// is taken out of `attrs` so that the element gets one `style` attribute.
+pub(crate) fn merge_style(attrs: &mut topcoat::view::Attributes, own: &str) -> Option<String> {
+    use topcoat::view::AttributeValue;
+    let theirs = match attrs.remove("style") {
+        Some(AttributeValue::PromotedStr { value, .. }) => (*value).to_owned(),
+        Some(AttributeValue::StaticStr { value, .. }) => value.to_owned(),
+        Some(AttributeValue::String { value, .. }) => value,
+        _ => String::new(),
+    };
+    match (own.is_empty(), theirs.is_empty()) {
+        (true, true) => None,
+        (false, true) => Some(own.to_owned()),
+        (true, false) => Some(theirs),
+        (false, false) => Some(format!("{own}; {theirs}")),
+    }
+}
+
 /// The `<link>` and `<script>` tags for the library. Render inside `<head>`.
 #[component]
 pub async fn head(cx: &Cx) -> Result<impl View> {

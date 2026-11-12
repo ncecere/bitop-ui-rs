@@ -1,7 +1,7 @@
 # Roadmap
 
 The target is every component in [bitop-ui](https://github.com/ncecere/bitop-ui): 120 in all.
-51 are built. The base set comes first, then the AI set as its own crate.
+61 are built. The base set comes first, then the AI set as its own crate.
 
 Names are bitop-ui's. A few live together here, as they do there: `switch` is in the `checkbox`
 module, `textarea` in `input`, `alert dialog` in `dialog`, and `app-shell` is `sidebar`.
@@ -50,25 +50,25 @@ Crate: `bitop-ui`.
 - [x] `command-palette`
 - [x] `toast`
 
-## Base: navigation and layout (6 of 13)
+## Base: navigation and layout (13 of 13)
 
 Crate: `bitop-ui`.
 
 - [x] `app-shell`
 - [x] `navigation-menu`
-- [ ] `breadcrumbs`
-- [ ] `pagination`
+- [x] `breadcrumbs`
+- [x] `pagination`
 - [x] `tabs`
-- [ ] `page-header`
-- [ ] `layout`
+- [x] `page-header`
+- [x] `layout`
 - [x] `separator`
 - [x] `scroll-area`
-- [ ] `resizable`
+- [x] `resizable`
 - [x] `aspect-ratio`
-- [ ] `direction`
-- [ ] `save-bar`
+- [x] `direction`
+- [x] `save-bar`
 
-## Base: display (9 of 18)
+## Base: display (12 of 18)
 
 Crate: `bitop-ui`.
 
@@ -85,9 +85,9 @@ Crate: `bitop-ui`.
 - [ ] `stat-card`
 - [x] `empty-state`
 - [ ] `checklist`
-- [ ] `accordion`
-- [ ] `disclosure`
-- [ ] `carousel`
+- [x] `accordion`
+- [x] `disclosure`
+- [x] `carousel`
 - [x] `copy-button`
 - [x] `copy-field`
 
@@ -191,8 +191,17 @@ Crate: `bitop-ui-ai`.
 - There is also an `icon` component with a small set of Lucide icons, which bitop-ui gets from
   a React package.
 - `alert` has no `ErrorAlert` yet (the mapping from an HTTP status to a title and message).
-- `menu` has no checkbox items, radio items, groups or submenus yet, so `context-menu` and
-  `menubar`, which share its items, have none either.
+- `menu` items have no `shortcut` hint, and there is no `MenuHeader`.
+- A popup lines up with the start edge of the page, not of its own section, when a section's
+  direction differs from the page's (see `direction`). Submenus follow their section.
+- `accordion` and `disclosure` are `<details>`: the heading of an accordion item is inside its
+  `<summary>`, and the panel's height is animated only where the browser can do it. Firefox
+  opens and closes at once; Safari animates opening and closes at once.
+- `pagination`'s `paginator` renders links only, not buttons for a table paged in the browser.
+- `layout`'s stack and inline render a `<div>` or a `<ul>`, not any element.
+- `resizable` does not size panels that are added to a group after it was laid out.
+- `carousel` with several slides in view shows a dot for every slide, though the last few
+  cannot come to the start edge.
 - `drawer` has no snap points, and `navigation-menu` has one popup for each panel, not one
   shared popup that changes size.
 - `date-picker` has no `DateRangePresets` (the toggle group that keeps a preset's ID for a

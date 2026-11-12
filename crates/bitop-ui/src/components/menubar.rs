@@ -10,9 +10,9 @@
 //! returns focus to its button.
 //!
 //! Differences from upstream: the items are [`menu`](super::menu)'s, re-exported
-//! under `menubar_*` names; checkbox items, radio items and submenus are not in the
-//! menu module yet, so they are not here either. The gap between the bar and a popup
-//! is the CSS variable `--popover-gap`, not a prop.
+//! under `menubar_*` names, checkbox items, radio items, groups and submenus
+//! included. The gap between the bar and a popup is the CSS variable `--popover-gap`,
+//! not a prop.
 //!
 //! ```ignore
 //! let file = element_id(cx);
@@ -38,7 +38,10 @@ use topcoat::{
 };
 
 pub use super::menu::{
-    MenuItemVariant, menu_item as menubar_item, menu_separator as menubar_separator,
+    MenuItemVariant, menu_checkbox_item as menubar_checkbox_item, menu_group as menubar_group,
+    menu_item as menubar_item, menu_radio_group as menubar_radio_group,
+    menu_radio_item as menubar_radio_item, menu_separator as menubar_separator,
+    menu_submenu as menubar_submenu,
 };
 use super::popover::PopupAlign;
 use crate::css::{menu as menu_css, menubar as css, popover as popover_css};
@@ -71,7 +74,8 @@ pub async fn menubar(
 }
 
 /// One top-level menu of a [`menubar`]: a button with the text `label` and its popup.
-/// Pass [`menubar_item`] and [`menubar_separator`] as children.
+/// Pass [`menubar_item`], [`menubar_checkbox_item`], [`menubar_radio_group`],
+/// [`menubar_group`], [`menubar_submenu`] and [`menubar_separator`] as children.
 ///
 /// `id` goes on the popup. `attrs` are forwarded to the button.
 #[component]
