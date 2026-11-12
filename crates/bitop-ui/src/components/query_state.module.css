@@ -1,0 +1,13 @@
+/* Padding keeps the alert off the edges of a flush card; override with a class. */
+.error {
+  padding: var(--query-state-padding, var(--space-4));
+}
+
+/* The slots are always rendered. One that was passed replaces the default beside it. */
+.custom:empty {
+  display: none;
+}
+
+.custom:not(:empty) + .standard {
+  display: none;
+}

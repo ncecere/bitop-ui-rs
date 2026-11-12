@@ -21,6 +21,7 @@ use topcoat::{
 };
 
 pub mod components;
+pub mod format;
 
 /// Scoped class names generated from the `*.module.css` files.
 pub mod css {

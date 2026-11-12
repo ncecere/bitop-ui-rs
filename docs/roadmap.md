@@ -1,7 +1,7 @@
 # Roadmap
 
 The target is every component in [bitop-ui](https://github.com/ncecere/bitop-ui): 120 in all.
-61 are built. The base set comes first, then the AI set as its own crate.
+75 are built. The base set comes first, then the AI set as its own crate.
 
 Names are bitop-ui's. A few live together here, as they do there: `switch` is in the `checkbox`
 module, `textarea` in `input`, `alert dialog` in `dialog`, and `app-shell` is `sidebar`.
@@ -68,7 +68,7 @@ Crate: `bitop-ui`.
 - [x] `direction`
 - [x] `save-bar`
 
-## Base: display (12 of 18)
+## Base: display (18 of 18)
 
 Crate: `bitop-ui`.
 
@@ -76,32 +76,32 @@ Crate: `bitop-ui`.
 - [x] `badge`
 - [x] `card`
 - [x] `alert`
-- [ ] `item`
+- [x] `item`
 - [x] `kbd`
-- [ ] `marker`
+- [x] `marker`
 - [x] `text-link`
-- [ ] `time`
-- [ ] `description-list`
-- [ ] `stat-card`
+- [x] `time`
+- [x] `description-list`
+- [x] `stat-card`
 - [x] `empty-state`
-- [ ] `checklist`
+- [x] `checklist`
 - [x] `accordion`
 - [x] `disclosure`
 - [x] `carousel`
 - [x] `copy-button`
 - [x] `copy-field`
 
-## Base: feedback (3 of 7)
+## Base: feedback (7 of 7)
 
 Crate: `bitop-ui`.
 
 - [x] `spinner`
-- [ ] `loader`
+- [x] `loader`
 - [x] `skeleton`
 - [x] `progress`
-- [ ] `meter`
-- [ ] `query-state`
-- [ ] `shimmer`
+- [x] `meter`
+- [x] `query-state`
+- [x] `shimmer`
 
 ## Base: utilities (2 of 2)
 
@@ -110,14 +110,14 @@ Crate: `bitop-ui`.
 - [x] `color-mode`
 - [x] `visually-hidden`
 
-## Data and charts (0 of 8)
+## Data and charts (4 of 8)
 
 Crate: `bitop-ui`.
 
-- [ ] `table`
-- [ ] `data-table`
-- [ ] `filter-bar`
-- [ ] `diff-viewer`
+- [x] `table`
+- [x] `data-table`
+- [x] `filter-bar`
+- [x] `diff-viewer`
 - [ ] `chart`
 - [ ] `bar-chart`
 - [ ] `line-chart`
@@ -190,7 +190,6 @@ Crate: `bitop-ui-ai`.
   Their look has not yet been compared part by part with bitop-ui's.
 - There is also an `icon` component with a small set of Lucide icons, which bitop-ui gets from
   a React package.
-- `alert` has no `ErrorAlert` yet (the mapping from an HTTP status to a title and message).
 - `menu` items have no `shortcut` hint, and there is no `MenuHeader`.
 - A popup lines up with the start edge of the page, not of its own section, when a section's
   direction differs from the page's (see `direction`). Submenus follow their section.

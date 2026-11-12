@@ -3,6 +3,7 @@
 use topcoat::{
     Result,
     context::Cx,
+    router::request::uri,
     view::{Child, View, component, view},
 };
 
@@ -42,5 +43,19 @@ pub async fn example(cx: &Cx, title: &str, #[default] child: Child<'_>) -> Resul
                 (child)
             </div>
         </section>
+    })
+}
+
+/// The raw query string of the request, without the `?`.
+pub fn query_string(cx: &Cx) -> String {
+    uri(cx).query().unwrap_or_default().to_owned()
+}
+
+/// The first value of a query parameter that needs no decoding, such as a page
+/// number or a column name.
+pub fn query_param(cx: &Cx, name: &str) -> Option<String> {
+    query_string(cx).split('&').find_map(|pair| {
+        let (key, value) = pair.split_once('=')?;
+        (key == name).then(|| value.to_owned())
     })
 }

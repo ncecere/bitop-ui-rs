@@ -285,6 +285,36 @@ pub const GROUPS: &[Group] = &[
                 "Slides on a track, with buttons and dots."
             ),
             entry!("icon", "Icon", "The small icon set the components use."),
+            entry!(
+                "item",
+                "Item",
+                "A row with media, a title, a description and actions."
+            ),
+            entry!(
+                "marker",
+                "Marker",
+                "An inline note in a conversation or an activity feed."
+            ),
+            entry!(
+                "time",
+                "Time",
+                "A date or a relative time, in the visitor's locale."
+            ),
+            entry!(
+                "description-list",
+                "Description list",
+                "Labels and values, and a line of short facts."
+            ),
+            entry!(
+                "stat-card",
+                "Stat card",
+                "A metric tile with a change indicator."
+            ),
+            entry!(
+                "checklist",
+                "Checklist",
+                "Onboarding steps with done states."
+            ),
         ],
     },
     Group {
@@ -297,6 +327,47 @@ pub const GROUPS: &[Group] = &[
                 "A placeholder for content that is loading."
             ),
             entry!("progress", "Progress", "How far a task has got."),
+            entry!(
+                "loader",
+                "Loader",
+                "Three pulsing dots for a pending reply."
+            ),
+            entry!("meter", "Meter", "How much of a limit is used."),
+            entry!(
+                "query-state",
+                "Query state",
+                "Loading, error, empty or the content."
+            ),
+            entry!(
+                "shimmer",
+                "Shimmer",
+                "Text with a light sweeping across it."
+            ),
+        ],
+    },
+    Group {
+        title: "Data and charts",
+        entries: &[
+            entry!(
+                "table",
+                "Table",
+                "Rows and columns, with a caption and real headers."
+            ),
+            entry!(
+                "data-table",
+                "Data table",
+                "A table with sorting, selection, a columns menu and paging."
+            ),
+            entry!(
+                "filter-bar",
+                "Filter bar",
+                "Faceted filters with a chip for each active filter."
+            ),
+            entry!(
+                "diff-viewer",
+                "Diff viewer",
+                "Before and after, for text and JSON."
+            ),
         ],
     },
 ];

@@ -1,0 +1,299 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+/* Controls line up on their bottom edge, so an unlabelled slot (the search
+   box in `start`, buttons in `end`) sits level with the labelled facets. */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3) var(--space-4);
+}
+
+.facet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+}
+
+.select {
+  width: 13rem;
+  max-width: 100%;
+}
+
+/* Option count inside a toggle: "Failed  3". */
+.count {
+  margin-inline-start: var(--space-1);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+
+.start {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-2);
+  min-width: 0;
+
+  /* The slot is always rendered; hide it when nothing was passed. */
+  &:empty {
+    display: none;
+  }
+}
+
+.end {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-inline-start: auto;
+}
+
+/* With the script a change submits at once, so the button is not needed. */
+.root[data-enhanced] .apply {
+  display: none;
+}
+
+.root[data-enhanced] .end:not(:has(> :not(.apply))) {
+  display: none;
+}
+
+/*
+ * A toggle facet: native radio buttons or checkboxes drawn as a joined row, like a
+ * joined toggle group. The chosen item is raised, with full-strength text and a
+ * ring, so it is not shown by colour alone.
+ */
+.toggles {
+  --filter-height: var(--control-height-sm);
+
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  max-width: 100%;
+  padding: 2px;
+  border-radius: var(--radius-control);
+  background-color: var(--color-surface-sunken);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+
+  .root[data-size="md"] & {
+    --filter-height: var(--control-height-md);
+  }
+}
+
+.toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(var(--filter-height) - 4px);
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-control-inner);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--motion-duration-fast) var(--motion-ease-out),
+    color var(--motion-duration-fast) var(--motion-ease-out);
+
+  /* The input covers the item: it takes the clicks and the focus, and is not drawn. */
+  & input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  @media (hover: hover) {
+    &:hover:not(:has(input:checked)) {
+      background-color: var(--color-surface-hover);
+      color: var(--color-text);
+    }
+  }
+
+  &:has(input:checked) {
+    background-color: var(--color-surface-raised);
+    box-shadow: var(--shadow-1);
+    color: var(--color-text);
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 1px;
+  }
+}
+
+/* A select facet with several choices: a dropdown of checkboxes. */
+.multi {
+  position: relative;
+  width: 13rem;
+  max-width: 100%;
+}
+
+.multiSummary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  height: var(--control-height-sm);
+  padding-inline: var(--space-3) var(--space-2);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  background-color: var(--color-control);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  list-style: none;
+  cursor: pointer;
+
+  .root[data-size="md"] & {
+    height: var(--control-height-md);
+  }
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &[data-active] {
+    color: var(--color-text);
+  }
+
+  & [data-icon] {
+    color: var(--color-text-muted);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 1px;
+  }
+}
+
+.multiValue {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.multiPanel {
+  position: absolute;
+  z-index: var(--z-dropdown);
+  inset-block-start: calc(100% + var(--space-1));
+  inset-inline-start: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 100%;
+  padding: var(--space-2);
+  border-radius: var(--radius-popover);
+  background-color: var(--color-surface-raised);
+  box-shadow: var(--shadow-3);
+}
+
+.multiList {
+  display: flex;
+  flex-direction: column;
+  max-height: 16rem;
+  overflow-y: auto;
+}
+
+.multiOption {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-control-inner);
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+  cursor: pointer;
+
+  & .count {
+    margin-inline-start: auto;
+    padding-inline-start: var(--space-3);
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--color-surface-hover);
+    }
+  }
+}
+
+.chipsRow {
+  min-width: 0;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* An active filter; the whole chip removes it. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 1.75rem;
+  padding-block: 0;
+  padding-inline: var(--space-3) var(--space-1);
+  text-decoration: none;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  background-color: var(--color-control);
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: background-color var(--motion-duration-fast) var(--motion-ease-out);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--color-control-hover);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.chipFacet {
+  color: var(--color-text-muted);
+}
+
+.chipIcon {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  padding: 0.1875rem;
+  border-radius: var(--radius-full);
+  color: var(--color-text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chip,
+  .toggle {
+    transition: none;
+  }
+}

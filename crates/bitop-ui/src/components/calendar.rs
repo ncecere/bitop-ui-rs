@@ -141,7 +141,7 @@ impl Date {
     }
 
     /// Days since 1 January 1970. (Howard Hinnant's `days_from_civil`.)
-    fn to_days(self) -> i64 {
+    pub(crate) fn to_days(self) -> i64 {
         let year = i64::from(self.year) - i64::from(self.month <= 2);
         let era = year.div_euclid(400);
         let year_of_era = year.rem_euclid(400);
@@ -154,7 +154,7 @@ impl Date {
     }
 
     /// The date that is `days` after 1 January 1970, kept within years 1 to 9999.
-    fn from_days(days: i64) -> Self {
+    pub(crate) fn from_days(days: i64) -> Self {
         let days = days.clamp(Self::MIN.to_days(), Self::MAX.to_days()) + 719_468;
         let era = days.div_euclid(146_097);
         let day_of_era = days.rem_euclid(146_097);
@@ -176,7 +176,7 @@ impl Date {
         }
     }
 
-    const MIN: Self = Self {
+    pub(crate) const MIN: Self = Self {
         year: 1,
         month: 1,
         day: 1,

@@ -15,9 +15,10 @@ export default async ({ page, check, axe, button, focused, settled, setDir }) =>
   for (let i = 0; i < 3; i++) await page.keyboard.press("Tab");
   check("onFocus", [await focused(), await open(), await link.getAttribute("aria-expanded")], ["@ada", true, "true"]);
   await settled(card);
+  // The link is inline text, so its height is a fraction of a pixel that differs by font.
   const l = await link.boundingBox();
   const c = await card.boundingBox();
-  check("anchored", { below: c.y >= l.y + l.height, gap: Math.round(c.y - l.y - l.height), centred: Math.abs(centre(c) - centre(l)) < 2, width: Math.round(c.width) }, { below: true, gap: 8, centred: true, width: 320 });
+  check("anchored", { below: c.y >= l.y + l.height, gap: Math.abs(c.y - l.y - l.height - 8) <= 1, centred: Math.abs(centre(c) - centre(l)) < 2, width: Math.round(c.width) }, { below: true, gap: true, centred: true, width: 320 });
   check("axeOpen", await axe(), []);
   await page.keyboard.press("Tab");
   check("tabIntoCard", [await focused(), await open()], ["View profile", true]);

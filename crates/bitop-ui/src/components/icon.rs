@@ -34,6 +34,12 @@ pub enum Icon {
     Upload,
     Ellipsis,
     GripVertical,
+    ArrowDownRight,
+    ArrowRight,
+    ArrowUp,
+    ArrowDown,
+    ChevronsUpDown,
+    Columns3,
 }
 
 impl Icon {
@@ -61,6 +67,12 @@ impl Icon {
             Self::Upload => "upload",
             Self::Ellipsis => "ellipsis",
             Self::GripVertical => "grip-vertical",
+            Self::ArrowDownRight => "arrow-down-right",
+            Self::ArrowRight => "arrow-right",
+            Self::ArrowUp => "arrow-up",
+            Self::ArrowDown => "arrow-down",
+            Self::ChevronsUpDown => "chevrons-up-down",
+            Self::Columns3 => "columns-3",
         }
     }
 }

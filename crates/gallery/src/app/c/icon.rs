@@ -38,6 +38,12 @@ async fn show(cx: &Cx) -> Result<impl View> {
                 icon(name: Icon::Upload)
                 icon(name: Icon::Ellipsis)
                 icon(name: Icon::GripVertical)
+                icon(name: Icon::ArrowDownRight)
+                icon(name: Icon::ArrowRight)
+                icon(name: Icon::ArrowUp)
+                icon(name: Icon::ArrowDown)
+                icon(name: Icon::ChevronsUpDown)
+                icon(name: Icon::Columns3)
             </div>
         )
         example(
