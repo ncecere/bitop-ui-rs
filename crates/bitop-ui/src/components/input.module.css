@@ -1,0 +1,49 @@
+.root {
+  --input-bg: var(--color-surface);
+  --input-border: var(--color-border-strong);
+
+  display: block;
+  inline-size: 100%;
+  min-block-size: var(--control-height-md);
+  padding: 0 var(--space-3);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-control);
+  background: var(--input-bg);
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--font-size-md);
+  transition: border-color var(--motion-duration-fast) var(--motion-ease-out);
+
+  &::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+  }
+
+  &:hover {
+    --input-border: var(--color-text-muted);
+  }
+
+  &:focus-visible {
+    --input-border: var(--color-focus-ring);
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: -1px;
+  }
+
+  &[aria-invalid="true"] {
+    --input-border: var(--color-danger);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+
+.textarea {
+  min-block-size: 4.5rem;
+  max-block-size: 20rem;
+  padding-block: var(--space-2);
+  line-height: 1.5;
+  resize: vertical;
+  field-sizing: content;
+}

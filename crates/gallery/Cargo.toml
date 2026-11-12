@@ -1,0 +1,17 @@
+[package]
+name = "gallery"
+description = "The bitop-ui gallery: every component on its own page, used for docs and browser checks"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+bitop-ui.workspace = true
+tokio.workspace = true
+topcoat = { workspace = true }
+
+[lints]
+workspace = true

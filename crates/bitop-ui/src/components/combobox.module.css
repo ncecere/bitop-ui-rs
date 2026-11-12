@@ -1,0 +1,88 @@
+.root {
+  position: relative;
+  display: flex;
+  min-inline-size: 0;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: var(--space-2);
+    inline-size: 1rem;
+    background: var(--color-text-muted);
+    mask: var(--icon-chevron-down) center / contain no-repeat;
+    pointer-events: none;
+  }
+}
+
+/* The extra selectors here and on the popup make these rules win over the input's
+   and the popover's own, whatever order the files load in. */
+.root > .input {
+  padding-inline-end: var(--space-8);
+}
+
+/* Shares the popover's look. The script names the input as the anchor
+   (--bitop-combobox) while the list is open. */
+[popover].popup {
+  position-anchor: --bitop-combobox;
+  inline-size: anchor-size(inline);
+  max-inline-size: none;
+  padding: var(--space-1);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  max-block-size: 16rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
+}
+
+/* Shared with the command palette, which has the same kind of list. */
+.option {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  border-radius: var(--radius-1);
+  background: none;
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--font-size-md);
+  text-align: start;
+  text-decoration: none;
+  cursor: default;
+  user-select: none;
+
+  /* Focus stays in the text input; the script marks the option the keys are on. */
+  &[data-active] {
+    background: var(--color-surface-hover);
+  }
+
+  &[aria-selected="true"]::after {
+    content: "";
+    inline-size: 1rem;
+    block-size: 1rem;
+    margin-inline-start: auto;
+    background: currentColor;
+    mask: var(--icon-check) center / contain no-repeat;
+  }
+
+  &[aria-disabled="true"] {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.empty {
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-md);
+}

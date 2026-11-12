@@ -1,0 +1,85 @@
+.checkbox,
+.switch {
+  appearance: none;
+  flex-shrink: 0;
+  margin: 0;
+  font: inherit;
+  cursor: pointer;
+  transition:
+    background-color var(--motion-duration-fast) var(--motion-ease-out),
+    border-color var(--motion-duration-fast) var(--motion-ease-out);
+
+  &:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+
+.checkbox {
+  display: inline-grid;
+  place-content: center;
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+  border: 1px solid var(--color-text-muted);
+  border-radius: var(--radius-1);
+  background: var(--color-surface);
+
+  &::before {
+    content: "";
+    inline-size: 0.875rem;
+    block-size: 0.875rem;
+    background: var(--color-primary-contrast);
+    mask: var(--icon-check) center / contain no-repeat;
+    scale: 0;
+    transition: scale var(--motion-duration-fast) var(--motion-ease-out);
+  }
+
+  &:checked,
+  &:indeterminate {
+    border-color: var(--color-primary);
+    background: var(--color-primary);
+  }
+
+  &:checked::before {
+    scale: 1;
+  }
+
+  &:indeterminate::before {
+    block-size: 2px;
+    mask: none;
+    scale: 1;
+  }
+}
+
+.switch {
+  --switch-width: 2.25rem;
+  --switch-height: 1.25rem;
+  --switch-inset: 2px;
+
+  position: relative;
+  inline-size: var(--switch-width);
+  block-size: var(--switch-height);
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-text-muted);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset-block-start: var(--switch-inset);
+    inset-inline-start: var(--switch-inset);
+    block-size: calc(var(--switch-height) - 2 * var(--switch-inset));
+    aspect-ratio: 1;
+    border-radius: var(--radius-full);
+    background: var(--color-surface);
+    transition: inset-inline-start var(--motion-duration-fast) var(--motion-ease-out);
+  }
+
+  &:checked {
+    background: var(--color-primary);
+  }
+
+  &:checked::before {
+    inset-inline-start: calc(100% - var(--switch-height) + var(--switch-inset));
+  }
+}

@@ -1,0 +1,44 @@
+/* The wrapper draws the chevron, because a <select> cannot have pseudo-elements. */
+.root {
+  position: relative;
+  display: inline-flex;
+  min-inline-size: 0;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: var(--space-2);
+    inline-size: 1rem;
+    background: var(--color-text-muted);
+    mask: var(--icon-chevron-down) center / contain no-repeat;
+    pointer-events: none;
+  }
+}
+
+.control {
+  appearance: none;
+  inline-size: 100%;
+  block-size: var(--control-height-md);
+  padding-inline: var(--space-3) var(--space-8);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--font-size-md);
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--color-text-muted);
+  }
+
+  &[aria-invalid="true"] {
+    border-color: var(--color-danger);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}

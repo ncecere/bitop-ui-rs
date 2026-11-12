@@ -1,0 +1,24 @@
+export default async ({ page, check, axe, button, focused }) => {
+  const popup = page.locator("[popover]:has([role=menu])");
+  await button("Options").focus();
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(250);
+  check("firstFocus", await focused(), "Rename");
+  await page.keyboard.press("ArrowDown");
+  check("down", await focused(), "Duplicate");
+  await page.keyboard.press("ArrowDown");
+  check("skipsDisabled", await focused(), "Home");
+  await page.keyboard.press("End");
+  check("end", await focused(), "Delete");
+  await page.keyboard.press("ArrowDown");
+  check("wraps", await focused(), "Rename");
+  await page.keyboard.press("d");
+  check("typeahead", await focused(), "Duplicate");
+  await page.keyboard.press("d");
+  check("typeaheadCycles", await focused(), "Delete");
+  check("axeOpen", await axe(), []);
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(250);
+  check("closedOnSelect", await popup.evaluate((p) => !p.matches(":popover-open")));
+  check("focusReturned", await focused(), "Options");
+};

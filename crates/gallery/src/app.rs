@@ -1,0 +1,219 @@
+mod c;
+mod healthz;
+mod kit;
+
+use bitop_ui::components::{
+    select::select,
+    sidebar::{
+        SIDEBAR_COOKIE, sidebar, sidebar_content, sidebar_group, sidebar_header, sidebar_item,
+        sidebar_layout, sidebar_main, sidebar_toggle,
+    },
+    toast::toast_region,
+};
+use topcoat::{
+    Result,
+    asset::{AssetBundle, RouterBuilderAssetExt, asset},
+    context::Cx,
+    cookie::{CookieLayer, Cookies, cookies},
+    router::{RouterBuilder, RouterBuilderDiscoverExt, Slot, layout, module_router, page},
+    runtime::RuntimeLayer,
+    view::{View, attributes, element_id, view},
+};
+
+/// One gallery page: the route under `/c/`, the title, and what the component is for.
+pub struct Entry {
+    pub slug: &'static str,
+    pub href: &'static str,
+    pub title: &'static str,
+    pub summary: &'static str,
+}
+
+/// A named set of components, shown as one group in the sidebar.
+pub struct Group {
+    pub title: &'static str,
+    pub entries: &'static [Entry],
+}
+
+macro_rules! entry {
+    ($slug:literal, $title:literal, $summary:literal) => {
+        Entry {
+            slug: $slug,
+            href: concat!("/c/", $slug),
+            title: $title,
+            summary: $summary,
+        }
+    };
+}
+
+/// Every page in the gallery. Add a component here and in `app/c.rs`.
+pub const GROUPS: &[Group] = &[Group {
+    title: "Base",
+    entries: &[
+        entry!("avatar", "Avatar", "A person's picture, or their initials."),
+        entry!("badge", "Badge", "A short label for a status or a count."),
+        entry!("button", "Button", "Starts an action."),
+        entry!(
+            "checkbox",
+            "Checkbox and switch",
+            "Turn one option on or off."
+        ),
+        entry!(
+            "combobox",
+            "Combobox",
+            "Choose one value from a list you can filter."
+        ),
+        entry!(
+            "command",
+            "Command palette",
+            "Search actions and pages from the keyboard."
+        ),
+        entry!(
+            "dialog",
+            "Dialog",
+            "A window over the page, and its alert variant."
+        ),
+        entry!(
+            "input",
+            "Input and field",
+            "Text inputs with a label, help text and errors."
+        ),
+        entry!(
+            "menu",
+            "Menu",
+            "A list of actions that opens from a button."
+        ),
+        entry!("popover", "Popover", "A small panel anchored to a button."),
+        entry!(
+            "scroll-area",
+            "Scroll area",
+            "A region that scrolls inside the page."
+        ),
+        entry!("select", "Select", "Choose one value from a short list."),
+        entry!(
+            "sidebar",
+            "Sidebar",
+            "The application shell with a navigation sidebar."
+        ),
+        entry!("tabs", "Tabs", "Switch between panels on one page."),
+        entry!("toast", "Toast", "A brief message that dismisses itself."),
+        entry!("tooltip", "Tooltip", "A hint shown on hover or focus."),
+    ],
+}];
+
+pub fn router() -> RouterBuilder {
+    module_router!()
+        .discover()
+        .assets(AssetBundle::load().unwrap())
+        .layer(CookieLayer::new())
+        .layer(RuntimeLayer::new())
+}
+
+#[layout]
+async fn root(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
+    let collapsed = cookies(cx)
+        .get(SIDEBAR_COOKIE)
+        .is_some_and(|cookie| cookie.value() == "collapsed");
+    let sidebar_id = element_id(cx);
+
+    Ok(view! {
+        <!DOCTYPE html>
+        <html lang="en">
+            <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+                <title>"bitop-ui gallery"</title>
+                bitop_ui::head()
+                <script type="module" src=(asset!("./client/gallery.js"))></script>
+                topcoat::runtime::script()
+                topcoat::dev::script()
+            </head>
+            <body>
+                sidebar_layout(
+                    collapsed: collapsed,
+                    sidebar(
+                        id: &sidebar_id,
+                        label: "Components",
+                        sidebar_header(
+                            <a href="/" style="color: inherit; text-decoration: none">
+                                "bitop-ui"
+                            </a>
+                        )
+                        sidebar_content(
+                            for group in GROUPS {
+                                sidebar_group(
+                                    label: group.title,
+                                    for entry in group.entries {
+                                        sidebar_item(href: entry.href, (entry.title))
+                                    }
+                                )
+                            }
+                        )
+                    )
+                    sidebar_main(
+                        <header
+                            style="display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-4); border-block-end: 1px solid var(--color-border)"
+                        >
+                            sidebar_toggle(target: &sidebar_id)
+                            <span style="flex: 1"></span>
+                            select(
+                                attrs: attributes! { aria-label="Theme" data-gallery-set="theme" },
+                                <option value="system">"System theme"</option>
+                                <option value="light">"Light"</option>
+                                <option value="dark">"Dark"</option>
+                            )
+                            select(
+                                attrs: attributes! { aria-label="Text direction" data-gallery-set="dir" },
+                                <option value="ltr">"Left to right"</option>
+                                <option value="rtl">"Right to left"</option>
+                            )
+                        </header>
+                        <main
+                            style="inline-size: 100%; max-inline-size: 52rem; margin-inline: auto; padding: var(--space-8)"
+                        >
+                            (slot)
+                        </main>
+                    )
+                )
+                toast_region()
+            </body>
+        </html>
+    })
+}
+
+#[page]
+async fn home(cx: &Cx) -> Result<impl View> {
+    Ok(view! {
+        <h1>"bitop-ui gallery"</h1>
+        <p
+            style="margin-block: var(--space-2) var(--space-6); color: var(--color-text-muted)"
+        >
+            "Every component on its own page, in every state."
+        </p>
+        for group in GROUPS {
+            <h2
+                style="margin-block: var(--space-6) var(--space-3); font-size: var(--font-size-lg)"
+            >
+                (group.title)
+            </h2>
+            <ul
+                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); gap: var(--space-3); padding: 0; list-style: none"
+            >
+                for entry in group.entries {
+                    <li>
+                        <a
+                            href=(entry.href)
+                            style="display: block; block-size: 100%; padding: var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-card); background: var(--color-surface); color: inherit; text-decoration: none"
+                        >
+                            <strong>(entry.title)</strong>
+                            <span
+                                style="display: block; margin-block-start: var(--space-1); color: var(--color-text-muted); font-size: var(--font-size-sm)"
+                            >
+                                (entry.summary)
+                            </span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        }
+    })
+}

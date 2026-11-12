@@ -1,0 +1,18 @@
+[package]
+name = "bitop-ui"
+description = "Component library for Topcoat: Base UI-style parts, CSS Modules, CSS variables"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+topcoat = { workspace = true }
+
+[build-dependencies]
+bitop-ui-build.workspace = true
+
+[lints]
+workspace = true

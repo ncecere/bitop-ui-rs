@@ -1,0 +1,162 @@
+.layout {
+  display: flex;
+  min-block-size: 100dvh;
+}
+
+/* The sidebar is a [popover], so it is a drawer by default: hidden until opened,
+   then in the top layer. The wide-screen rules below put it back in the layout. */
+.root {
+  position: fixed;
+  inset: 0;
+  inset-inline-end: auto;
+  flex-direction: column;
+  inline-size: min(var(--sidebar-width), calc(100vw - var(--space-8)));
+  block-size: 100dvh;
+  max-block-size: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-inline-end: 1px solid var(--color-border);
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
+  overflow: hidden;
+
+  translate: -100% 0;
+  transition:
+    translate var(--motion-duration-normal) var(--motion-ease-out),
+    overlay var(--motion-duration-normal) allow-discrete,
+    display var(--motion-duration-normal) allow-discrete;
+
+  &:dir(rtl) {
+    translate: 100% 0;
+  }
+
+  &:popover-open {
+    display: flex;
+    translate: 0 0;
+
+    @starting-style {
+      translate: -100% 0;
+
+      &:dir(rtl) {
+        translate: 100% 0;
+      }
+    }
+  }
+
+  &::backdrop {
+    background: var(--color-overlay);
+  }
+}
+
+@media (min-width: 48rem) {
+  .root {
+    position: sticky;
+    inset: auto;
+    inset-block-start: 0;
+    display: flex;
+    flex-shrink: 0;
+    inline-size: var(--sidebar-width);
+    translate: none;
+    transition: none;
+
+    &:dir(rtl) {
+      translate: none;
+    }
+  }
+
+  .layout[data-collapsed] > .root {
+    display: none;
+  }
+}
+
+.header,
+.footer {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+
+.header {
+  font-weight: 600;
+}
+
+.footer {
+  border-block-start: 1px solid var(--color-border);
+  font-size: var(--font-size-md);
+}
+
+.content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-block-size: 0;
+  padding: var(--space-2);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.group-label {
+  padding: var(--space-1) var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border-radius: var(--radius-1);
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+  text-decoration: none;
+
+  /* One line, cut with an ellipsis: chat titles are long. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &:hover {
+    background: var(--color-surface-hover);
+  }
+
+  &:focus-visible {
+    outline-offset: -2px;
+  }
+
+  &[aria-current="page"] {
+    background: var(--color-surface-active);
+    font-weight: 500;
+  }
+}
+
+.main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.toggle::before {
+  content: "";
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+  background: currentColor;
+  mask: var(--icon-panel) center / contain no-repeat;
+
+  &:dir(rtl) {
+    scale: -1 1;
+  }
+}

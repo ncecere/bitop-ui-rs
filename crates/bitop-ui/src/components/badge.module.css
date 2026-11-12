@@ -1,0 +1,36 @@
+.root {
+  --badge-bg: var(--color-surface-active);
+  --badge-fg: var(--color-text);
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  block-size: 1.375rem;
+  padding-inline: var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--badge-bg);
+  color: var(--badge-fg);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  white-space: nowrap;
+
+  &[data-variant="accent"] {
+    --badge-bg: var(--color-primary-subtle);
+    --badge-fg: var(--color-primary-subtle-text);
+  }
+
+  &[data-variant="success"] {
+    --badge-bg: var(--color-success-subtle);
+    --badge-fg: var(--color-success-text);
+  }
+
+  &[data-variant="warning"] {
+    --badge-bg: var(--color-warning-subtle);
+    --badge-fg: var(--color-warning-text);
+  }
+
+  &[data-variant="danger"] {
+    --badge-bg: var(--color-danger-subtle);
+    --badge-fg: var(--color-danger-text);
+  }
+}

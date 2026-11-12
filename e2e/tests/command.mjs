@@ -1,0 +1,34 @@
+export default async ({ page, check, axe, button, settled, visible }) => {
+  const palette = page.locator("dialog[data-command-palette]");
+  const search = palette.getByRole("combobox");
+  const toasts = page.locator("[data-toast]");
+  const options = () => visible(palette.locator("[role=option]:not([hidden])"));
+  const active = () => visible(palette.locator("[data-active]"));
+
+  await page.keyboard.press("Control+k");
+  check("shortcut", await palette.evaluate((d) => d.open && d.matches(":modal")));
+  check("focus", await page.evaluate(() => document.activeElement.getAttribute("role")), "combobox");
+  check("firstActive", await active(), ["Home"]);
+  await settled(palette);
+  check("axeOpen", await axe(), []);
+  await page.keyboard.type("comp");
+  check("keywords", await options(), ["Button"]);
+  check("hidesEmptyGroup", await palette.locator("[role=group]:not([hidden])").count(), 1);
+  await search.fill("nothing here");
+  check("empty", await palette.locator("[data-combobox-empty]").isVisible());
+  await search.fill("save");
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(300);
+  check("runsAction", [await palette.evaluate((d) => !d.open), await visible(toasts)], [true, ["Changes saved"]]);
+  await button("Open palette").click();
+  check("resets", [await search.inputValue(), await options()], ["", ["Home", "Button", "Save changes", "Copy link"]]);
+  await page.keyboard.press("ArrowUp");
+  check("arrowWraps", await active(), ["Copy link"]);
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(300);
+  check("esc", await palette.evaluate((d) => !d.open));
+  await button("Open palette").click();
+  await page.keyboard.press("Enter");
+  await page.waitForURL((url) => url.pathname === "/");
+  check("followsLink", new URL(page.url()).pathname, "/");
+};

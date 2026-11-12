@@ -1,0 +1,26 @@
+export default async ({ page, check, axe, button, settled }) => {
+  const toasts = page.locator("[data-toast]");
+  const held = toasts.filter({ hasText: "Held" });
+  await button("Show success").click();
+  check("fromScript", [await toasts.count(), await toasts.nth(0).getAttribute("role"), await toasts.nth(0).getAttribute("data-variant")], [1, "status", "success"]);
+  await button("Show error").click();
+  check("dangerIsAlert", await toasts.nth(1).getAttribute("role"), "alert");
+  await settled(toasts.nth(1));
+  check("axeOpen", await axe(), []);
+  await toasts.nth(0).getByRole("button", { name: "Dismiss" }).click();
+  await page.waitForTimeout(400);
+  check("dismissed", await toasts.count(), 1);
+  await page.evaluate(() => window.bitopUi.toast({ title: "Short", duration: 200 }));
+  await page.mouse.move(0, 0);
+  await page.waitForTimeout(700);
+  check("timesOut", await toasts.filter({ hasText: "Short" }).count(), 0);
+  await page.evaluate(() => window.bitopUi.toast({ title: "Held", duration: 1500 }));
+  await held.hover();
+  await page.waitForTimeout(2000);
+  check("pausesOnHover", await held.count(), 1);
+  await page.mouse.move(0, 0);
+  await page.waitForTimeout(2000);
+  check("resumes", await held.count(), 0);
+  for (const close of await toasts.getByRole("button", { name: "Dismiss" }).all()) await close.click();
+  await page.waitForTimeout(400);
+};

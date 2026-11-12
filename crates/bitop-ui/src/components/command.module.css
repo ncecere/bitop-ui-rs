@@ -1,0 +1,84 @@
+/* Extends the dialog popup: no padding, pinned near the top of the screen so the
+   list can grow and shrink without the search box moving. The element selector
+   makes these rules win over the dialog's own, whatever order the files load in. */
+dialog.popup {
+  --dialog-width: 36rem;
+
+  flex-direction: column;
+  max-block-size: min(28rem, calc(100dvh - 20vh - var(--space-4)));
+  margin-block-start: 20vh;
+  padding: 0;
+  overflow: hidden;
+
+  &[open] {
+    display: flex;
+  }
+}
+
+.search {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--space-2);
+  padding-inline: var(--space-4);
+  border-block-end: 1px solid var(--color-border);
+
+  &::before {
+    content: "";
+    flex-shrink: 0;
+    inline-size: 1rem;
+    block-size: 1rem;
+    background: var(--color-text-muted);
+    mask: var(--icon-search) center / contain no-repeat;
+  }
+}
+
+.input {
+  flex: 1;
+  min-inline-size: 0;
+  block-size: 3rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text);
+  font: inherit;
+
+  /* The dialog's border already shows where focus is. */
+  outline: none;
+
+  &::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+  }
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-block-size: 0;
+  padding: var(--space-2);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
+
+  &:not(:has([role="option"]:not([hidden]))) {
+    display: none;
+  }
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.group-label {
+  padding: var(--space-1) var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+}

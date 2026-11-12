@@ -1,0 +1,15 @@
+[package]
+name = "bitop-ui-build"
+description = "Build-script helper: compiles *.module.css into one stylesheet plus Rust class-name constants, and bundles component scripts"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+lightningcss.workspace = true
+
+[lints]
+workspace = true

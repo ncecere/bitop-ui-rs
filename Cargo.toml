@@ -1,0 +1,32 @@
+[workspace]
+resolver = "3"
+members = ["crates/*"]
+
+[workspace.package]
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.99"
+license = "MIT"
+repository = "https://github.com/ncecere/bitop-ui-rs"
+publish = false
+
+[workspace.dependencies]
+bitop-ui = { path = "crates/bitop-ui" }
+bitop-ui-build = { path = "crates/bitop-ui-build" }
+
+# Topcoat is experimental; pin exactly and upgrade deliberately.
+topcoat = { version = "=0.12.1" }
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+lightningcss = { version = "=1.0.0-alpha.72", default-features = false }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+
+[profile.dev]
+debug = "line-tables-only"
+
+[profile.dev.package."*"]
+opt-level = 1

@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        run: rustup show
+      - uses: Swatinem/rust-cache@v2
+      - name: Install the Topcoat CLI
+        run: cargo install topcoat-cli --version 0.12.1 --locked
+      - name: Format
+        run: |
+          cargo fmt --all --check
+          topcoat fmt --check crates
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Test
+        run: cargo test --workspace
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install browsers
+        working-directory: e2e
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium firefox webkit
+      - name: Browser checks
+        run: E2E_NATIVE=1 scripts/e2e.sh

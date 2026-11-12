@@ -1,0 +1,22 @@
+export default async ({ page, check, button, focused }) => {
+  const share = button("Share");
+  const tip = page.locator("[role=tooltip]");
+  const open = () => tip.evaluate((t) => t.matches(":popover-open"));
+  check("describes", await share.evaluate((b) => document.getElementById(b.getAttribute("aria-describedby")).getAttribute("role")), "tooltip");
+  await button("Toggle sidebar").focus();
+  for (let i = 0; i < 3; i++) await page.keyboard.press("Tab");
+  check("onFocus", [await focused(), await open()], ["Share", true]);
+  const t = await share.boundingBox();
+  const p = await tip.boundingBox();
+  const centre = (box) => box.x + box.width / 2;
+  check("anchored", { above: p.y + p.height <= t.y, centred: Math.abs(centre(p) - centre(t)) < 2 }, { above: true, centred: true });
+  await page.keyboard.press("Escape");
+  check("esc", !(await open()));
+  await page.mouse.move(0, 0);
+  await share.hover();
+  await page.waitForTimeout(800);
+  check("onHover", await open());
+  await page.mouse.move(0, 0);
+  await page.waitForTimeout(100);
+  check("hidesOnLeave", !(await open()));
+};

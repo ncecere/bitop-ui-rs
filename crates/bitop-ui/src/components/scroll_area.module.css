@@ -1,0 +1,10 @@
+.root {
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
+
+  &:focus-visible {
+    outline-offset: -2px;
+  }
+}

@@ -1,0 +1,28 @@
+export default async ({ page, check, button, focused }) => {
+  const dialog = page.locator("dialog", { hasText: "Rename chat?" });
+  await button("Rename chat").click();
+  check("open", await dialog.evaluate((d) => d.open && d.matches(":modal")));
+  check("name", await page.getByRole("dialog", { name: "Rename chat?" }).count(), 1);
+  check("focus", await focused(), "Cancel");
+  for (let i = 0; i < 3; i++) await page.keyboard.press("Tab");
+  check("focusTrapped", await page.evaluate(() => !!document.activeElement.closest("dialog")));
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(300);
+  check("closedByEsc", await dialog.evaluate((d) => !d.open));
+  check("focusReturned", await focused(), "Rename chat");
+  await button("Rename chat").click();
+  await page.mouse.click(5, 5);
+  await page.waitForTimeout(300);
+  check("closedByBackdrop", await dialog.evaluate((d) => !d.open));
+
+  const alert = page.locator("dialog", { hasText: "Delete workspace?" });
+  await button("Delete workspace").click();
+  check("alertRole", await page.getByRole("alertdialog", { name: "Delete workspace?" }).count(), 1);
+  check("alertDescribed", await alert.evaluate((d) => document.getElementById(d.getAttribute("aria-describedby"))?.tagName), "P");
+  await page.mouse.click(5, 5);
+  await page.waitForTimeout(300);
+  check("alertIgnoresBackdrop", await alert.evaluate((d) => d.open));
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(300);
+  check("alertClosedByEsc", await alert.evaluate((d) => !d.open));
+};
