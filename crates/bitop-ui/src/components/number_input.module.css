@@ -1,0 +1,84 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-inline-size: 0;
+}
+
+/* The input and its step buttons, joined: neighbours overlap by 1px so that their
+   borders collapse into one line. */
+.field {
+  display: inline-flex;
+  flex: 1 1 auto;
+  align-items: stretch;
+  min-inline-size: 0;
+  isolation: isolate;
+}
+
+.input {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  font-variant-numeric: tabular-nums;
+
+  &:focus-visible {
+    z-index: 2;
+  }
+
+  &:not(:last-child) {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+  }
+}
+
+.step {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--control-height-md);
+  min-block-size: var(--control-height-md);
+  margin-inline-start: -1px;
+  padding: 0;
+  border: 1px solid var(--color-border-strong);
+  background-color: var(--color-control);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition:
+    background-color var(--motion-duration-fast) var(--motion-ease-out),
+    color var(--motion-duration-fast) var(--motion-ease-out);
+
+  & [data-icon] {
+    inline-size: 1rem;
+    block-size: 1rem;
+  }
+
+  &:last-child {
+    border-start-end-radius: var(--radius-control);
+    border-end-end-radius: var(--radius-control);
+  }
+
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      z-index: 1;
+      background-color: var(--color-control-hover);
+      color: var(--color-text);
+    }
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--color-surface-active);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.unit {
+  flex: none;
+  white-space: nowrap;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}

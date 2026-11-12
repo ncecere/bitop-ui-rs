@@ -28,6 +28,9 @@ async fn show(cx: &Cx) -> Result<impl View> {
                 icon(name: Icon::ChevronRight)
                 icon(name: Icon::Search)
                 icon(name: Icon::Inbox)
+                icon(name: Icon::Minus)
+                icon(name: Icon::Plus)
+                icon(name: Icon::Copy)
             </div>
         )
         example(

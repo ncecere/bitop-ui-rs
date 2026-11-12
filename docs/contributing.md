@@ -114,10 +114,39 @@ Styles:
   those selectors as the porting table says, and change `& svg` to `& [data-icon]`.
 - Icons are the `icon` part, a CSS mask. To add one, add its Lucide path to
   `src/styles/icons.css` and a variant to `Icon`.
+- An icon is an empty `<span>`, so `:has(> span:empty)` matches any element with an icon in
+  it. Give the element you mean a `data-*` attribute and select on that.
+- The parts of a native control have a different name in each engine
+  (`::-webkit-slider-thumb`, `::-moz-range-thumb`). Write one rule for each: a selector list
+  with a name the engine does not know drops the whole rule.
+- axe measures contrast on any text, `aria-hidden` or not. Text dimmed with `opacity` beside
+  a disabled control fails; only the control and its `<label>` are exempt. Dim the control,
+  not its wrapper. For the same reason a gallery page cannot show a colour pair that fails on
+  purpose: reach that state in the check instead.
+
+Scripts:
+
+- Setting an input's `value` in a focus handler drops the selection that Tab makes, so what
+  is typed next is added to the text, not put in its place. Call `select()` after.
+- Native keyboard behaviour is not the same everywhere: WebKit does not wrap the arrow keys
+  in a radio group. Check the keyboard pattern in all three engines before leaving it to the
+  browser.
+- A control that shows its value in another form than it submits (grouping in a number) can
+  keep one input: change the value in a `formdata` listener on `document`.
 
 Checks:
 
 - A role query in Playwright does not find hidden elements. Use a CSS locator for a popup that
   may be closed.
 - Wait for an entry transition with the `settled` helper before measuring a popup or running
-  axe on it; text that is still fading in fails the contrast rule.
+  axe on it; text that is still fading in fails the contrast rule. The `setTheme` helper waits
+  for colour transitions for the same reason.
+- Firefox lays out on fractions of a pixel. Round a measured size or position before comparing
+  it.
+- To read the clipboard, paste: focus a text box and press `ControlOrMeta+V`. To fill it, select
+  text in a text box and press `ControlOrMeta+C`. Reading it with the Clipboard API needs a
+  permission that only Chromium can grant, and a `ClipboardEvent` made in script carries no
+  text in Firefox.
+- In Playwright's Firefox, two role queries by name in a row crashed the page when a
+  `<fieldset>` had `aria-labelledby` pointing at its own `<legend>`. The legend names the
+  fieldset already; leave the attribute out.

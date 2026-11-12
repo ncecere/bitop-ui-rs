@@ -24,6 +24,9 @@ pub enum Icon {
     ChevronRight,
     Search,
     Inbox,
+    Minus,
+    Plus,
+    Copy,
 }
 
 impl Icon {
@@ -41,6 +44,9 @@ impl Icon {
             Self::ChevronRight => "chevron-right",
             Self::Search => "search",
             Self::Inbox => "inbox",
+            Self::Minus => "minus",
+            Self::Plus => "plus",
+            Self::Copy => "copy",
         }
     }
 }

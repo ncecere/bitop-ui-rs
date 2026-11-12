@@ -60,7 +60,14 @@ for (const name of names) {
             poll();
           }),
       ),
-    setTheme: (mode) => page.evaluate((m) => window.bitopUi.setColorMode(m), mode),
+    // Colours change through transitions on some components; the promise resolves when
+    // they have ended, so that axe does not measure a colour half way.
+    setTheme: (mode) =>
+      page.evaluate((m) => {
+        window.bitopUi.setColorMode(m);
+        const running = document.getAnimations().filter((a) => a instanceof CSSTransition);
+        return Promise.allSettled(running.map((a) => a.finished)).then(() => undefined);
+      }, mode),
     setDir: (dir) => page.evaluate((d) => (document.documentElement.dir = d), dir),
     visible: (locator) => locator.allTextContents().then((texts) => texts.map((t) => t.trim())),
   };

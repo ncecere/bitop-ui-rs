@@ -1,0 +1,172 @@
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.fieldset {
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  padding: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+}
+
+.groupDescription {
+  margin-block-start: 0.125rem;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-block-start: var(--space-3);
+
+  &[data-orientation="horizontal"] {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-6);
+  }
+
+  &[data-variant="card"] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: var(--space-2);
+  }
+}
+
+/* The item is the <label>, so the whole of it, a card included, selects the radio. */
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  cursor: pointer;
+
+  &:has(.radio:disabled) {
+    cursor: not-allowed;
+  }
+
+  .options[data-variant="card"] > & {
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-control);
+    background-color: var(--color-surface);
+    box-shadow: var(--shadow-control);
+    transition: box-shadow var(--motion-duration-fast) var(--motion-ease-out);
+
+    &:has(.radio:checked) {
+      box-shadow:
+        0 0 0 1.5px var(--color-primary),
+        var(--shadow-0);
+      background-color: color-mix(in srgb, var(--color-primary-subtle) 45%, var(--color-surface));
+    }
+  }
+}
+
+.label {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  font-size: var(--font-size-md);
+  line-height: 1.25rem;
+  color: var(--color-text);
+
+  &:has(.radio:disabled) {
+    color: var(--color-text-subtle);
+  }
+
+  .options[data-variant="card"] & {
+    font-weight: var(--font-weight-medium);
+  }
+}
+
+.text {
+  min-inline-size: 0;
+}
+
+/* Ring boundary uses --color-border-strong (>= 3:1). */
+.radio {
+  appearance: none;
+  position: relative;
+  display: inline-grid;
+  flex-shrink: 0;
+  place-content: center;
+  inline-size: 1rem;
+  block-size: 1rem;
+  margin: 0;
+  margin-block-start: 0.125rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-full);
+  background-color: var(--color-control);
+  box-shadow: var(--shadow-0);
+  font: inherit;
+  cursor: inherit;
+  transition:
+    border-color var(--motion-duration-fast) var(--motion-ease-out),
+    background-color var(--motion-duration-fast) var(--motion-ease-out);
+
+  /* The indicator. */
+  &::before {
+    content: "";
+    inline-size: 0.375rem;
+    block-size: 0.375rem;
+    border-radius: var(--radius-full);
+    background-color: var(--color-primary-contrast);
+    scale: 0;
+    transition: scale var(--motion-duration-fast) var(--motion-ease-out);
+  }
+
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      border-color: var(--color-border-hover);
+    }
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+  }
+
+  &:checked {
+    border-color: var(--color-primary);
+    background-color: var(--color-primary);
+  }
+
+  &:checked::before {
+    scale: 1;
+  }
+
+  &:disabled {
+    opacity: 0.55;
+  }
+}
+
+.description {
+  padding-inline-start: 1.625rem;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-snug);
+  color: var(--color-text-muted);
+}
+
+.error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.375rem;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-danger-text);
+}
+
+.errorIcon {
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+  margin-block-start: 0.1875rem;
+  flex-shrink: 0;
+}

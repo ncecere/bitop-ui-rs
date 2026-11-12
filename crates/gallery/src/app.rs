@@ -67,6 +67,57 @@ pub const GROUPS: &[Group] = &[
                 "Combobox",
                 "Choose one value from a list you can filter."
             ),
+            entry!(
+                "button-group",
+                "Button group",
+                "Related buttons joined into one unit."
+            ),
+            entry!(
+                "radio-group",
+                "Radio group",
+                "Choose one option from a few."
+            ),
+            entry!("toggle", "Toggle", "A button that stays pressed."),
+            entry!(
+                "toggle-group",
+                "Toggle group",
+                "Toggles that share their pressed state."
+            ),
+            entry!(
+                "input-group",
+                "Input group",
+                "An input with text, icons or buttons inside it."
+            ),
+            entry!(
+                "number-input",
+                "Number input",
+                "An amount, with grouping and step buttons."
+            ),
+            entry!(
+                "input-otp",
+                "Input OTP",
+                "A one-time code, one character per box."
+            ),
+            entry!(
+                "slider",
+                "Slider",
+                "Choose a value from a range by dragging."
+            ),
+            entry!(
+                "color-field",
+                "Color field",
+                "A hex colour with a picker and a contrast check."
+            ),
+            entry!(
+                "copy-button",
+                "Copy button",
+                "Copies text to the clipboard."
+            ),
+            entry!(
+                "copy-field",
+                "Copy field",
+                "A read-only value with a copy button."
+            ),
         ],
     },
     Group {

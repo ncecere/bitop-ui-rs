@@ -1,0 +1,113 @@
+/*
+ * OTP slots are joined within a group (shared 1px borders, outer corners
+ * rounded) like a single segmented control. Boundaries use
+ * --color-border-strong (>= 3:1); the focused slot is raised so its ring
+ * sits on top of its neighbours.
+ */
+.root {
+  --otp-slot: 2.5rem;
+
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  inline-size: fit-content;
+
+  &[data-size="sm"] {
+    --otp-slot: var(--control-height-sm);
+  }
+
+  &:has(.slot:disabled) {
+    opacity: 0.55;
+  }
+}
+
+.group {
+  display: flex;
+  align-items: center;
+}
+
+.slot {
+  position: relative;
+  inline-size: var(--otp-slot);
+  block-size: var(--otp-slot);
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 0;
+  background-color: var(--color-control);
+  color: var(--color-text);
+  box-shadow: var(--shadow-0);
+  font-family: inherit;
+  font-size: var(--font-size-lg);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+  caret-color: var(--color-focus-ring);
+  outline: none;
+  transition:
+    border-color var(--motion-duration-fast) var(--motion-ease-out),
+    box-shadow var(--motion-duration-fast) var(--motion-ease-out);
+
+  & + & {
+    margin-inline-start: -1px;
+  }
+
+  &:first-child {
+    border-start-start-radius: var(--radius-control);
+    border-end-start-radius: var(--radius-control);
+  }
+
+  &:last-child {
+    border-start-end-radius: var(--radius-control);
+    border-end-end-radius: var(--radius-control);
+  }
+
+  &::placeholder {
+    color: var(--color-text-subtle);
+    opacity: 1;
+  }
+
+  @media (hover: hover) {
+    &:hover:not(:disabled, :focus) {
+      z-index: 1;
+      border-color: var(--color-border-hover);
+    }
+  }
+
+  &:focus {
+    z-index: 2;
+    border-color: var(--color-focus-ring);
+    box-shadow: var(--shadow-focus-field);
+  }
+
+  &[aria-invalid="true"] {
+    border-color: var(--color-danger);
+
+    &:focus {
+      box-shadow:
+        0 0 0 1px var(--color-danger),
+        0 0 0 4px color-mix(in srgb, var(--color-danger) 18%, transparent);
+    }
+  }
+
+  &:disabled {
+    background-color: var(--color-control-disabled);
+    color: var(--color-text-subtle);
+    cursor: not-allowed;
+  }
+
+  .root[data-size="sm"] & {
+    font-size: var(--font-size-md);
+  }
+}
+
+.separator {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text-subtle);
+
+  & [data-icon] {
+    inline-size: 1rem;
+    block-size: 1rem;
+  }
+}

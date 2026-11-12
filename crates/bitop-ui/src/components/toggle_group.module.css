@@ -1,0 +1,91 @@
+.group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
+  inline-size: fit-content;
+  max-inline-size: 100%;
+
+  &[data-orientation="vertical"] {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.item {
+  .group[data-orientation="vertical"] > & {
+    justify-content: flex-start;
+  }
+}
+
+/*
+ * Joined: a segmented control, drawn as one sunken track whose selected item
+ * is raised (the same look as Tabs' pills variant). Items carry no borders of
+ * their own, so a row of filters reads as one quiet control rather than a
+ * strip of boxes. The selected item differs in three ways (raised surface with
+ * a ring, full-strength text, aria-pressed), never by colour alone.
+ */
+.group[data-joined] {
+  flex-wrap: nowrap;
+  gap: 2px;
+  padding: 2px;
+  border-radius: var(--radius-control);
+  background-color: var(--color-surface-sunken);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+
+  & > .item {
+    flex-shrink: 0;
+    /* The track's 2px inset keeps the outer height of a lone control. */
+    block-size: calc(var(--control-height-md) - 4px);
+    border-radius: var(--radius-control-inner);
+    --toggle-ring: transparent;
+
+    &:not([aria-pressed="true"]) {
+      --toggle-bg: transparent;
+    }
+
+    @media (hover: hover) {
+      &:hover:not(:disabled, [aria-pressed="true"]) {
+        --toggle-bg: var(--color-surface-hover);
+        --toggle-ring: transparent;
+      }
+    }
+
+    &[aria-pressed="true"] {
+      --toggle-bg: var(--color-surface-raised);
+      --toggle-fg: var(--color-text);
+      --toggle-ring: transparent;
+      box-shadow: var(--shadow-segment);
+    }
+  }
+
+  &[data-size="sm"] > .item {
+    block-size: calc(var(--control-height-sm) - 4px);
+  }
+
+  & > .item:focus-visible {
+    z-index: 2;
+  }
+
+  &[data-orientation="vertical"] {
+    flex-direction: column;
+  }
+}
+
+/* Too wide for its container, a joined group wraps onto more lines, so that no
+   choice is cut off. Later than the joined rules, so it overrides them. */
+.group[data-joined][data-overflow-mode="wrap"] {
+  flex-wrap: wrap;
+}
+
+/* With scroll it scrolls sideways instead. */
+.group[data-joined][data-overflow-mode="scroll"] {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+
+  /* The scroll box clips anything outside it: keep the focus ring inside the item. */
+  & > .item:focus-visible {
+    outline-offset: -2px;
+  }
+}

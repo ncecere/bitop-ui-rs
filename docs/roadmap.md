@@ -1,7 +1,7 @@
 # Roadmap
 
 The target is every component in [bitop-ui](https://github.com/ncecere/bitop-ui): 120 in all.
-30 are built. The base set comes first, then the AI set as its own crate.
+41 are built. The base set comes first, then the AI set as its own crate.
 
 Names are bitop-ui's. A few live together here, as they do there: `switch` is in the `checkbox`
 module, `textarea` in `input`, `alert dialog` in `dialog`, and `app-shell` is `sidebar`.
@@ -9,27 +9,27 @@ module, `textarea` in `input`, `alert dialog` in `dialog`, and `app-shell` is `s
 Order of work: forms, overlays, navigation and layout, display and feedback, data and charts,
 then AI chat, agents and tools, code, and voice.
 
-## Base: forms (7 of 20)
+## Base: forms (16 of 20)
 
 Crate: `bitop-ui`.
 
 - [x] `button`
-- [ ] `button-group`
+- [x] `button-group`
 - [x] `checkbox`
 - [x] `switch`
-- [ ] `radio-group`
-- [ ] `toggle`
-- [ ] `toggle-group`
+- [x] `radio-group`
+- [x] `toggle`
+- [x] `toggle-group`
 - [x] `input`
-- [ ] `input-group`
-- [ ] `input-otp`
-- [ ] `number-input`
+- [x] `input-group`
+- [x] `input-otp`
+- [x] `number-input`
 - [ ] `tag-input`
-- [ ] `color-field`
+- [x] `color-field`
 - [x] `field`
 - [x] `select`
 - [x] `combobox`
-- [ ] `slider`
+- [x] `slider`
 - [ ] `calendar`
 - [ ] `date-picker`
 - [ ] `drop-zone`
@@ -68,7 +68,7 @@ Crate: `bitop-ui`.
 - [ ] `direction`
 - [ ] `save-bar`
 
-## Base: display (7 of 18)
+## Base: display (9 of 18)
 
 Crate: `bitop-ui`.
 
@@ -88,8 +88,8 @@ Crate: `bitop-ui`.
 - [ ] `accordion`
 - [ ] `disclosure`
 - [ ] `carousel`
-- [ ] `copy-button`
-- [ ] `copy-field`
+- [x] `copy-button`
+- [x] `copy-field`
 
 ## Base: feedback (3 of 7)
 
