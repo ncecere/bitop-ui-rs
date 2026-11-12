@@ -16,6 +16,21 @@ file in its own block.
 
 Then add the module to `components.rs`, a page to the gallery, and a browser check.
 
+## Two crates
+
+- `crates/bitop-ui` is the base set. Its stylesheet carries the tokens, themes and base styles.
+- `crates/bitop-ui-ai` is the AI set, built on the base set. It has its own `build.rs`,
+  stylesheet and script, with no global styles: it reads the same tokens. Pages render
+  `bitop_ui::head()` and then `bitop_ui_ai::head()`.
+
+An AI component lives in `crates/bitop-ui-ai/src/components/` and is listed in that crate's
+`components.rs`. It uses base parts by calling them (`bitop_ui::components::button::button`)
+and may put base classes on its own elements (`bitop_ui::css::button::ROOT`) with the matching
+`data-*` attributes. It shares script helpers through `window.bitopUi`, as the base set does;
+the base script loads first. `bitop_ui::merge_style` joins a part's inline style with the
+caller's. Its gallery pages go in `crates/gallery/src/app/c/` like any other, in the "AI: ..."
+groups.
+
 ## Parts
 
 ```rust

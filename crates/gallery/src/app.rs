@@ -415,6 +415,7 @@ async fn root(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                 <meta name="viewport" content="width=device-width, initial-scale=1">
                 <title>"bitop-ui gallery"</title>
                 bitop_ui::head()
+                bitop_ui_ai::head()
                 <script type="module" src=(asset!("./client/gallery.js"))></script>
                 topcoat::runtime::script()
                 topcoat::dev::script()

@@ -41,7 +41,7 @@ pub const COLOR_MODE_SCRIPT: Asset = asset!("./color-mode.js");
 
 /// Joins a part's own inline style with the `style` a caller passed in `attrs`, which
 /// is taken out of `attrs` so that the element gets one `style` attribute.
-pub(crate) fn merge_style(attrs: &mut topcoat::view::Attributes, own: &str) -> Option<String> {
+pub fn merge_style(attrs: &mut topcoat::view::Attributes, own: &str) -> Option<String> {
     use topcoat::view::AttributeValue;
     let theirs = match attrs.remove("style") {
         Some(AttributeValue::PromotedStr { value, .. }) => (*value).to_owned(),

@@ -110,6 +110,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "bitop-ui-ai"
+version = "0.0.0"
+dependencies = [
+ "bitop-ui",
+ "bitop-ui-build",
+ "topcoat",
+]
+
+[[package]]
 name = "bitop-ui-build"
 version = "0.0.0"
 dependencies = [
@@ -508,6 +517,7 @@ name = "gallery"
 version = "0.0.0"
 dependencies = [
  "bitop-ui",
+ "bitop-ui-ai",
  "tokio",
  "topcoat",
 ]

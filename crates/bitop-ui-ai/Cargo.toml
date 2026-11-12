@@ -1,0 +1,19 @@
+[package]
+name = "bitop-ui-ai"
+description = "Chat and agent components for Topcoat, built on bitop-ui"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+bitop-ui.workspace = true
+topcoat = { workspace = true }
+
+[build-dependencies]
+bitop-ui-build.workspace = true
+
+[lints]
+workspace = true
