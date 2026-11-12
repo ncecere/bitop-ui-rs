@@ -87,3 +87,37 @@ gives the behaviour and can be styled.
 
 Before pushing: `cargo fmt --all`, `topcoat fmt crates`, `cargo clippy --workspace --all-targets
 -- -D warnings`, `cargo test --workspace`, `scripts/e2e.sh`.
+
+## Things that catch people out
+
+Topcoat's `view!` macro:
+
+- An attribute needs a value: write `popover="auto"`, `data-flush=""` and `disabled=(true)`, not
+  a bare name.
+- `if` can wrap attributes, but `if`/`else` between attributes with different names is safest
+  written as one attribute with an `if` expression for its value.
+- A part can take extra content by name. Declare `#[default] #[into] actions: Child<'_>` and
+  callers write `alert(actions: view! { ... }, "message")`. A slot cannot be tested for being
+  empty, so render its wrapper always and hide it in CSS with `:empty { display: none }`.
+- A string built in a loop cannot be borrowed by a part in that loop. Build the strings before
+  `view!`, or make them `&'static str`.
+- `element_id(cx)` gives a different ID at each call site. Inside a loop, parts that call it
+  need a keyed context; passing IDs in from the page avoids that.
+- A gallery page function is called `show`, so that it does not clash with the component it
+  imports. Routes use hyphens: `app/c/scroll_area.rs` is served at `/c/scroll-area`.
+
+Styles:
+
+- The reset sets `margin: 0` on everything. Anything the browser places with a margin, such as
+  a centred `<dialog>`, must set it again.
+- bitop-ui's stylesheets select Base UI's `data-*` state attributes. After copying one, change
+  those selectors as the porting table says, and change `& svg` to `& [data-icon]`.
+- Icons are the `icon` part, a CSS mask. To add one, add its Lucide path to
+  `src/styles/icons.css` and a variant to `Icon`.
+
+Checks:
+
+- A role query in Playwright does not find hidden elements. Use a CSS locator for a popup that
+  may be closed.
+- Wait for an entry transition with the `settled` helper before measuring a popup or running
+  axe on it; text that is still fading in fails the contrast rule.
