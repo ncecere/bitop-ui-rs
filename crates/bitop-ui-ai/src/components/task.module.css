@@ -1,0 +1,145 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-inline-size: 0;
+  /* Lets the panel's height run from 0 to auto where the browser can do that. */
+  interpolate-size: allow-keywords;
+}
+
+/* The panel opens through the box the browser puts around a <details>'s content. A
+   rule of its own: a browser that does not know the pseudo-element drops the rule. */
+.root::details-content {
+  inline-size: 100%;
+  block-size: 0;
+  overflow: clip;
+  transition:
+    block-size var(--motion-duration-normal) var(--motion-ease-out),
+    content-visibility var(--motion-duration-normal) allow-discrete;
+}
+
+.root[open]::details-content {
+  block-size: auto;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  max-inline-size: 100%;
+  min-block-size: var(--control-height-sm);
+  padding: 0 var(--space-2);
+  margin-inline-start: calc(var(--space-2) * -1);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: var(--font-size-md);
+  text-align: start;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--color-surface-hover);
+      color: var(--color-text);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+/* Safari draws the disclosure triangle with its own pseudo-element. */
+.trigger::-webkit-details-marker {
+  display: none;
+}
+
+.icon {
+  display: inline-flex;
+  flex: none;
+
+  & [data-icon] {
+    inline-size: 1rem;
+    block-size: 1rem;
+  }
+}
+
+.title {
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  flex: none;
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+  transition: rotate var(--motion-duration-fast) var(--motion-ease-out);
+
+  .root[open] > .trigger & {
+    rotate: 180deg;
+  }
+}
+
+.panel {
+  inline-size: 100%;
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-block-start: var(--space-2);
+  margin-inline-start: 0.4375rem;
+  padding: 0;
+  padding-inline-start: var(--space-4);
+  border-inline-start: 2px solid var(--color-border-emphasis);
+  list-style: none;
+}
+
+.item {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: 1.5rem;
+}
+
+.file {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  block-size: 1.375rem;
+  margin-inline: 0.125rem;
+  padding-block: 0;
+  padding-inline: 0.375rem var(--space-2);
+  border-radius: var(--radius-2);
+  background-color: var(--color-neutral-subtle);
+  color: var(--color-neutral-text);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  vertical-align: 0.05em;
+}
+
+.fileIcon {
+  display: inline-flex;
+
+  & [data-icon] {
+    inline-size: 0.8125rem;
+    block-size: 0.8125rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root::details-content {
+    transition: none;
+  }
+
+  .chevron {
+    transition: none;
+  }
+}

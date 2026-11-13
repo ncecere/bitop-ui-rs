@@ -4,6 +4,7 @@
 //! stop. Give every [`radio`] in a group the same `name`. The library script handles
 //! the arrow keys, which move between the radios and select them, so that they wrap
 //! at the ends and follow the visual order in a right-to-left page in every browser.
+//! Radios that are not shown, such as those a search has filtered out, are skipped.
 //!
 //! Upstream takes the options as a list. Here each option is a [`radio`] part, so
 //! that its label can be any markup.

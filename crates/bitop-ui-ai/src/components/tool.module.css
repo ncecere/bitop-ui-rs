@@ -1,0 +1,228 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  min-inline-size: 0;
+  border-radius: var(--radius-3);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-ring);
+  /* Lets the panel's height run from 0 to auto where the browser can do that. */
+  interpolate-size: allow-keywords;
+}
+
+/* The panel opens through the box the browser puts around a <details>'s content. A
+   rule of its own: a browser that does not know the pseudo-element drops the rule. */
+.root::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition:
+    block-size var(--motion-duration-normal) var(--motion-ease-out),
+    content-visibility var(--motion-duration-normal) allow-discrete;
+}
+
+.root[open]::details-content {
+  block-size: auto;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  inline-size: 100%;
+  min-block-size: var(--control-height-lg);
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  border-radius: var(--radius-3);
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  text-align: start;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color var(--motion-duration-fast) var(--motion-ease-out);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--color-surface-hover);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+
+  .root[open] > & {
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+  }
+}
+
+/* Safari draws the disclosure triangle with its own pseudo-element. */
+.trigger::-webkit-details-marker {
+  display: none;
+}
+
+.icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--color-text-muted);
+
+  & [data-icon] {
+    inline-size: 0.9375rem;
+    block-size: 0.9375rem;
+  }
+}
+
+.name {
+  min-inline-size: 0;
+  overflow: hidden;
+  font-weight: var(--font-weight-medium);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  & code {
+    font-family: var(--font-family-mono);
+    font-size: 0.95em;
+  }
+}
+
+/* The base badge, with a status dot. Running uses the info colours. */
+.badge {
+  flex: none;
+  block-size: 1.25rem;
+
+  &[data-state="running"] {
+    --badge-bg: var(--color-info-subtle);
+    --badge-fg: var(--color-info-text);
+    --badge-dot: var(--color-info-dot);
+  }
+
+  &[data-state="pending"] {
+    --badge-dot: var(--color-neutral-dot);
+  }
+
+  &[data-state="completed"] {
+    --badge-dot: var(--color-success-dot);
+  }
+
+  &[data-state="error"] {
+    --badge-dot: var(--color-danger-dot);
+  }
+}
+
+.dot {
+  position: relative;
+  display: inline-block;
+  inline-size: 0.375rem;
+  block-size: 0.375rem;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background-color: var(--badge-dot);
+
+  .badge[data-state="running"] > &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-color: var(--badge-dot);
+    /* Longhands: a shorthand with var() in it keeps the keyframes' unscoped name. */
+    animation-name: pulse;
+    animation-duration: 1.6s;
+    animation-timing-function: var(--motion-ease-out);
+    animation-iteration-count: infinite;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    scale: 1;
+    opacity: 0.6;
+  }
+
+  80%,
+  100% {
+    scale: 2.6;
+    opacity: 0;
+  }
+}
+
+.summary {
+  min-inline-size: 0;
+  overflow: hidden;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  flex: none;
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+  margin-inline-start: auto;
+  color: var(--color-text-muted);
+  transition: rotate var(--motion-duration-fast) var(--motion-ease-out);
+
+  .root[open] > .trigger & {
+    rotate: 180deg;
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-block-start: 1px solid var(--color-border);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-inline-size: 0;
+}
+
+.sectionLabel {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-caps);
+  text-transform: uppercase;
+}
+
+.error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-2);
+  background-color: var(--color-danger-subtle);
+  box-shadow: inset 0 0 0 1px var(--color-danger-border);
+  color: var(--color-danger-text);
+  font-size: var(--font-size-sm);
+}
+
+.errorIcon {
+  flex: none;
+  inline-size: 1rem;
+  block-size: 1rem;
+  margin-block-start: 0.125rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root::details-content {
+    transition: none;
+  }
+
+  .chevron {
+    transition: none;
+  }
+
+  .dot::after {
+    animation: none;
+  }
+}

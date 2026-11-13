@@ -1,0 +1,223 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  min-inline-size: 0;
+  border-radius: var(--radius-3);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-ring);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: var(--control-height-lg);
+  padding: var(--space-2) var(--space-3);
+}
+
+.icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--color-text-muted);
+
+  & [data-icon] {
+    inline-size: 1rem;
+    block-size: 1rem;
+  }
+}
+
+.name {
+  min-inline-size: 0;
+  overflow: hidden;
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.model {
+  flex: none;
+  font-family: var(--font-family-mono);
+}
+
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-inline-start: auto;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-1) var(--space-3) var(--space-3);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-inline-size: 0;
+}
+
+.sectionLabel {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-caps);
+  text-transform: uppercase;
+}
+
+.instructions {
+  padding: var(--space-3);
+  border-radius: var(--radius-2);
+  background-color: var(--color-surface-sunken);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.tools {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-2);
+  box-shadow: var(--shadow-ring);
+}
+
+.tool {
+  /* Lets the panel's height run from 0 to auto where the browser can do that. */
+  interpolate-size: allow-keywords;
+}
+
+.tool + .tool {
+  border-block-start: 1px solid var(--color-border);
+}
+
+/* The panel opens through the box the browser puts around a <details>'s content. A
+   rule of its own: a browser that does not know the pseudo-element drops the rule. */
+.tool::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition:
+    block-size var(--motion-duration-normal) var(--motion-ease-out),
+    content-visibility var(--motion-duration-normal) allow-discrete;
+}
+
+.tool[open]::details-content {
+  block-size: auto;
+}
+
+.toolTrigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  inline-size: 100%;
+  min-block-size: var(--control-height-md);
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  border-radius: var(--radius-2);
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  text-align: start;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color var(--motion-duration-fast) var(--motion-ease-out);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--color-surface-hover);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: -2px;
+  }
+
+  &[aria-disabled="true"] {
+    color: var(--color-text-subtle);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+/* Safari draws the disclosure triangle with its own pseudo-element. */
+.toolTrigger::-webkit-details-marker {
+  display: none;
+}
+
+/* The heading inside the trigger: the name and the description in one line. */
+.toolHeading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-inline-size: 0;
+  margin: 0;
+  font: inherit;
+}
+
+.toolName {
+  flex: none;
+  font-family: var(--font-family-mono);
+  font-size: 0.95em;
+  font-weight: var(--font-weight-medium);
+}
+
+.toolDescription {
+  min-inline-size: 0;
+  overflow: hidden;
+  color: var(--color-text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  .toolTrigger[aria-disabled="true"] & {
+    color: inherit;
+  }
+}
+
+.chevron {
+  flex: none;
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+  margin-inline-start: auto;
+  color: var(--color-text-muted);
+  transition: rotate var(--motion-duration-fast) var(--motion-ease-out);
+
+  .tool[open] > .toolTrigger & {
+    rotate: 180deg;
+  }
+}
+
+.toolBody {
+  padding: 0 var(--space-3) var(--space-3);
+}
+
+.empty {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tool::details-content {
+    transition: none;
+  }
+
+  .toolTrigger,
+  .chevron {
+    transition: none;
+  }
+}

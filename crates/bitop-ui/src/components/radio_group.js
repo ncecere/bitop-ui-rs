@@ -6,7 +6,8 @@ document.addEventListener("keydown", (event) => {
   if (!radio || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
   const group = radio.closest('[role="radiogroup"]');
   const radios = [...group.querySelectorAll('input[type="radio"]')].filter(
-    (other) => other.name === radio.name && other.form === radio.form && !other.matches(":disabled"),
+    // Radios that are not shown, such as those a search has filtered out, are skipped.
+    (other) => other.name === radio.name && other.form === radio.form && !other.matches(":disabled") && other.checkVisibility(),
   );
   const rtl = getComputedStyle(group).direction === "rtl";
   const step = { ArrowDown: 1, ArrowUp: -1, ArrowRight: rtl ? -1 : 1, ArrowLeft: rtl ? 1 : -1 }[event.key];

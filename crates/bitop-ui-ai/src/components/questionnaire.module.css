@@ -1,0 +1,115 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  inline-size: 100%;
+  padding: var(--space-5);
+  border-radius: var(--radius-card);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-1);
+}
+
+.progress {
+  inline-size: 100%;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-inline-size: 0;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.review {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.heading {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+  letter-spacing: var(--letter-spacing-snug);
+  scroll-margin-block: var(--space-6);
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+    border-radius: var(--radius-1);
+  }
+}
+
+.description {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  margin: var(--space-2) 0 0;
+  border-block-start: 1px solid var(--color-border);
+}
+
+.summaryRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-1) var(--space-4);
+  padding: var(--space-3) 0;
+  border-block-end: 1px solid var(--color-border);
+}
+
+.summaryPrompt {
+  grid-column: 1;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.summaryAnswer {
+  grid-column: 1;
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+
+  &[data-skipped] {
+    color: var(--color-text-muted);
+    font-style: italic;
+    font-weight: var(--font-weight-regular);
+  }
+}
+
+.summaryEdit {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+
+  /* The buttons set display, which would win over the hidden attribute. */
+  & > [hidden] {
+    display: none;
+  }
+}
+
+.back {
+  margin-inline-end: auto;
+}

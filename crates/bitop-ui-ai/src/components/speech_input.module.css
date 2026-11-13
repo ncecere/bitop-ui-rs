@@ -1,0 +1,94 @@
+.root {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+.button {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+}
+
+.toggle[data-size] {
+  position: relative;
+  z-index: 1;
+  border-radius: var(--radius-full);
+
+  .root[data-size="sm"] & {
+    --button-height: 2rem;
+  }
+}
+
+/* The toggle shows a microphone, a square while listening, or a spinner. */
+.root:not([data-status="listening"]) .toggle [data-icon="square"],
+.root[data-status="listening"] .toggle [data-icon="mic"],
+.root[data-status="processing"] .toggle [data-icon],
+.root:not([data-status="processing"]) .spinner {
+  display: none;
+}
+
+/* Decorative "recording" ring; the pressed state and status text carry the meaning. */
+.pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 0 0 var(--color-danger-border);
+  /* Longhands: a shorthand with var() in it keeps the keyframes' unscoped name. */
+  animation-name: pulse;
+  animation-duration: 1.6s;
+  animation-timing-function: var(--motion-ease-out);
+  animation-iteration-count: infinite;
+
+  .root:not([data-status="listening"]) & {
+    display: none;
+  }
+}
+
+.status {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+
+  &[data-tone="danger"] {
+    color: var(--color-danger-text);
+  }
+
+  &:empty {
+    margin-inline-start: calc(var(--space-2) * -1);
+  }
+}
+
+.interim {
+  flex-basis: 100%;
+  min-inline-size: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-style: italic;
+  overflow-wrap: anywhere;
+
+  &:empty {
+    display: none;
+  }
+}
+
+@keyframes pulse {
+  from {
+    box-shadow: 0 0 0 0 var(--color-danger-border);
+    opacity: 1;
+  }
+
+  to {
+    box-shadow: 0 0 0 0.75rem var(--color-danger-border);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse {
+    animation: none;
+    box-shadow: 0 0 0 3px var(--color-danger-border);
+  }
+}

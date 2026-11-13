@@ -1,15 +1,32 @@
 //! The components, one module each.
 
+pub mod agent;
+pub mod artifact;
 pub mod attachments;
+pub mod audio_player;
+pub mod chain_of_thought;
+pub mod checkpoint;
 pub mod code_block;
+pub mod confirmation;
+pub mod context;
 pub mod conversation;
 pub mod image;
 pub mod inline_citation;
 pub mod message;
+pub mod mic_selector;
 pub mod model_selector;
 pub mod open_in_chat;
+pub mod plan;
 pub mod prompt_input;
+pub mod question;
+pub mod questionnaire;
+pub mod queue;
 pub mod reasoning;
 pub mod response;
 pub mod sources;
+pub mod speech_input;
 pub mod suggestion;
+pub mod task;
+pub mod tool;
+pub mod transcription;
+pub mod voice_selector;

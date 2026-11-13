@@ -136,6 +136,12 @@ Topcoat's `view!` macro:
   blocks with code blocks and citation cards, for example) overflowed the compiler's
   recursion limit while it checked that the page is `Send`. A large part returns
   `Ok(Child::new(view! { ... }))`, which boxes its view and ends the nesting there.
+- A `class!(…)` value cannot be borrowed in a view (`&Class` is not an attribute value).
+  For a class that several elements share, build a `String` and write
+  `class=(name.as_str())`.
+- Options a gallery page passes by reference (`&[QuestionChoice]`) must outlive the view.
+  Give such structs `const fn` builders so the page can hold them in a `const`; a string
+  that is computed, such as a `data:` URL, goes in a `static LazyLock<String>`.
 - Markup that is already sanitised goes into a view as `(Unescaped::new_unchecked(html))`.
   Only HTML built by code that escapes every piece of text may go there; see
   `bitop-ui-ai`'s `markdown.rs`.
@@ -184,6 +190,9 @@ Styles:
   a disabled control fails; only the control and its `<label>` are exempt. Dim the control,
   not its wrapper. For the same reason a gallery page cannot show a colour pair that fails on
   purpose: reach that state in the check instead.
+- A panel hidden with `hidden` that fades out through `display … allow-discrete` is still
+  shown until its transition ends. A check waits for it to be hidden
+  (`waitFor({ state: "hidden" })`) rather than reading it at once.
 - An SVG presentation attribute (`fill="url(#stripes)"`) loses to any stylesheet rule for
   the same property. Scope the rule so it does not match those elements.
 - A drawing stretched with `viewBox` and `preserveAspectRatio="none"` stretches corner radii
@@ -228,6 +237,8 @@ Scripts:
   which submenus are open when the pointer arrives and closes only those.
 - `scroll` does not bubble. To hear it from every scroller, listen on `document` with
   `capture: true`.
+- Media events (`timeupdate`, `play`, `volumechange`) do not bubble either. Listen on
+  `document` with `capture: true`.
 - `scrollBy({ behavior: "auto" })` follows the stylesheet's `scroll-behavior`, which may be
   `smooth`. To jump, say `"instant"`.
 - A script that rebuilds what the server rendered needs the scoped class names. Copy an
@@ -325,3 +336,25 @@ Checks:
 - Changing the page's direction resizes a log that follows its content, and its
   `ResizeObserver` pins it to the bottom a frame later. A check that then scrolls the log
   waits two frames first, or the pin undoes the scroll.
+- The Firefox crash above happens for any element named by `aria-labelledby` pointing
+  inside itself: a `<section>` (region) named by its title, a `<form>` named by its
+  prompt, and a group named by its label all crashed the page. The agent, plan,
+  confirmation, question and artifact cards are named with `aria-label` for that reason.
+- In Firefox, a popover whose `position-try` moves it from a place off the screen (a
+  card that opens above its trigger near the top of the page and flips below) stops its
+  entry transition just short of the end, at an opacity of 0.999, so `settled` never
+  returns. Gallery pages leave room above such a trigger.
+- Firefox and WebKit leave the content of a `<details>` that has just opened out of the
+  tab order until it is shown. Wait for an element inside to be visible before pressing
+  Tab into it.
+- In a search box that holds text, the first Escape empties it in Chromium and Firefox;
+  a dialog around it closes on the second.
+- A media element's state (`paused`, `muted`, `currentTime`) changes at once, but its
+  events come a moment later, and the controls follow the events. Wait for what the
+  controls show, not for the element.
+- `run.mjs` launches Chromium with a fake microphone that is allowed without a prompt,
+  and Firefox with fake streams and no permission prompt; WebKit has neither. A voice
+  check compares the page with what the engine reports (`enumerateDevices`,
+  `SpeechRecognition`), and runs the rest of the state machine on stand-ins installed
+  with `addInitScript` in a page of its own (`page.context().newPage()`): the runner
+  reloads the test's page for axe, and the stand-ins would stay on it.

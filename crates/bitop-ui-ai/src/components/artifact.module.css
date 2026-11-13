@@ -1,0 +1,71 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+  min-block-size: 0;
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-2);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-block-size: 3rem;
+  padding-block: var(--space-2);
+  padding-inline: var(--space-4) var(--space-2);
+  border-block-end: 1px solid var(--color-border);
+
+  & > :first-child {
+    flex: 1;
+    min-inline-size: 0;
+  }
+}
+
+.title {
+  overflow: hidden;
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.description {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.action[data-size] {
+  --button-height: 2rem;
+}
+
+.content {
+  flex: 1;
+  min-block-size: 0;
+  overflow: auto;
+  padding: var(--space-4);
+  outline: 0;
+
+  &[data-flush] {
+    padding: 0;
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-focus-ring);
+  }
+}
