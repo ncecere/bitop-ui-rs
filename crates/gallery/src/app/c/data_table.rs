@@ -1,7 +1,7 @@
 use bitop_ui::{
     components::{
         alert::error_alert,
-        badge::{BadgeVariant, badge},
+        badge::{BadgeTone, badge},
         button::{ButtonSize, ButtonVariant, button},
         data_table::{
             DataTableColumn, DataTableSort, SortDirection, cell_text, data_table,
@@ -393,10 +393,10 @@ async fn show(cx: &Cx) -> Result<impl View> {
                             td(numeric: true, (row.amount))
                             td(
                                 badge(
-                                    variant: if row.paid {
-                                        BadgeVariant::Success
+                                    tone: if row.paid {
+                                        BadgeTone::Success
                                     } else {
-                                        BadgeVariant::Warning
+                                        BadgeTone::Warning
                                     },
                                     (if row.paid { "Paid" } else { "Open" })
                                 )

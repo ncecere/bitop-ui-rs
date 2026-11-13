@@ -30,7 +30,7 @@
 
 use bitop_ui::{
     components::{
-        badge::{BadgeVariant, badge},
+        badge::{BadgeSize, BadgeTone, BadgeVariant, badge},
         icon::{Icon, icon},
     },
     css::popover as popover_css,
@@ -152,7 +152,7 @@ struct Row {
     option_id: String,
     name: String,
     meta: String,
-    badges: Vec<(String, BadgeVariant)>,
+    badges: Vec<(String, BadgeTone)>,
     search: String,
     selected: bool,
 }
@@ -187,7 +187,7 @@ pub async fn model_selector(
     #[default("Search models")] search_label: &str,
     #[default("No models found.")] empty: &str,
     #[default] capability_labels: &[(&str, &str)],
-    #[default] capability_tones: &[(&str, BadgeVariant)],
+    #[default] capability_tones: &[(&str, BadgeTone)],
     #[default("{tokens} context")] context_label: &str,
     #[default] size: ModelSelectorSize,
     #[default] disabled: bool,
@@ -210,7 +210,7 @@ pub async fn model_selector(
         .filter(|part| !part.is_empty())
         .collect::<Vec<_>>()
         .join(" · ");
-        let badges: Vec<(String, BadgeVariant)> = model
+        let badges: Vec<(String, BadgeTone)> = model
             .capabilities
             .iter()
             .map(|capability| {
@@ -221,7 +221,7 @@ pub async fn model_selector(
                 let tone = capability_tones
                     .iter()
                     .find(|(key, _)| key == capability)
-                    .map_or(BadgeVariant::Neutral, |(_, tone)| *tone);
+                    .map_or(BadgeTone::Neutral, |(_, tone)| *tone);
                 (text, tone)
             })
             .collect();
@@ -345,7 +345,16 @@ pub async fn model_selector(
                                     if !row.badges.is_empty() {
                                         <span class=(css::BADGES)>
                                             for (text, tone) in &row.badges {
-                                                badge(variant: *tone, (text))
+                                                badge(
+                                                    tone: *tone,
+                                                    variant: if *tone == BadgeTone::Neutral {
+                                                        BadgeVariant::Outline
+                                                    } else {
+                                                        BadgeVariant::Soft
+                                                    },
+                                                    size: BadgeSize::Sm,
+                                                    (text)
+                                                )
                                             }
                                         </span>
                                     }

@@ -24,7 +24,7 @@ export default async ({ page, check, axe, button, focusedLabel: focused, settled
     "File menu false", "Edit menu false", "View menu false", "Help menu false",
   ]);
   check("oneTabStop", await stops(), ["File"]);
-  await button("Toggle sidebar").focus();
+  await button("Collapse sidebar").focus();
   for (let i = 0; i < 3; i++) await page.keyboard.press("Tab");
   check("tabIntoBar", await focused(), "File");
   await page.keyboard.press("Tab");

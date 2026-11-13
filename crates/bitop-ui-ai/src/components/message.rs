@@ -39,7 +39,7 @@
 
 use bitop_ui::{
     components::{
-        avatar::{AvatarSize, avatar},
+        avatar::{AvatarShape, AvatarSize, avatar},
         button::ButtonVariant,
         copy_button::copy_button,
         icon::{Icon, icon},
@@ -167,7 +167,8 @@ pub async fn message_content(
 ///
 /// `color` is a CSS colour for the tile behind the initials, such as an agent's accent;
 /// pick one with 4.5:1 contrast against `--color-primary-contrast`. `child` replaces
-/// the avatar, for a logo.
+/// the avatar, for a logo. Without `color` the avatar's tint is chosen from the name.
+/// `shape: AvatarShape::Square` suits an assistant or a bot.
 #[component]
 pub async fn message_avatar(
     cx: &Cx,
@@ -176,7 +177,8 @@ pub async fn message_avatar(
     #[into]
     src: Option<&str>,
     #[default] color: &str,
-    #[default(AvatarSize::Md)] size: AvatarSize,
+    #[default(AvatarSize::Sm)] size: AvatarSize,
+    #[default] shape: AvatarShape,
     #[default] mut attrs: Attributes,
     #[default] child: Child<'_>,
 ) -> Result<impl View> {
@@ -197,7 +199,7 @@ pub async fn message_avatar(
             (attrs)
         >
             (child)
-            avatar(name: name, src: src, size: size)
+            avatar(name: name, src: src, size: size, shape: shape, decorative: true)
         </span>
     })
 }

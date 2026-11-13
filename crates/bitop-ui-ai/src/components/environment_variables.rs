@@ -423,7 +423,8 @@ pub async fn environment_variable_required(
 ) -> Result<impl View> {
     Ok(view! {
         <span
-            data-variant="warning"
+            data-tone="warning"
+            data-size="sm"
             data-env-required=""
             class=(class!(badge_css::ROOT, css::REQUIRED, attrs.remove("class")))
             (attrs)

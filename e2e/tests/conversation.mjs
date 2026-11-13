@@ -127,7 +127,7 @@ export default async ({ page, check }) => {
   check("emptySuggestions", await page.locator("[data-example=empty]").getByRole("group", { name: "Suggestions" }).getByRole("button").count(), 2);
   // An avatar replaces the icon; the default title.
   const media = page.locator("[data-example=media]");
-  check("media", [await media.locator("[data-icon]").isVisible(), await media.locator("[role=img]").count(), (await media.locator("p").first().textContent()).trim()], [false, 1, "How can I help?"]);
+  check("media", [await media.locator("[data-icon]").isVisible(), await media.locator("[data-hue]").count(), (await media.locator("p").first().textContent()).trim()], [false, 1, "How can I help?"]);
   // Turning following on sticks once.
   await empty.evaluate((l) => {
     l.firstElementChild.style.minBlockSize = "60rem";

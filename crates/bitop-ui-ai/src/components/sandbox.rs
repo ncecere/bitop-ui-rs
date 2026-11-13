@@ -148,7 +148,7 @@ pub async fn sandbox_header(
             <span class=(css::TITLE)>(title)</span>
             " "
             <span
-                data-variant=(state.badge())
+                data-tone=(state.badge())
                 data-state=(state.as_str())
                 class=(class!(badge_css::ROOT, tool_css::BADGE, css::BADGE))
             >

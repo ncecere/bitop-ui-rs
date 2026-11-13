@@ -147,7 +147,7 @@ pub async fn tool_header(
             </span>
             " "
             <span
-                data-variant=(state.badge())
+                data-tone=(state.badge())
                 data-state=(state.as_str())
                 class=(class!(badge_css::ROOT, css::BADGE))
             >

@@ -32,7 +32,10 @@ for (const name of names) {
   const page = await context.newPage();
   const errors = [];
   page.on("console", (message) => message.type() === "error" && errors.push(message.text()));
-  page.on("pageerror", (error) => errors.push(String(error)));
+  // WebKit reports a ResizeObserver loop when it defers notifications to the next
+  // frame; they still arrive, so it is not an error of the page.
+  const benign = (text) => text.includes("ResizeObserver loop completed with undelivered notifications");
+  page.on("pageerror", (error) => benign(String(error)) || errors.push(String(error)));
 
   // Records one check: the value seen and the value wanted.
   const check = (label, got, want = true) => {

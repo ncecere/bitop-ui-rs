@@ -4,10 +4,11 @@ mod kit;
 mod preview;
 
 use bitop_ui::components::{
+    icon::Icon,
     select::native_select,
     sidebar::{
-        SIDEBAR_COOKIE, sidebar, sidebar_content, sidebar_group, sidebar_header, sidebar_item,
-        sidebar_layout, sidebar_main, sidebar_toggle,
+        SIDEBAR_COOKIE, brand, shell_main, sidebar, sidebar_content, sidebar_header, sidebar_item,
+        sidebar_layout, sidebar_nav, sidebar_section, top_bar,
     },
     toast::toaster,
 };
@@ -31,6 +32,8 @@ pub struct Entry {
 
 /// A named set of components, shown as one group in the sidebar.
 pub struct Group {
+    /// The ID of the group's list in the sidebar.
+    pub id: &'static str,
     pub title: &'static str,
     pub entries: &'static [Entry],
 }
@@ -49,6 +52,7 @@ macro_rules! entry {
 /// Every page in the gallery. Add a component here and in `app/c.rs`.
 pub const GROUPS: &[Group] = &[
     Group {
+        id: "nav-forms",
         title: "Forms",
         entries: &[
             entry!("button", "Button", "Starts an action."),
@@ -146,6 +150,7 @@ pub const GROUPS: &[Group] = &[
         ],
     },
     Group {
+        id: "nav-overlays",
         title: "Overlays",
         entries: &[
             entry!(
@@ -190,6 +195,7 @@ pub const GROUPS: &[Group] = &[
         ],
     },
     Group {
+        id: "nav-navigation-and-layout",
         title: "Navigation and layout",
         entries: &[
             entry!(
@@ -261,6 +267,7 @@ pub const GROUPS: &[Group] = &[
         ],
     },
     Group {
+        id: "nav-display",
         title: "Display",
         entries: &[
             entry!("avatar", "Avatar", "A person's picture, or their initials."),
@@ -323,6 +330,7 @@ pub const GROUPS: &[Group] = &[
         ],
     },
     Group {
+        id: "nav-feedback",
         title: "Feedback",
         entries: &[
             entry!("spinner", "Spinner", "A sign that work is in progress."),
@@ -351,6 +359,7 @@ pub const GROUPS: &[Group] = &[
         ],
     },
     Group {
+        id: "nav-data-and-charts",
         title: "Data and charts",
         entries: &[
             entry!(
@@ -396,6 +405,7 @@ pub const GROUPS: &[Group] = &[
         ],
     },
     Group {
+        id: "nav-ai-chat",
         title: "AI: chat",
         entries: &[
             entry!(
@@ -471,6 +481,7 @@ pub const GROUPS: &[Group] = &[
         ],
     },
     Group {
+        id: "nav-ai-agents-and-tools",
         title: "AI: agents and tools",
         entries: &[
             entry!(
@@ -536,6 +547,7 @@ pub const GROUPS: &[Group] = &[
         ],
     },
     Group {
+        id: "nav-ai-code-and-developer",
         title: "AI: code and developer",
         entries: &[
             entry!(
@@ -596,6 +608,7 @@ pub const GROUPS: &[Group] = &[
         ],
     },
     Group {
+        id: "nav-ai-voice",
         title: "AI: voice",
         entries: &[
             entry!(
@@ -641,6 +654,7 @@ async fn root(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
         .get(SIDEBAR_COOKIE)
         .is_some_and(|cookie| cookie.value() == "collapsed");
     let sidebar_id = element_id(cx);
+    let toggle_target = sidebar_id.clone();
 
     Ok(view! {
         <!DOCTYPE html>
@@ -657,50 +671,56 @@ async fn root(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
             </head>
             <body>
                 sidebar_layout(
+                    id: &sidebar_id,
                     collapsed: collapsed,
-                    sidebar(
-                        id: &sidebar_id,
-                        label: "Components",
-                        sidebar_header(
-                            <a href="/" style="color: inherit; text-decoration: none">
-                                "bitop-ui"
-                            </a>
-                        )
-                        sidebar_content(
-                            for group in GROUPS {
-                                sidebar_group(
-                                    label: group.title,
-                                    for entry in group.entries {
-                                        sidebar_item(href: entry.href, (entry.title))
+                    sidebar: view! {
+                        sidebar(
+                            sidebar_header(brand(name: "bitop-ui"))
+                            sidebar_content(
+                                sidebar_nav(
+                                    label: "Components",
+                                    sidebar_section(
+                                        label: "Getting started",
+                                        id: "nav-getting-started",
+                                        sidebar_item(
+                                            href: "/",
+                                            icon: Icon::House,
+                                            label: "All components"
+                                        )
+                                    )
+                                    for group in GROUPS {
+                                        sidebar_section(
+                                            label: group.title,
+                                            id: group.id,
+                                            for entry in group.entries {
+                                                sidebar_item(href: entry.href, label: entry.title)
+                                            }
+                                        )
                                     }
+                                )
+                            )
+                        )
+                    },
+                    topbar: view! {
+                        top_bar(
+                            sidebar: toggle_target.as_str(),
+                            collapsed: collapsed,
+                            end: view! {
+                                native_select(
+                                    attrs: attributes! { aria-label="Theme" data-gallery-set="theme" },
+                                    <option value="system">"System theme"</option>
+                                    <option value="light">"Light"</option>
+                                    <option value="dark">"Dark"</option>
+                                )
+                                native_select(
+                                    attrs: attributes! { aria-label="Text direction" data-gallery-set="dir" },
+                                    <option value="ltr">"Left to right"</option>
+                                    <option value="rtl">"Right to left"</option>
                                 )
                             }
                         )
-                    )
-                    sidebar_main(
-                        <header
-                            style="display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-4); border-block-end: 1px solid var(--color-border)"
-                        >
-                            sidebar_toggle(target: &sidebar_id)
-                            <span style="flex: 1"></span>
-                            native_select(
-                                attrs: attributes! { aria-label="Theme" data-gallery-set="theme" },
-                                <option value="system">"System theme"</option>
-                                <option value="light">"Light"</option>
-                                <option value="dark">"Dark"</option>
-                            )
-                            native_select(
-                                attrs: attributes! { aria-label="Text direction" data-gallery-set="dir" },
-                                <option value="ltr">"Left to right"</option>
-                                <option value="rtl">"Right to left"</option>
-                            )
-                        </header>
-                        <main
-                            style="inline-size: 100%; max-inline-size: 52rem; margin-inline: auto; padding: var(--space-8)"
-                        >
-                            (slot)
-                        </main>
-                    )
+                    },
+                    shell_main((slot))
                 )
                 toaster()
             </body>

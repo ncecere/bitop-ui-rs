@@ -1,5 +1,5 @@
 use bitop_ui::components::{
-    avatar::AvatarSize,
+    avatar::AvatarShape,
     icon::{Icon, icon},
 };
 use bitop_ui_ai::components::message::{
@@ -71,13 +71,17 @@ async fn show(cx: &Cx) -> Result<impl View> {
             >
                 message(
                     from: MessageRole::User,
-                    message_avatar(name: "Ada Lovelace", size: AvatarSize::Sm)
+                    message_avatar(name: "Ada Lovelace")
                     message_content("Summarise the travel policy.")
                 )
                 message(
                     from: MessageRole::Assistant,
                     label: "Handbook assistant said",
-                    message_avatar(name: "Handbook", color: "var(--color-primary)")
+                    message_avatar(
+                        name: "Handbook",
+                        color: "var(--color-primary)",
+                        shape: AvatarShape::Square
+                    )
                     message_content(
                         <p>
                             "Book through the travel portal, economy for flights under six hours."
