@@ -101,6 +101,11 @@ gives the behaviour and can be styled.
 - Add `e2e/tests/name.mjs` (the route name, so `scroll-area.mjs`). It exports one function that
   receives `page`, `check(label, got, want)` and helpers; see `e2e/run.mjs`.
 - The runner also checks every page with axe in light and dark, and fails on console errors.
+- Compare with bitop-ui: run its docs site (`npx vite --port 5317` in a bitop-ui checkout)
+  and the gallery, then `node e2e/compare.mjs http://localhost:5317 http://127.0.0.1:3918
+  /tmp/cmp button dialog` (or through the Playwright image, as `scripts/e2e.sh` does). It
+  saves bitop-ui's examples beside ours for each name; `ref:ours` pairs a different name,
+  such as `app-shell:sidebar`.
 
 Before pushing: `cargo fmt --all`, `topcoat fmt crates`, `cargo clippy --workspace --all-targets
 -- -D warnings`, `cargo test --workspace`, `scripts/e2e.sh`.
@@ -169,8 +174,9 @@ Styles:
   stays where it started. Use a plain percentage.
 - bitop-ui's stylesheets select Base UI's `data-*` state attributes. After copying one, change
   those selectors as the porting table says, and change `& svg` to `& [data-icon]`.
-- Icons are the `icon` part, a CSS mask. To add one, add its Lucide path to
-  `src/styles/icons.css` and a variant to `Icon`.
+- Icons are the `icon` part, a CSS mask. To add Lucide icons, run
+  `node scripts/add-icons.mjs <lucide-react's dist/esm/icons> pencil share-2`, which adds
+  the masks to `src/styles/icons.css` and the variants to `Icon`.
 - An icon is an empty `<span>`, so `:has(> span:empty)` matches any element with an icon in
   it. Give the element you mean a `data-*` attribute and select on that.
 - The parts of a native control have a different name in each engine

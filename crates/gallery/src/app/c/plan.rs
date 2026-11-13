@@ -45,7 +45,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                     )
                     plan_footer(
                         button(
-                            variant: ButtonVariant::Outline,
+                            variant: ButtonVariant::Secondary,
                             size: ButtonSize::Sm,
                             "Revise"
                         )
@@ -78,7 +78,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                 <div style="display: flex; gap: var(--space-2)">
                     button(
                         size: ButtonSize::Sm,
-                        variant: ButtonVariant::Outline,
+                        variant: ButtonVariant::Secondary,
                         attrs: attributes! {
                             data-gallery-attr="data-streaming"
                             data-gallery-target="live-plan"

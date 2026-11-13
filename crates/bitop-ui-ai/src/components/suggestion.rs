@@ -134,7 +134,7 @@ pub async fn suggestion(
             data-suggestion=(suggestion)
             data-suggestion-target=((!target.is_empty()).then_some(target))
             data-suggestion-send=(send.then_some(""))
-            data-variant="outline"
+            data-variant="secondary"
             data-size="sm"
             class=(class!(button_css::ROOT, css::SUGGESTION, attrs.remove("class")))
             (attrs)

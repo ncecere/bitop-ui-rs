@@ -63,7 +63,7 @@ function renderSpeech(root) {
   if (button) {
     button.setAttribute("aria-pressed", String(listening));
     button.disabled = root.hasAttribute("data-disabled") || unsupported || processing;
-    button.dataset.variant = listening ? "danger" : "outline";
+    button.dataset.variant = listening ? "danger" : "secondary";
     if (processing) button.setAttribute("aria-busy", "true");
     else button.removeAttribute("aria-busy");
     if (text && status) button.setAttribute("aria-describedby", status.id);

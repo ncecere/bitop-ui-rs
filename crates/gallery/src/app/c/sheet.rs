@@ -45,7 +45,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                     sheet_close(target: &filters_footer_id, "Cancel")
                     sheet_close(
                         target: &filters_footer_id,
-                        variant: ButtonVariant::Solid,
+                        variant: ButtonVariant::Primary,
                         "Apply"
                     )
                 },
@@ -126,7 +126,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                 footer: view! {
                     sheet_close(
                         target: &terms_footer_id,
-                        variant: ButtonVariant::Solid,
+                        variant: ButtonVariant::Primary,
                         "Accept"
                     )
                 },

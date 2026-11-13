@@ -173,7 +173,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                     end: view! {
                         button(
                             size: ButtonSize::Sm,
-                            variant: ButtonVariant::Outline,
+                            variant: ButtonVariant::Secondary,
                             "Export"
                         )
                     }

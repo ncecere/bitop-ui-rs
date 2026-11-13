@@ -1,5 +1,5 @@
 use bitop_ui::components::{
-    button::{ButtonSize, ButtonVariant, button},
+    button::{ButtonVariant, button},
     button_group::{button_group, button_group_separator, button_group_text},
     icon::{Icon, icon},
     input::input,
@@ -21,9 +21,9 @@ async fn show(cx: &Cx) -> Result<impl View> {
             title: "Joined",
             button_group(
                 label: "Pagination",
-                button(variant: ButtonVariant::Outline, "Previous")
+                button(variant: ButtonVariant::Secondary, "Previous")
                 button_group_text("Page 2 of 9")
-                button(variant: ButtonVariant::Outline, "Next")
+                button(variant: ButtonVariant::Secondary, "Next")
             )
         )
         example(
@@ -33,7 +33,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                 button("Save")
                 button_group_separator()
                 button(
-                    size: ButtonSize::Icon,
+                    icon_only: true,
                     attrs: attributes! { aria-label="More save options" },
                     icon(name: Icon::ChevronDown)
                 )
@@ -53,7 +53,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                         placeholder="ada@example.com"
                     }
                 )
-                button(variant: ButtonVariant::Outline, "Invite")
+                button(variant: ButtonVariant::Secondary, "Invite")
             )
         )
         example(
@@ -62,14 +62,14 @@ async fn show(cx: &Cx) -> Result<impl View> {
                 label: "Zoom",
                 vertical: true,
                 button(
-                    variant: ButtonVariant::Outline,
-                    size: ButtonSize::Icon,
+                    variant: ButtonVariant::Secondary,
+                    icon_only: true,
                     attrs: attributes! { aria-label="Zoom in" },
                     icon(name: Icon::Plus)
                 )
                 button(
-                    variant: ButtonVariant::Outline,
-                    size: ButtonSize::Icon,
+                    variant: ButtonVariant::Secondary,
+                    icon_only: true,
                     attrs: attributes! { aria-label="Zoom out" },
                     icon(name: Icon::Minus)
                 )
@@ -82,15 +82,15 @@ async fn show(cx: &Cx) -> Result<impl View> {
                 spaced: true,
                 button_group(
                     label: "History",
-                    button(variant: ButtonVariant::Outline, "Undo")
-                    button(variant: ButtonVariant::Outline, "Redo")
+                    button(variant: ButtonVariant::Secondary, "Undo")
+                    button(variant: ButtonVariant::Secondary, "Redo")
                 )
                 button_group(
                     label: "Clipboard",
-                    button(variant: ButtonVariant::Outline, "Cut")
-                    button(variant: ButtonVariant::Outline, "Copy")
+                    button(variant: ButtonVariant::Secondary, "Cut")
+                    button(variant: ButtonVariant::Secondary, "Copy")
                     button(
-                        variant: ButtonVariant::Outline,
+                        variant: ButtonVariant::Secondary,
                         attrs: attributes! { disabled=(true) },
                         "Paste"
                     )

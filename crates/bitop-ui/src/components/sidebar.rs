@@ -192,7 +192,8 @@ pub async fn sidebar_toggle(
             data-sidebar-toggle=""
             class=(class!(button_css::ROOT, css::TOGGLE, attrs.remove("class")))
             data-variant=(ButtonVariant::Ghost.as_str())
-            data-size=(ButtonSize::Icon.as_str())
+            data-size=(ButtonSize::Md.as_str())
+            data-icon-only=""
             (attrs)
         ></button>
     })

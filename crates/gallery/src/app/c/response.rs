@@ -165,7 +165,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                 <div>
                     button(
                         size: ButtonSize::Sm,
-                        variant: ButtonVariant::Outline,
+                        variant: ButtonVariant::Secondary,
                         attrs: attributes! { data-gallery-replay="replay" },
                         "Replay the answer"
                     )

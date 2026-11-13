@@ -33,7 +33,7 @@ use crate::css::{button as button_css, dialog as css};
 pub async fn dialog_trigger(
     cx: &Cx,
     target: &str,
-    #[default(ButtonVariant::Outline)] variant: ButtonVariant,
+    #[default(ButtonVariant::Secondary)] variant: ButtonVariant,
     #[default] size: ButtonSize,
     #[default] mut attrs: Attributes,
     #[default] child: Child<'_>,

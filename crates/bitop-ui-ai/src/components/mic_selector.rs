@@ -123,7 +123,7 @@ pub async fn mic_selector(
                 (unsupported_text)
             </p>
             button(
-                variant: ButtonVariant::Outline,
+                variant: ButtonVariant::Secondary,
                 size: ButtonSize::Sm,
                 attrs: attributes! {
                     hidden=(true)

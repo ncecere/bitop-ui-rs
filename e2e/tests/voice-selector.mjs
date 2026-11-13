@@ -26,6 +26,10 @@ export default async ({ page, check, settled }) => {
   await search.fill("a");
   check("several", await dialog.locator("[data-voice-status]").textContent(), "4 voices");
   await search.fill("english");
+  // Enter only filters: it does not submit the form around the selector.
+  const url = page.url();
+  await search.press("Enter");
+  check("enterStays", [page.url(), await dialog.isVisible()], [url, true]);
   check("english", await rows(), ["ava", "sam"]);
 
   // The arrow keys move among the voices shown, and choose; the trigger follows.

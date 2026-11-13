@@ -229,9 +229,9 @@ pub async fn checklist(
                                     href=(step.action_href)
                                     class=(button_css::ROOT)
                                     data-variant=(if current == Some(index) {
-                                        "solid"
+                                        "primary"
                                     } else {
-                                        "outline"
+                                        "secondary"
                                     })
                                     data-size="sm"
                                 >

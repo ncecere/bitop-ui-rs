@@ -31,7 +31,7 @@ use crate::css::{button as button_css, tooltip as css};
 pub async fn tooltip_trigger(
     cx: &Cx,
     target: &str,
-    #[default(ButtonVariant::Outline)] variant: ButtonVariant,
+    #[default(ButtonVariant::Secondary)] variant: ButtonVariant,
     #[default] size: ButtonSize,
     #[default] mut attrs: Attributes,
     #[default] child: Child<'_>,

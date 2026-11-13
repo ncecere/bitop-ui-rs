@@ -99,7 +99,7 @@ impl SheetSize {
 pub async fn sheet_trigger(
     cx: &Cx,
     target: &str,
-    #[default(ButtonVariant::Outline)] variant: ButtonVariant,
+    #[default(ButtonVariant::Secondary)] variant: ButtonVariant,
     #[default] size: ButtonSize,
     #[default] mut attrs: Attributes,
     #[default] child: Child<'_>,
@@ -219,7 +219,7 @@ pub async fn sheet(
 pub async fn sheet_close(
     cx: &Cx,
     target: &str,
-    #[default(ButtonVariant::Outline)] variant: ButtonVariant,
+    #[default(ButtonVariant::Secondary)] variant: ButtonVariant,
     #[default] size: ButtonSize,
     #[default] mut attrs: Attributes,
     #[default] child: Child<'_>,

@@ -28,7 +28,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                     description: "People with access to this workspace.",
                     button(
                         size: ButtonSize::Sm,
-                        variant: ButtonVariant::Outline,
+                        variant: ButtonVariant::Secondary,
                         "Invite"
                     )
                 )

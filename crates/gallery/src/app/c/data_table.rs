@@ -347,7 +347,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                     toolbar: view! {
                         button(
                             size: ButtonSize::Sm,
-                            variant: ButtonVariant::Outline,
+                            variant: ButtonVariant::Secondary,
                             attrs: attributes! { type="submit" form="invoice-search-form" },
                             "Search"
                         )
@@ -355,7 +355,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                     bulk_actions: view! {
                         button(
                             size: ButtonSize::Sm,
-                            variant: ButtonVariant::Outline,
+                            variant: ButtonVariant::Secondary,
                             attrs: attributes! { type="submit" name="action" value="Archived" },
                             "Archive"
                         )

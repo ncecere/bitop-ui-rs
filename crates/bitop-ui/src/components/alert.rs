@@ -266,7 +266,7 @@ pub async fn error_alert(
                     <a
                         href=(retry_href)
                         class=(button_css::ROOT)
-                        data-variant="outline"
+                        data-variant="secondary"
                         data-size="sm"
                         data-error-retry=""
                     >

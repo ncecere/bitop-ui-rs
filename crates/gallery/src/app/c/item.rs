@@ -36,7 +36,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                     item_actions(
                         button(
                             size: ButtonSize::Sm,
-                            variant: ButtonVariant::Outline,
+                            variant: ButtonVariant::Secondary,
                             "Connect"
                         )
                     )
@@ -55,7 +55,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                     item_actions(
                         button(
                             size: ButtonSize::Sm,
-                            variant: ButtonVariant::Outline,
+                            variant: ButtonVariant::Secondary,
                             "Manage"
                         )
                     )

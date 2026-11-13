@@ -89,6 +89,9 @@ pub enum Icon {
     Eraser,
     SquareTerminal,
     ArrowLeft,
+    Pencil,
+    Share2,
+    Trash2,
 }
 
 impl Icon {
@@ -170,6 +173,9 @@ impl Icon {
             Self::Eraser => "eraser",
             Self::SquareTerminal => "square-terminal",
             Self::ArrowLeft => "arrow-left",
+            Self::Pencil => "pencil",
+            Self::Share2 => "share-2",
+            Self::Trash2 => "trash-2",
         }
     }
 }

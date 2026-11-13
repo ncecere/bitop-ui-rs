@@ -33,6 +33,14 @@ document.addEventListener("input", (event) => {
   if (root && event.target.matches("[data-voice-search]")) filterVoices(root);
 });
 
+// The search only filters the list. Enter in it would submit the form around the
+// selector and leave the page.
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Enter" && event.target instanceof Element && event.target.matches("[data-voice-search]")) {
+    event.preventDefault();
+  }
+});
+
 document.addEventListener("change", (event) => {
   const root = voiceRoot(event.target);
   if (!root || !event.target.matches("[data-voice-row] input[type=radio]")) return;

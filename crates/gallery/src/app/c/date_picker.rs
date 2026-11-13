@@ -86,7 +86,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                 keep_open: true,
                 footer: view! {
                     button(
-                        variant: ButtonVariant::Outline,
+                        variant: ButtonVariant::Secondary,
                         size: ButtonSize::Sm,
                         attrs: attributes! { popovertarget=(trip_popup_id) popovertargetaction="hide" },
                         "Done"

@@ -226,7 +226,7 @@ pub async fn open_in_chat(
     Ok(Child::new(view! {
         menu_trigger(
             target: id,
-            variant: ButtonVariant::Outline,
+            variant: ButtonVariant::Secondary,
             size: ButtonSize::Sm,
             attrs: attributes! { data-open-in-chat="" },
             (label)

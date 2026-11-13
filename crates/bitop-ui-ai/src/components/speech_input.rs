@@ -138,7 +138,7 @@ pub async fn speech_input(
                     aria-pressed="false"
                     disabled=(true)
                     data-speech-toggle=""
-                    data-variant="outline"
+                    data-variant="secondary"
                     data-size="icon"
                     class=(class!(button_css::ROOT, css::TOGGLE))
                 >

@@ -336,7 +336,7 @@ pub async fn questionnaire(
             }
             <div class=(css::ACTIONS)>
                 button(
-                    variant: ButtonVariant::Outline,
+                    variant: ButtonVariant::Secondary,
                     attrs: attributes! {
                         hidden=(step == 0)
                         data-questionnaire-back=""

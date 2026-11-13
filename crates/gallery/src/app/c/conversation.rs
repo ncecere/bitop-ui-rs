@@ -83,7 +83,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                 <div style="display: flex; flex-wrap: wrap; gap: var(--space-2)">
                     button(
                         size: ButtonSize::Sm,
-                        variant: ButtonVariant::Outline,
+                        variant: ButtonVariant::Secondary,
                         attrs: attributes! {
                             data-gallery-stream="streamed"
                             data-gallery-announcer="announcer"

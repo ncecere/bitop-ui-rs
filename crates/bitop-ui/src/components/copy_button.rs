@@ -62,11 +62,6 @@ pub async fn copy_button(
     #[default("Couldn't copy. Select the text and copy it manually.")] failed_status: &str,
     #[default] mut attrs: Attributes,
 ) -> Result<impl View> {
-    let size = if show_text {
-        ButtonSize::Sm
-    } else {
-        ButtonSize::Icon
-    };
     let has_tooltip = !tooltip.is_empty() && !show_text;
     let tooltip_id = has_tooltip.then_some(tooltip);
     Ok(view! {
@@ -84,7 +79,8 @@ pub async fn copy_button(
                 aria-describedby=(tooltip_id)
                 data-tooltip=(tooltip_id)
                 data-variant=(variant.as_str())
-                data-size=(size.as_str())
+                data-size=(ButtonSize::Sm.as_str())
+                data-icon-only=((!show_text).then_some(""))
                 class=(class!(button_css::ROOT, css::BUTTON, attrs.remove("class")))
                 (attrs)
             >

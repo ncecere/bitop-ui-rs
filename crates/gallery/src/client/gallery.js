@@ -172,3 +172,15 @@ document.addEventListener("bitop:web-preview-navigate", (event) => {
   const out = root.parentElement.querySelector("[data-preview-event]");
   if (out) out.textContent = `Went to ${event.detail.url}`;
 });
+
+// The button page's "Save changes": loading for a moment, as while a request runs.
+document.addEventListener("click", (event) => {
+  const button = event.target instanceof Element && event.target.closest("[data-gallery-loading]");
+  if (!button) return;
+  window.bitopUi.button.setLoading(button, true);
+  button.firstChild.textContent = "Saving…";
+  setTimeout(() => {
+    window.bitopUi.button.setLoading(button, false);
+    button.firstChild.textContent = "Save changes";
+  }, 1600);
+});

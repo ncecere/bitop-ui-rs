@@ -21,6 +21,7 @@ use topcoat::{
 };
 
 pub mod components;
+pub mod font;
 pub mod format;
 
 /// Scoped class names generated from the `*.module.css` files.
@@ -57,10 +58,20 @@ pub fn merge_style(attrs: &mut topcoat::view::Attributes, own: &str) -> Option<S
     }
 }
 
-/// The `<link>` and `<script>` tags for the library. Render inside `<head>`.
+/// The `<link>` and `<script>` tags for the library, and its font. Render inside
+/// `<head>`. Only the Latin part of the font is preloaded; the browser fetches the
+/// others when a page uses their characters.
 #[component]
 pub async fn head(cx: &Cx) -> Result<impl View> {
     Ok(view! {
+        <link
+            rel="preload"
+            href=(font::INTER_LATIN)
+            as="font"
+            type="font/woff2"
+            crossorigin="anonymous"
+        >
+        topcoat::font::link(font: font::INTER, preload: false)
         <link rel="stylesheet" href=(STYLESHEET)>
         <script src=(COLOR_MODE_SCRIPT)></script>
         <script type="module" src=(SCRIPT)></script>
