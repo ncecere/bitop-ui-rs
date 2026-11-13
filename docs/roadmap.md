@@ -195,8 +195,10 @@ Every component was compared with bitop-ui's docs site, side by side in a browse
 - [x] `avatar`'s initials follow bitop-ui (first two words, punctuation and particles
   skipped, "?" for none).
 - [x] `voice-selector`: Enter in the search no longer submits the form around it.
-- [ ] `avatar`: sizes xs to xl, square shape, `decorative`, a tint chosen from the name.
-- [ ] `badge`: outline, `sm`, `dot`, `pulse`, `StatusBadge`, `StatusDot`, the ring.
+- [x] `avatar`: sizes xs to xl, square shape, `decorative`, a tint chosen from the name
+  with upstream's hash; `message_avatar` is decorative, small and can be square.
+- [x] `badge`: `tone` (with info) and `variant` (soft, outline), `sm`, `dot`, `pulse`,
+  `status_badge`, `status_dot`, the ring in the tone's colour.
 - [x] `dialog`: sizes, the close button, the footer band, the place near the top, the
   blurred backdrop; `alert_dialog`'s `busy`, `error` and `tone`.
 - [x] `toast`: info and warning, an action, `promise`, `close(id)`, a collapsed stack with
@@ -222,8 +224,10 @@ Every component was compared with bitop-ui's docs site, side by side in a browse
   description and position, its size and off colour.
 - [x] `field` and `input`: `Fieldset`, `Form`, `FormActions`; label and error sizes, the
   error's icon; `input`'s `size` and start icon.
-- [ ] `sidebar`: the icon rail when collapsed; item icons, badges, dots and descriptions;
-  collapsible sections; brand, workspace switcher, user, top bar and skip link.
+- [x] `sidebar`: the icon rail when collapsed, with tooltips; item icons, trailing counts,
+  dots and descriptions; collapsible sections; brand, mode switch, workspace switcher,
+  user, top bar, main and skip link; a modal drawer below 600px that traps focus. The
+  gallery's shell is built from them.
 - [x] `slider`: a range with two thumbs. `input-otp`: `mask` and `normalize`.
 - [ ] Smaller ones: `scroll-area` orientation, `pagination` colours, `checkpoint`,
   `empty-state` icon size, `bar-chart` solid fills and spacing, `save-bar` hiding when
@@ -297,7 +301,15 @@ Every component was compared with bitop-ui's docs site, side by side in a browse
 - `tabs` pair a tab with its panel by ID, not by `value`; `onValueChange` is the
   `bitop:change` event. Tab counts are grouped the English way. `NavTab` has no
   `render` for a router's link: it is an `<a>`.
-- The sidebar drawer on narrow screens does not trap focus.
+- `sidebar` (upstream's `AppShell`): the collapsed state is a cookie the server reads,
+  not React state, so there is no `onCollapsedChange`; the drawer breakpoint is fixed at
+  600px (no `drawerQuery`). The drawer is a popover that the script makes a modal dialog
+  (role, inert page, Tab kept inside), not Base UI's `Dialog`; without the script it
+  opens as a plain popover. Items are links (`href`), not router `render` props, and a
+  mode switch's items are parts. A collapsible section's `open` is the initial state;
+  the script toggles it and sends `bitop:change`. The rail's tooltips are the
+  sidebar's own, not `Tooltip`s. The gallery's top bar has no search: a command
+  palette there would take Ctrl+K from the command page.
 - The charts' data table has no `onOpenChange` or controlled `open`; listen for the native
   `toggle` event. A lone point between gaps in a `sparkline` is not drawn, as upstream.
 - The AI chat set (`bitop-ui-ai`) renders on the server, so a few React-only parts of
@@ -349,6 +361,6 @@ Every component was compared with bitop-ui's docs site, side by side in a browse
   collapsible) beside other buttons; `test-results`, `sandbox` and the sections of
   `schema-display` are `<details>`. `file-tree` items are named by their row's text, not
   through `aria-labelledby`, because of the Playwright Firefox crash.
-- `package-info`, `environment-variables`, `test-results` and `schema-display` show the
-  base badge in upstream's small size and info colour with styles of their own, as the
-  base badge has neither.
+- `tool` and `sandbox` draw their state badge with styles of their own (the colour
+  follows `data-state`, which a page streaming into it may change), not
+  `status_badge`.

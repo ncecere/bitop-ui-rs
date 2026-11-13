@@ -1,5 +1,5 @@
 use bitop_ui::components::{
-    badge::{BadgeVariant, badge},
+    badge::{BadgeTone, badge},
     description_list::{
         DescriptionLayout, DescriptionSize, description_item, description_list, facts_line,
         facts_line_item,
@@ -30,7 +30,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                 description_item(label: "Schedule", "Weekly, next on 3 October")
                 description_item(
                     label: "Status",
-                    badge(variant: BadgeVariant::Success, "Ready")
+                    badge(tone: BadgeTone::Success, "Ready")
                 )
                 description_item(label: "Owner", blank: true)
             )

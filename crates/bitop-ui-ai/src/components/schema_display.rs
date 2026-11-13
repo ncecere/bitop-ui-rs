@@ -76,7 +76,8 @@ impl HttpMethod {
             Self::Get => "success",
             Self::Put | Self::Patch => "warning",
             Self::Delete => "danger",
-            Self::Post | Self::Head | Self::Options => "neutral",
+            Self::Post => "info",
+            Self::Head | Self::Options => "neutral",
         }
     }
 }
@@ -477,7 +478,7 @@ pub async fn schema_display_method(
 ) -> Result<impl View> {
     Ok(view! {
         <span
-            data-variant=(method.badge())
+            data-tone=(method.badge())
             data-method=(method.as_str())
             class=(class!(badge_css::ROOT, css::METHOD, attrs.remove("class")))
             (attrs)
@@ -582,7 +583,8 @@ pub async fn schema_display_section(
                 if let Some(count) = count {
                     " "
                     <span
-                        data-variant="neutral"
+                        data-tone="neutral"
+                        data-size="sm"
                         class=(class!(badge_css::ROOT, css::COUNT))
                     >
                         (count)
@@ -599,7 +601,9 @@ pub async fn schema_display_section(
 async fn required_mark(cx: &Cx, label: &str) -> Result<impl View> {
     Ok(view! {
         <span
-            data-variant="danger"
+            data-tone="danger"
+            data-size="sm"
+            data-variant="outline"
             data-required=""
             class=(class!(badge_css::ROOT, css::REQUIRED))
         >
@@ -653,7 +657,9 @@ pub async fn schema_display_parameter(
                 if let Some(location) = parameter.location {
                     " "
                     <span
-                        data-variant="neutral"
+                        data-tone="neutral"
+                        data-size="sm"
+                        data-variant="outline"
                         data-location=""
                         class=(class!(badge_css::ROOT, css::LOCATION))
                     >

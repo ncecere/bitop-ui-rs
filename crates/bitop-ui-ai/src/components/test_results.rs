@@ -278,7 +278,7 @@ pub async fn test_results_summary(
     Ok(view! {
         <div class=(class!(css::SUMMARY, attrs.remove("class"))) (attrs)>
             <span
-                data-variant="success"
+                data-tone="success"
                 data-count="passed"
                 class=(class!(badge_css::ROOT, css::SUMMARY_BADGE))
             >
@@ -288,7 +288,7 @@ pub async fn test_results_summary(
             if summary.failed > 0 {
                 " "
                 <span
-                    data-variant="danger"
+                    data-tone="danger"
                     data-count="failed"
                     class=(class!(badge_css::ROOT, css::SUMMARY_BADGE))
                 >
@@ -299,7 +299,7 @@ pub async fn test_results_summary(
             if summary.skipped > 0 {
                 " "
                 <span
-                    data-variant="warning"
+                    data-tone="warning"
                     data-count="skipped"
                     class=(class!(badge_css::ROOT, css::SUMMARY_BADGE))
                 >

@@ -1,4 +1,4 @@
-use bitop_ui::components::badge::BadgeVariant;
+use bitop_ui::components::badge::BadgeTone;
 use bitop_ui_ai::components::model_selector::{ModelOption, ModelSelectorSize, model_selector};
 use topcoat::{
     Result,
@@ -35,7 +35,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
         ("tools", "Tools"),
         ("reasoning", "Reasoning"),
     ];
-    let tones = [("slow", BadgeVariant::Warning)];
+    let tones = [("slow", BadgeTone::Warning)];
     Ok(view! {
         page_header(slug: "model-selector")
         example(

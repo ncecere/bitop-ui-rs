@@ -47,7 +47,18 @@ export default async ({ page, check, base }) => {
   const avatars = page.locator("[data-example=avatars]");
   check("avatarHidden", await avatars.locator("[data-from] > span[aria-hidden=true]").count(), 2);
   check("ownLabel", await avatars.getByRole("article", { name: "Handbook assistant said" }).count(), 1);
-  check("avatarColour", await avatars.locator("[data-color] [role=img]").evaluate((a) => getComputedStyle(a).backgroundColor === getComputedStyle(document.body).getPropertyValue("--color-primary") || getComputedStyle(a).backgroundColor !== "rgba(0, 0, 0, 0)"), true);
+  // The avatar inside is decorative too; a custom colour fills the tile, square for the assistant.
+  check("avatarDecorative", await avatars.locator("[data-hue]").evaluateAll((all) => all.map((a) => [a.getAttribute("aria-hidden"), a.getAttribute("role")])), [["true", null], ["true", null]]);
+  const tile = avatars.locator("[data-color] [data-hue]");
+  check("avatarColour", await tile.evaluate((a) => {
+    const probe = document.createElement("div");
+    probe.style.background = "var(--color-primary)";
+    document.body.append(probe);
+    const primary = getComputedStyle(probe).backgroundColor;
+    probe.remove();
+    return getComputedStyle(a).backgroundColor === primary;
+  }));
+  check("avatarSquare", await tile.evaluate((a) => [a.dataset.shape, a.dataset.size, getComputedStyle(a).borderTopLeftRadius]), ["square", "sm", "6px"]);
   const hoverActions = avatars.locator("[data-visibility=hover]");
   await page.mouse.move(1, 1);
   check("hiddenUntilHover", await hoverActions.evaluate((a) => getComputedStyle(a).opacity), "0");

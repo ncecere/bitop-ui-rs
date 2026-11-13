@@ -98,6 +98,19 @@ pub enum Icon {
     SlidersHorizontal,
     Download,
     Cpu,
+    PanelLeft,
+    House,
+    Rocket,
+    Layers,
+    KeyRound,
+    Users,
+    LayoutDashboard,
+    Shield,
+    Boxes,
+    LogOut,
+    Box,
+    Palette,
+    MessagesSquare,
 }
 
 impl Icon {
@@ -188,6 +201,19 @@ impl Icon {
             Self::SlidersHorizontal => "sliders-horizontal",
             Self::Download => "download",
             Self::Cpu => "cpu",
+            Self::PanelLeft => "panel-left",
+            Self::House => "house",
+            Self::Rocket => "rocket",
+            Self::Layers => "layers",
+            Self::KeyRound => "key-round",
+            Self::Users => "users",
+            Self::LayoutDashboard => "layout-dashboard",
+            Self::Shield => "shield",
+            Self::Boxes => "boxes",
+            Self::LogOut => "log-out",
+            Self::Box => "box",
+            Self::Palette => "palette",
+            Self::MessagesSquare => "messages-square",
         }
     }
 }

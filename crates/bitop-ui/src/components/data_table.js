@@ -68,7 +68,10 @@ document.addEventListener("click", (event) => {
   // A click on a row that opens, but not on a control in it, follows the row's link.
   const row = target.closest("[data-data-table] tr[data-clickable]");
   if (!row || event.defaultPrevented) return;
-  if (target.closest("a, button, input, select, textarea, label, summary, [role=menu], [popover], [tabindex]")) return;
+  // Only a control inside the row counts: the page around it may be focusable too (a
+  // main landmark with tabindex="-1").
+  const control = target.closest("a, button, input, select, textarea, label, summary, [role=menu], [popover], [tabindex]");
+  if (control && row.contains(control)) return;
   if (window.getSelection()?.toString()) return;
   row.querySelector("a[data-row-open]")?.click();
 });

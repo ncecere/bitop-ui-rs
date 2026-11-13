@@ -64,7 +64,8 @@ impl PackageChangeType {
             Self::Major => "danger",
             Self::Minor => "warning",
             Self::Patch => "success",
-            Self::Added | Self::Removed => "neutral",
+            Self::Added => "info",
+            Self::Removed => "neutral",
         }
     }
 
@@ -202,7 +203,8 @@ pub async fn package_info_change_type(
     };
     Ok(view! {
         <span
-            data-variant=(change_type.badge())
+            data-tone=(change_type.badge())
+            data-size="sm"
             data-change=(change_type.as_str())
             class=(class!(badge_css::ROOT, css::BADGE, attrs.remove("class")))
             (attrs)

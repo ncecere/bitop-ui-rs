@@ -11,7 +11,7 @@ export default async ({ page, check, axe, button, focused, settled, setDir }) =>
   check("controls", await link.evaluate((a) => document.getElementById(a.getAttribute("aria-controls")).getAttribute("aria-label")), "Ada Lovelace");
 
   // Keyboard focus opens it at once; Tab goes into it, because it follows the link.
-  await button("Toggle sidebar").focus();
+  await button("Collapse sidebar").focus();
   for (let i = 0; i < 3; i++) await page.keyboard.press("Tab");
   check("onFocus", [await focused(), await open(), await link.getAttribute("aria-expanded")], ["@ada", true, "true"]);
   await settled(card);

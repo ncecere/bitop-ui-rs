@@ -38,14 +38,16 @@
   grid-row: 1 / span 3;
   margin-block-start: 0.125rem;
 
-  /* A custom tile colour with contrast-colour initials. */
-  &[data-color] > [role="img"] {
-    background: var(--message-avatar-color, var(--color-primary));
-    color: var(--color-primary-contrast);
+  /* A custom tile colour (the `color` argument) with contrast-colour initials. */
+  &[data-color] > [data-hue] {
+    --avatar-bg: var(--message-avatar-color, var(--color-primary));
+    --avatar-fg: var(--color-primary-contrast);
+
+    box-shadow: none;
   }
 
   /* A logo passed in place of the avatar. */
-  & > :not([role="img"]) ~ [role="img"] {
+  & > :not([data-hue]) ~ [data-hue] {
     display: none;
   }
 }

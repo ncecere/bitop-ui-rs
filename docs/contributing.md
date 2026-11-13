@@ -37,12 +37,12 @@ groups.
 #[component]
 pub async fn badge(
     cx: &Cx,
-    #[default] variant: BadgeVariant,
+    #[default] tone: BadgeTone,
     #[default] mut attrs: Attributes,
     #[default] child: Child<'_>,
 ) -> Result<impl View> {
     Ok(view! {
-        <span class=(class!(css::ROOT, attrs.remove("class"))) data-variant=(variant.as_str()) (attrs)>
+        <span class=(class!(css::ROOT, attrs.remove("class"))) data-tone=(tone.as_str()) (attrs)>
             (child)
         </span>
     })
@@ -273,6 +273,9 @@ Scripts:
   opened or closed it (reasoning stops following the stream then) compares `open` with
   the state it last set itself, rather than waiting for the event: a change made by a
   server streaming into the page can arrive first.
+- The page's `<main>` has `tabindex="-1"`, as the skip link's target. A script that ignores
+  clicks on focusable elements (`closest("[tabindex]")`) must check that what it found is
+  inside the component, or it ignores every click on the page.
 - The gallery marks the current page in the sidebar only. A page's own navigation links to
   the same path with a query (`?page=2`) and marks its current item itself.
 
@@ -359,7 +362,8 @@ Checks:
   waits two frames first, or the pin undoes the scroll.
 - The Firefox crash above happens for any element named by `aria-labelledby` pointing
   inside itself: a `<section>` (region) named by its title, a `<form>` named by its
-  prompt, and a group named by its label all crashed the page. The agent, plan,
+  prompt, a group named by its label, and a sidebar section's list named by the label
+  beside it all crashed the page. The agent, plan,
   confirmation, question and artifact cards are named with `aria-label` for that reason.
 - In Firefox, a popover whose `position-try` moves it from a place off the screen (a
   card that opens above its trigger near the top of the page and flips below) stops its

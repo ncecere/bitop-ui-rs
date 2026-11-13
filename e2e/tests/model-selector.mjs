@@ -18,7 +18,8 @@ export default async ({ page, check, settled, axe }) => {
   // Capabilities are small outlined badges; a toned one is soft.
   check("outlineBadge", await popup.locator("[data-value=claude-sonnet] [data-variant]").first().evaluate((b) => {
     const style = getComputedStyle(b);
-    return [Math.round(b.getBoundingClientRect().height), style.fontSize, style.boxShadow.includes("inset")];
+    // offsetHeight: the popup may still be scaled by its entry transition.
+    return [b.offsetHeight, style.fontSize, style.boxShadow.includes("inset")];
   }), [18, "11px", true]);
   await page.keyboard.press("End");
   check("end", await active(), "Llama 8B");
@@ -34,7 +35,7 @@ export default async ({ page, check, settled, axe }) => {
   check("meta", await popup.locator("[role=option]").first().evaluate((o) => [o.querySelector("span span:nth-child(2)").textContent, [...o.querySelectorAll("[data-variant]")].map((b) => b.textContent.trim())]), [
     "Balanced speed and quality · 200K context", ["Vision", "Tools", "Reasoning"],
   ]);
-  check("tone", await popup.locator("[data-value=local-llama] [data-variant]").getAttribute("data-variant"), "warning");
+  check("tone", await popup.locator("[data-value=local-llama] [data-variant]").evaluate((b) => [b.dataset.tone, b.dataset.variant]), ["warning", "soft"]);
   check("selectedMark", await popup.locator("[aria-selected=true]").evaluate((o) => o.dataset.value), "claude-sonnet");
   check("axeOpen", await axe(), []);
 
