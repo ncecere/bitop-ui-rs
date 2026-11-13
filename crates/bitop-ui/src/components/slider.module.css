@@ -81,11 +81,15 @@
 }
 
 .input {
-  /* Where the filled part ends: the centre of the thumb. */
+  /* Where the filled part ends: the centre of the thumb. A range's starts at the
+     centre of its first thumb; a single slider's at the start of the track. */
   --slider-stop: calc(var(--slider-thumb) / 2 + var(--slider-fill, 0) * (100% - var(--slider-thumb)));
+  --slider-start: 0px;
   --slider-direction: to right;
   --slider-gradient: linear-gradient(
     var(--slider-direction),
+    var(--color-border-strong) var(--slider-start),
+    var(--color-primary) var(--slider-start),
     var(--color-primary) var(--slider-stop),
     var(--color-border-strong) var(--slider-stop)
   );
@@ -178,5 +182,47 @@
 
   &:disabled::-moz-range-thumb {
     background-color: var(--color-control-disabled);
+  }
+}
+
+/*
+ * A range: two inputs over each other. The first draws the track, filled between the
+ * thumbs; the second's track is clear. Only the thumbs take the pointer, so each can
+ * be grabbed; a press on the track goes to the control, where the script moves the
+ * nearer thumb.
+ */
+.control[data-range] {
+  display: grid;
+  touch-action: none;
+
+  &:not(:has(.input:disabled)) {
+    cursor: pointer;
+  }
+
+  & .input {
+    grid-area: 1 / 1;
+    pointer-events: none;
+
+    &[data-thumb="start"] {
+      --slider-start: calc(var(--slider-thumb) / 2 + var(--slider-from, 0) * (100% - var(--slider-thumb)));
+    }
+
+    &[data-thumb="end"] {
+      --slider-gradient: none;
+    }
+
+    /* The thumb that was moved last is on top, so that two thumbs at one place can
+       be pulled apart. */
+    &[data-top] {
+      z-index: 1;
+    }
+  }
+
+  & .input::-webkit-slider-thumb {
+    pointer-events: auto;
+  }
+
+  & .input::-moz-range-thumb {
+    pointer-events: auto;
   }
 }

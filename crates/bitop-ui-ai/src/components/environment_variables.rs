@@ -35,9 +35,8 @@
 
 use bitop_ui::{
     components::{
-        checkbox::switch,
+        checkbox::{SwitchLabelPosition, switch},
         copy_button::copy_button,
-        field::field_choice,
         icon::{Icon, icon},
     },
     css::{badge as badge_css, button as button_css, tooltip as tooltip_css},
@@ -182,20 +181,14 @@ pub async fn environment_variables_toggle(
     cx: &Cx,
     #[default("Show values")] label: &str,
     #[default] checked: bool,
-    #[default] mut attrs: Attributes,
+    #[default] attrs: Attributes,
 ) -> Result<impl View> {
     Ok(view! {
-        field_choice(
-            attrs: attributes! { class=(css::TOGGLE) },
+        switch(
+            checked: checked,
+            label_position: SwitchLabelPosition::Start,
+            attrs: attributes! { data-env-toggle="" (attrs) },
             (label)
-            switch(
-                attrs: attributes! {
-                    checked=(checked)
-                    data-env-toggle=""
-                    class=(attrs.remove("class"))
-                    (attrs)
-                }
-            )
         )
     })
 }

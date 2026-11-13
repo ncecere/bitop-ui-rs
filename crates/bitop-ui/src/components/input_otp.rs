@@ -11,8 +11,15 @@
 //! point at it; without a visible label, pass `label`. The other slots are named
 //! "Character 2 of 6" and so on.
 //!
+//! `validation` picks the characters that are accepted, and the keyboard a phone
+//! shows; `normalize` changes their case as they are typed or pasted, such as upper
+//! case for a recovery code. `mask` hides the characters as a password field does.
+//! As in Base UI, only one slot is in the tab order: the first empty one, or the
+//! one that had focus.
+//!
 //! Differences from upstream: there is no `onValueComplete`; listen for `change` on
-//! the hidden input and compare the length of its value.
+//! the hidden input and compare the length of its value. `normalizeValue` is the
+//! [`OtpNormalize`] choice of case, not a function.
 //!
 //! ```ignore
 //! view! {
@@ -50,6 +57,72 @@ impl InputOtpSize {
     }
 }
 
+/// The characters an [`input_otp`] accepts. Rendered as `data-validation`.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum OtpValidation {
+    /// Digits, with a numeric keyboard.
+    #[default]
+    Numeric,
+    /// Latin letters and digits.
+    Alphanumeric,
+    /// Latin letters only.
+    Alpha,
+    /// Any character.
+    None,
+}
+
+impl OtpValidation {
+    #[must_use]
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Numeric => "numeric",
+            Self::Alphanumeric => "alphanumeric",
+            Self::Alpha => "alpha",
+            Self::None => "none",
+        }
+    }
+
+    fn accepts(self, c: char) -> bool {
+        match self {
+            Self::Numeric => c.is_ascii_digit(),
+            Self::Alphanumeric => c.is_ascii_alphanumeric(),
+            Self::Alpha => c.is_ascii_alphabetic(),
+            Self::None => !c.is_whitespace(),
+        }
+    }
+}
+
+/// How an [`input_otp`] changes what is typed. Rendered as `data-normalize`.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum OtpNormalize {
+    /// As typed.
+    #[default]
+    None,
+    /// Upper case, such as for a recovery code.
+    Upper,
+    /// Lower case.
+    Lower,
+}
+
+impl OtpNormalize {
+    #[must_use]
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Upper => "upper",
+            Self::Lower => "lower",
+        }
+    }
+
+    fn apply(self, text: &str) -> String {
+        match self {
+            Self::None => text.to_owned(),
+            Self::Upper => text.to_uppercase(),
+            Self::Lower => text.to_lowercase(),
+        }
+    }
+}
+
 /// Splits `length` slots into groups of the given sizes. What the sizes leave over
 /// becomes a last group; sizes past `length` are dropped.
 fn split_groups(length: usize, groups: &[usize]) -> Vec<usize> {
@@ -75,6 +148,7 @@ struct Slot {
     label: Option<String>,
     value: String,
     autocomplete: &'static str,
+    tabindex: &'static str,
 }
 
 /// A one-time-code field.
@@ -86,7 +160,9 @@ struct Slot {
 /// - `label` names the field when it has no visible label.
 /// - `slot_label` names the slots after the first; `{position}` and `{length}` are
 ///   replaced.
-/// - `alphanumeric` accepts letters as well as digits.
+/// - `validation` is which characters are accepted (digits by default);
+///   `normalize` changes their case.
+/// - `mask` hides the characters, as a password field does.
 /// - `invalid` marks every slot with `aria-invalid`.
 /// - `attrs` are forwarded to the wrapper, which has `role="group"`.
 #[component]
@@ -100,20 +176,22 @@ pub async fn input_otp(
     #[default] label: &str,
     #[default("Character {position} of {length}")] slot_label: &str,
     #[default] size: InputOtpSize,
-    #[default] alphanumeric: bool,
+    #[default] validation: OtpValidation,
+    #[default] normalize: OtpNormalize,
+    #[default] mask: bool,
     #[default] disabled: bool,
     #[default] invalid: bool,
     #[default] mut attrs: Attributes,
 ) -> Result<impl View> {
-    let accepts = |c: &char| {
-        if alphanumeric {
-            c.is_alphanumeric()
-        } else {
-            c.is_ascii_digit()
-        }
-    };
-    let chars: Vec<char> = value.chars().filter(accepts).take(length).collect();
+    let chars: Vec<char> = normalize
+        .apply(value)
+        .chars()
+        .filter(|c| validation.accepts(*c))
+        .take(length)
+        .collect();
     let code: String = chars.iter().collect();
+    // The one slot in the tab order: the first empty one.
+    let active = chars.len().min(length.saturating_sub(1));
     let mut slots = (0..length).map(|index| Slot {
         id: (index == 0).then(|| id.to_owned()),
         label: if index == 0 {
@@ -127,6 +205,7 @@ pub async fn input_otp(
         },
         value: chars.get(index).map(char::to_string).unwrap_or_default(),
         autocomplete: if index == 0 { "one-time-code" } else { "off" },
+        tabindex: if index == active { "0" } else { "-1" },
     });
     let groups: Vec<Vec<Slot>> = split_groups(length, groups)
         .into_iter()
@@ -138,7 +217,8 @@ pub async fn input_otp(
             aria-label=((!label.is_empty()).then_some(label))
             data-otp=""
             data-size=(size.as_str())
-            data-alphanumeric=(alphanumeric)
+            data-validation=(validation.as_str())
+            data-normalize=(normalize.as_str())
             class=(class!(css::ROOT, attrs.remove("class")))
             (attrs)
         >
@@ -151,9 +231,14 @@ pub async fn input_otp(
                 <div class=(css::GROUP)>
                     for slot in group {
                         <input
-                            type="text"
+                            type=(if mask { "password" } else { "text" })
                             id=(slot.id)
-                            inputmode=(if alphanumeric { "text" } else { "numeric" })
+                            tabindex=(slot.tabindex)
+                            inputmode=(if validation == OtpValidation::Numeric {
+                                "numeric"
+                            } else {
+                                "text"
+                            })
                             autocomplete=(slot.autocomplete)
                             autocapitalize="off"
                             spellcheck="false"

@@ -3,9 +3,21 @@
 const ROOT = "[data-otp]";
 const slotsOf = (root) => [...root.querySelectorAll("[data-otp-slot]")];
 
+const REJECT = { numeric: /[^0-9]/g, alphanumeric: /[^a-zA-Z0-9]/g, alpha: /[^a-zA-Z]/g, none: /\s/g };
+
+// What is left of `text` once the field's case is applied and the characters it
+// does not accept are taken out.
 function accepted(root, text) {
-  const pattern = root.hasAttribute("data-alphanumeric") ? /[^\p{L}\p{N}]/gu : /[^0-9]/g;
-  return text.replace(pattern, "");
+  const normalize = root.dataset.normalize;
+  const cased = normalize === "upper" ? text.toUpperCase() : normalize === "lower" ? text.toLowerCase() : text;
+  return cased.replace(REJECT[root.dataset.validation] ?? REJECT.numeric, "");
+}
+
+// Only one slot is in the tab order: the focused one, or else the first empty one.
+function roving(root, focused) {
+  const slots = slotsOf(root);
+  const active = focused ?? slots.find((slot) => slot.value === "") ?? slots.at(-1);
+  for (const slot of slots) slot.tabIndex = slot === active ? 0 : -1;
 }
 
 // Copies the slots into the hidden input that is submitted.
@@ -14,6 +26,7 @@ function sync(root) {
   const code = slotsOf(root)
     .map((slot) => slot.value)
     .join("");
+  if (!root.contains(document.activeElement)) roving(root);
   if (!hidden || hidden.value === code) return;
   hidden.value = code;
   hidden.dispatchEvent(new Event("change", { bubbles: true }));
@@ -35,6 +48,13 @@ function slotFor(event) {
   const root = slot && slot.closest(ROOT);
   return root ? [root, slot, slotsOf(root)] : [];
 }
+
+// A typed character the field does not accept changes nothing, so the slot keeps
+// what it held.
+document.addEventListener("beforeinput", (event) => {
+  const [root] = slotFor(event);
+  if (root && event.inputType === "insertText" && event.data && !accepted(root, event.data)) event.preventDefault();
+});
 
 document.addEventListener("input", (event) => {
   const [root, slot, slots] = slotFor(event);
@@ -59,7 +79,15 @@ document.addEventListener("paste", (event) => {
 // A focused slot is selected, so that typing replaces its character.
 document.addEventListener("focusin", (event) => {
   const [root, slot] = slotFor(event);
-  if (root) slot.select();
+  if (!root) return;
+  roving(root, slot);
+  slot.select();
+});
+
+// Leaving the field puts the first empty slot in the tab order again.
+document.addEventListener("focusout", (event) => {
+  const [root] = slotFor(event);
+  if (root && !(event.relatedTarget instanceof Node && root.contains(event.relatedTarget))) roving(root);
 });
 
 document.addEventListener("keydown", (event) => {
