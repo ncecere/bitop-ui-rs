@@ -65,6 +65,9 @@ export default async ({ page, check, settled, axe }) => {
 
   // Hover opens the card after a moment without moving focus, and leaving closes it.
   const site = page.getByRole("button", { name: "data.example.net +1: Climate data portal and 1 more" });
+  // The pointer may already rest where the chip is, after the last card closed; WebKit
+  // sends no pointerover until it moves.
+  await page.mouse.move(5, 5);
   await site.hover();
   await waitOpen("cite-site");
   check("hoverKeepsFocus", await active(), "Sources 1, 2, 3: Annual report 2024 and 2 more");
