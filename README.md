@@ -4,7 +4,7 @@ A component library for [Topcoat](https://github.com/tokio-rs/topcoat), the serv
 web framework. It is the Rust port of [bitop-ui](https://github.com/ncecere/bitop-ui) and shares
 its design tokens and themes, so a Rust site and a React site can look the same.
 
-- **Parts, not monoliths.** A dialog is `dialog_trigger`, `dialog`, `dialog_title`, and so on.
+- **Parts, not monoliths.** A dialog is `dialog_trigger`, `dialog` and `dialog_close`, and so on.
   Each part is a Topcoat `#[component]` that renders one element.
 - **Platform first.** Overlays use `<dialog>`, the Popover API, invoker commands and CSS anchor
   positioning. One small script adds what the platform lacks, such as arrow keys in menus.
@@ -46,15 +46,16 @@ topcoat = "=0.12.1"
 Render `bitop_ui::head()` inside `<head>`, then use the parts:
 
 ```rust
-use bitop_ui::components::dialog::{dialog, dialog_actions, dialog_close, dialog_title, dialog_trigger};
+use bitop_ui::components::dialog::{dialog, dialog_close, dialog_trigger};
 
 let id = element_id(cx);
-let title = element_id(cx);
+let footer_id = id.clone();
 view! {
     dialog_trigger(target: &id, "Rename chat")
-    dialog(id: &id, labelled_by: &title,
-        dialog_title(id: &title, "Rename chat?")
-        dialog_actions(dialog_close(target: &id, "Cancel"))
+    dialog(
+        id: &id,
+        title: "Rename chat?",
+        footer: view! { dialog_close(target: &footer_id, "Cancel") }
     )
 }
 ```

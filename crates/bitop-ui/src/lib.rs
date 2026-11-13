@@ -1,8 +1,8 @@
 //! A component library for Topcoat in the style of Base UI. The Rust port of
 //! [bitop-ui](https://github.com/ncecere/bitop-ui), sharing its tokens and themes.
 //!
-//! - **Parts, not monoliths.** A dialog is `dialog_trigger`, `dialog`, `dialog_title`, and so
-//!   on. Each part renders one element and forwards `attrs` to it.
+//! - **Parts, not monoliths.** A dialog is `dialog_trigger`, `dialog` and `dialog_close`, and
+//!   so on. Each part renders one element and forwards `attrs` to it.
 //! - **State in attributes.** Variants and state are `data-*` and ARIA attributes, so styles
 //!   select on them and never on generated class names.
 //! - **Platform first.** Overlays use `<dialog>`, the Popover API, invoker commands and CSS
