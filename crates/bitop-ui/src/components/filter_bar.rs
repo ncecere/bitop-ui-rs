@@ -34,7 +34,9 @@
 //!   the chosen item again clears it (script).
 //! - select: a `<select>`; with `multiple`, a dropdown of checkboxes with its own
 //!   "Apply".
-//! - date range: a joined row of presets (Today, Last 7, 30 and 90 days).
+//! - date range: a joined row of presets (Today, Last 7, 30 and 90 days) and
+//!   "Custom", which opens a two-month range [`date_picker`]; the facet filters once
+//!   both ends are picked. Pressing the chosen item again clears it (script).
 //!
 //! Every active facet gets a chip, except a single-choice toggle, whose pressed item
 //! already shows the choice. A chip is a link that removes its filter. The bar is a
@@ -45,9 +47,10 @@
 //! in the browser; here each change is a request. Toggles are native radio buttons
 //! and checkboxes, not toggle buttons, so that they submit without a script. A select
 //! facet is a native `<select>`, or a dropdown of checkboxes, not a combobox, so it
-//! has no type-ahead filtering of long lists, option icons or groups. A date range has
-//! no "Custom" range picker, though a custom range in the URL is read, shown as a
-//! chip and kept. Chips are links, not buttons.
+//! has no type-ahead filtering of long lists, option icons or groups. "Custom" needs
+//! the script, so it is hidden without one; a custom range in the URL is still read,
+//! shown as a chip and kept. The picker takes no `pickerProps`. Chips are links, not
+//! buttons.
 
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -59,6 +62,7 @@ use topcoat::{
 
 use super::{
     calendar::Date,
+    date_picker::{DatePickerMode, DatePickerSize, date_picker},
     icon::{Icon, icon},
     select::native_select,
 };
@@ -135,6 +139,8 @@ pub struct Facet<'a> {
     /// Whether the facet gets a chip while active. `None` means every facet but a
     /// single-choice toggle.
     pub chip: Option<bool>,
+    /// For a date range: whether a last item, "Custom", opens a range picker.
+    pub custom: bool,
 }
 
 impl<'a> Facet<'a> {
@@ -148,6 +154,7 @@ impl<'a> Facet<'a> {
             all_label: "",
             placeholder: "Any",
             chip: None,
+            custom: false,
         }
     }
 
@@ -163,10 +170,21 @@ impl<'a> Facet<'a> {
         Self::new(id, label, FacetKind::Select, options)
     }
 
-    /// A date range, with the default presets and "Any time" to clear it.
+    /// A date range, with the default presets and "Custom", as upstream's: pressing
+    /// the chosen item again clears it. Add an item that clears it with
+    /// [`all_label`](Self::all_label), such as "Any time".
     #[must_use]
     pub fn date_range(id: &'a str, label: &'a str) -> Self {
-        Self::new(id, label, FacetKind::DateRange, &DATE_RANGE_PRESETS).all_label("Any time")
+        let mut facet = Self::new(id, label, FacetKind::DateRange, &DATE_RANGE_PRESETS);
+        facet.custom = true;
+        facet
+    }
+
+    /// For a date range: says whether "Custom" offers a range picker.
+    #[must_use]
+    pub fn custom(mut self, custom: bool) -> Self {
+        self.custom = custom;
+        self
     }
 
     /// Replaces the options; for a date range, the presets.
@@ -604,6 +622,34 @@ struct FacetView {
     options: Vec<OptionView>,
     /// A value in the URL that no option stands for, such as a custom date range.
     extra: Option<String>,
+    /// For a date range with "Custom": the picker's ID and the custom range's days.
+    custom: Option<(String, Vec<Date>)>,
+    /// For a date range with "Custom": whether a custom range is chosen.
+    custom_checked: Option<bool>,
+}
+
+/// The range picker that "Custom" opens, shown while a custom range is chosen. Boxed:
+/// its arguments are owned, so it can be rendered in the loop over facets.
+fn custom_range_picker(
+    cx: &Cx,
+    id: String,
+    label: String,
+    days: Vec<Date>,
+    size: DatePickerSize,
+) -> Child<'_> {
+    let hidden = days.is_empty();
+    Child::new(view! {
+        <span class=(css::CUSTOM) data-filter-custom-picker="" hidden=(hidden)>
+            date_picker(
+                id: &id,
+                mode: DatePickerMode::Range,
+                selected: &days,
+                label: &label,
+                number_of_months: 2,
+                size: size
+            )
+        </span>
+    })
 }
 
 /// `path?query`, or the path alone when the query is empty.
@@ -631,6 +677,8 @@ fn url(action: &str, query: &str) -> String {
 ///   `end` one after them, for buttons.
 /// - `chips` shows the active filters and "Clear all".
 /// - `size` is the size of the controls.
+/// - `custom_label` is the text of a date range's "Custom" item; its picker is named
+///   after the facet and this text in lower case ("Updated: custom").
 /// - The other arguments are the strings. `remove_label` is a chip's accessible name,
 ///   with `{facet}` and `{value}`; `selected_label` what a dropdown of checkboxes
 ///   shows for several choices, with `{count}`.
@@ -662,6 +710,7 @@ pub async fn filter_bar(
     #[default("Apply")] apply_label: &str,
     #[default("Remove filter {facet}: {value}")] remove_label: &str,
     #[default("{count} selected")] selected_label: &str,
+    #[default("Custom")] custom_label: &str,
     #[default] mut attrs: Attributes,
 ) -> Result<impl View> {
     let views: Vec<FacetView> = facets
@@ -695,6 +744,18 @@ pub async fn filter_bar(
                 1 | 2 => picked.join(", "),
                 many => selected_label.replace("{count}", &many.to_string()),
             };
+            let extra = chosen
+                .iter()
+                .find(|value| !facet.options.iter().any(|option| option.value == *value))
+                .cloned();
+            let custom = (facet.kind == FacetKind::DateRange && facet.custom).then(|| {
+                // A custom range is dates; the ends do not depend on today.
+                let days = extra
+                    .as_deref()
+                    .and_then(|value| date_range_of(value, Date::MIN))
+                    .map_or_else(Vec::new, |(from, to)| vec![from, to]);
+                (format!("{id}-{}-custom", facet.id), days)
+            });
             FacetView {
                 id: facet.id.to_owned(),
                 label: facet.label.to_owned(),
@@ -705,10 +766,9 @@ pub async fn filter_bar(
                 placeholder: facet.placeholder.to_owned(),
                 active: !chosen.is_empty(),
                 summary,
-                extra: chosen
-                    .iter()
-                    .find(|value| !facet.options.iter().any(|option| option.value == *value))
-                    .cloned(),
+                extra,
+                custom_checked: custom.as_ref().map(|(_, days)| !days.is_empty()),
+                custom,
                 options,
             }
         })
@@ -751,6 +811,11 @@ pub async fn filter_bar(
     };
     let any_active = !chip_list.is_empty() || active_filter_count(values) > 0;
     let clear_href = url(action, &build_query(&kept));
+    let picker_size = match size {
+        FilterBarSize::Sm => DatePickerSize::Sm,
+        FilterBarSize::Md => DatePickerSize::Md,
+    };
+    let custom_name = custom_label.to_lowercase();
     let size = size.as_str();
 
     Ok(view! {
@@ -851,49 +916,72 @@ pub async fn filter_bar(
                             </details>
                         } else {
                             <span class=(css::LABEL)>(facet.label.clone())</span>
-                            <div
-                                role=(if facet.multiple { "group" } else { "radiogroup" })
-                                aria-label=(facet.label.clone())
-                                class=(css::TOGGLES)
-                                data-clearable=((!facet.multiple
-                                        && facet.all_label.is_empty()).then_some(""))
-                            >
-                                if !facet.all_label.is_empty() {
-                                    <label class=(css::TOGGLE)>
+                            <div class=(css::ROW)>
+                                <div
+                                    role=(if facet.multiple { "group" } else { "radiogroup" })
+                                    aria-label=(facet.label.clone())
+                                    class=(css::TOGGLES)
+                                    data-clearable=((!facet.multiple
+                                            && facet.all_label.is_empty()).then_some(""))
+                                >
+                                    if !facet.all_label.is_empty() {
+                                        <label class=(css::TOGGLE)>
+                                            <input
+                                                type=(if facet.multiple { "checkbox" } else { "radio" })
+                                                name=(facet.id.clone())
+                                                value=""
+                                                checked=((!facet.active).then_some(""))
+                                                data-filter-all=""
+                                            >
+                                            <span>(facet.all_label.clone())</span>
+                                        </label>
+                                    }
+                                    for option in facet.options {
+                                        <label class=(css::TOGGLE)>
+                                            <input
+                                                type=(if facet.multiple { "checkbox" } else { "radio" })
+                                                name=(facet.id.clone())
+                                                value=(option.value)
+                                                checked=(option.checked.then_some(""))
+                                            >
+                                            <span>
+                                                (option.label)
+                                                if let Some(count) = option.count {
+                                                    " "
+                                                    <span class=(css::COUNT)>(count)</span>
+                                                }
+                                            </span>
+                                        </label>
+                                    }
+                                    if let Some(checked) = facet.custom_checked {
+                                        <label class=(css::TOGGLE) data-filter-custom-item="">
+                                            <input
+                                                type="radio"
+                                                name=(facet.id.clone())
+                                                value="custom"
+                                                checked=(checked.then_some(""))
+                                                data-filter-custom=""
+                                            >
+                                            <span>(custom_label)</span>
+                                        </label>
+                                    }
+                                    if let Some(extra) = facet.extra {
                                         <input
-                                            type=(if facet.multiple { "checkbox" } else { "radio" })
+                                            type="hidden"
                                             name=(facet.id.clone())
-                                            value=""
-                                            checked=((!facet.active).then_some(""))
-                                            data-filter-all=""
+                                            value=(extra)
+                                            data-filter-extra=""
                                         >
-                                        <span>(facet.all_label.clone())</span>
-                                    </label>
-                                }
-                                for option in facet.options {
-                                    <label class=(css::TOGGLE)>
-                                        <input
-                                            type=(if facet.multiple { "checkbox" } else { "radio" })
-                                            name=(facet.id.clone())
-                                            value=(option.value)
-                                            checked=(option.checked.then_some(""))
-                                        >
-                                        <span>
-                                            (option.label)
-                                            if let Some(count) = option.count {
-                                                " "
-                                                <span class=(css::COUNT)>(count)</span>
-                                            }
-                                        </span>
-                                    </label>
-                                }
-                                if let Some(extra) = facet.extra {
-                                    <input
-                                        type="hidden"
-                                        name=(facet.id.clone())
-                                        value=(extra)
-                                        data-filter-extra=""
-                                    >
+                                    }
+                                </div>
+                                if let Some((picker_id, days)) = facet.custom {
+                                    (custom_range_picker(
+                                        cx,
+                                        picker_id,
+                                        format!("{}: {}", facet.label, custom_name),
+                                        days,
+                                        picker_size,
+                                    ))
                                 }
                             </div>
                         }

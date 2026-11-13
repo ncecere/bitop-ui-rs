@@ -1,14 +1,15 @@
 use bitop_ui::{
     components::{
         alert::error_alert,
-        badge::{BadgeTone, badge},
+        badge::{BadgeTone, status_badge},
         button::{ButtonSize, ButtonVariant, button},
         data_table::{
             DataTableColumn, DataTableSort, SortDirection, cell_text, data_table,
             data_table_message, data_table_more, data_table_row_link, data_table_select,
             data_table_skeleton, page_rows,
         },
-        input::input,
+        icon::Icon,
+        input::{InputSize, input},
         pagination::{
             pagination, pagination_content, pagination_item, pagination_next, pagination_previous,
             paginator,
@@ -333,23 +334,18 @@ async fn show(cx: &Cx) -> Result<impl View> {
                         <label class="sr-only" for="invoice-search">
                             "Filter invoices"
                         </label>
+                        // Enter submits the search form, which has no other field.
                         input(
+                            size: InputSize::Sm,
+                            start_icon: Icon::Search,
                             attrs: attributes! {
                                 id="invoice-search"
                                 type="search"
                                 name="q"
                                 value=(search.clone())
-                                placeholder="Filter invoices"
+                                placeholder="Filter invoices…"
                                 form="invoice-search-form"
                             }
-                        )
-                    },
-                    toolbar: view! {
-                        button(
-                            size: ButtonSize::Sm,
-                            variant: ButtonVariant::Secondary,
-                            attrs: attributes! { type="submit" form="invoice-search-form" },
-                            "Search"
                         )
                     },
                     bulk_actions: view! {
@@ -392,7 +388,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                             td(cell_text(primary: row.customer, secondary: row.email))
                             td(numeric: true, (row.amount))
                             td(
-                                badge(
+                                status_badge(
                                     tone: if row.paid {
                                         BadgeTone::Success
                                     } else {

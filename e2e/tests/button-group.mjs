@@ -1,7 +1,7 @@
 export default async ({ page, check, button }) => {
   const groups = page.locator("main [role=group]");
   check("named", await groups.evaluateAll((all) => all.map((g) => g.getAttribute("aria-label"))), [
-    "Pagination", "Save options", "Invite by email", "Zoom", "Editor toolbar", "History", "Clipboard",
+    "Pagination", "Save options", "Invite by email", "Reorder", "Editor toolbar", "History", "Clipboard",
   ]);
 
   // Rounded, because Firefox lays out on fractions of a pixel.
@@ -25,6 +25,7 @@ export default async ({ page, check, button }) => {
   // The buttons keep their own keyboard behaviour: Tab moves between them.
   await button("Previous").focus();
   await page.keyboard.press("Tab");
+  check("chevrons", [await button("Previous").locator("[data-icon]").getAttribute("data-icon"), await button("Next").locator("[data-icon]").getAttribute("data-icon")], ["chevron-left", "chevron-right"]);
   check("tabMoves", await page.evaluate(() => document.activeElement.textContent.trim()), "Next");
 
   const separator = page.locator("main [role=separator]");
@@ -36,9 +37,9 @@ export default async ({ page, check, button }) => {
   const invite = await box(button("Invite"));
   check("inputGrows", email.width > 150 && invite.left - email.right === -1);
 
-  const zoomIn = await box(button("Zoom in"));
-  const zoomOut = await box(button("Zoom out"));
-  check("vertical", [zoomOut.left, zoomOut.top - zoomIn.bottom], [zoomIn.left, -1]);
+  const moveUp = await box(button("Move up"));
+  const moveDown = await box(button("Move down"));
+  check("vertical", [moveDown.left, moveDown.top - moveUp.bottom], [moveUp.left, -1]);
 
   const redo = await box(button("Redo"));
   const cut = await box(button("Cut"));

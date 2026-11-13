@@ -26,8 +26,8 @@
 //!
 //! With `layout` [`BarLayout::Overlap`] the series share each slot, the first at the
 //! back in its paler colour, so put the largest series first. With
-//! [`BarLayout::Stack`] they add up. Series also differ by pattern: solid, striped and
-//! dotted bars, shown in the legend too.
+//! [`BarLayout::Stack`] they add up. Bars are solid, in their series' colour, and fill
+//! their slot with 2px between neighbours, as upstream's.
 //!
 //! The scale runs from 0 to the largest value, or stack total. `max` fixes the top,
 //! such as 100 for a percentage; taller bars are drawn full height and stacks are cut
@@ -37,20 +37,18 @@
 //!
 //! Differences from upstream: upstream draws the bars with CSS boxes and shows the
 //! values in a `title`; here they are SVG rectangles, and the readout shows on
-//! hover and on keyboard focus. Bars have patterns, so that colour is not the only
-//! difference between series. In right-to-left the time axis runs from the right, as
+//! hover and on keyboard focus. In right-to-left the time axis runs from the right, as
 //! upstream's does. An empty chart says "No data".
 
 use topcoat::{
     Result,
     context::Cx,
-    view::{Attributes, View, class, component, element_id, view},
+    view::{Attributes, View, class, component, view},
 };
 
 use super::chart::{
-    ChartFormat, ChartPattern, ChartPoint, ChartSeries, ChartSize, ChartSwatch, ChartTable,
-    chart_data, chart_legend, chart_value, coordinate, format_chart_value, point_text,
-    series_pattern, series_tone,
+    ChartFormat, ChartPoint, ChartSeries, ChartSize, ChartSwatch, ChartTable, chart_data,
+    chart_legend, chart_value, coordinate, format_chart_value, point_text, series_tone,
 };
 use crate::css::{bar_chart as css, chart as chart_css};
 
@@ -82,9 +80,6 @@ pub struct BarRect {
     pub width: f64,
     pub height: f64,
 }
-
-/// The share of a slot's width left empty on each side of its bars.
-const BAR_INSET: f64 = 0.1;
 
 /// The top of the scale: `max` if given, else the largest value (overlap) or stack
 /// total (stack), and never below 0. Values with no data and negative values add
@@ -124,8 +119,8 @@ pub fn bar_rects(values: &[Vec<Option<f64>>], layout: BarLayout, peak: f64) -> V
         .enumerate()
         .map(|(index, point)| {
             #[allow(clippy::cast_precision_loss)]
-            let x = index as f64 * slot + slot * BAR_INSET;
-            let width = slot * (1.0 - 2.0 * BAR_INSET);
+            let x = index as f64 * slot;
+            let width = slot;
             let mut base = 0.0;
             point
                 .iter()
@@ -159,9 +154,6 @@ struct Bar {
 
 struct Series {
     tone: &'static str,
-    pattern: ChartPattern,
-    fill: Option<String>,
-    pattern_id: String,
     bars: Vec<Bar>,
 }
 
@@ -176,7 +168,6 @@ struct Series {
 /// - `max` fixes the top of the scale.
 /// - `data_table` adds the "Show data" disclosure.
 /// - `toggle_label`, `missing_label` and `empty_label` are the strings.
-/// - `id` prefixes the IDs of the bar patterns; one is made when it is empty.
 #[component]
 pub async fn bar_chart(
     cx: &Cx,
@@ -197,14 +188,8 @@ pub async fn bar_chart(
     #[default("Show data")] toggle_label: &str,
     #[default("No data")] missing_label: &str,
     #[default("No data")] empty_label: &str,
-    #[default] id: &str,
     #[default] mut attrs: Attributes,
 ) -> Result<impl View> {
-    let id = if id.is_empty() {
-        element_id(cx)
-    } else {
-        id.to_owned()
-    };
     let values = data
         .iter()
         .map(|point| {
@@ -219,8 +204,6 @@ pub async fn bar_chart(
         .iter()
         .enumerate()
         .map(|(index, one)| {
-            let pattern = series_pattern(one, index);
-            let pattern_id = format!("{id}-{index}");
             let bars = rects
                 .iter()
                 .zip(&values)
@@ -242,9 +225,6 @@ pub async fn bar_chart(
                 .collect();
             Series {
                 tone: series_tone(one, index).as_str(),
-                pattern,
-                fill: (pattern != ChartPattern::Solid).then(|| format!("url(#{pattern_id})")),
-                pattern_id,
                 bars,
             }
         })
@@ -303,29 +283,8 @@ pub async fn bar_chart(
                                 <g
                                     class=(chart_css::TONE)
                                     data-tone=(group.tone)
-                                    data-pattern=(group.pattern.as_str())
                                     data-series=""
                                 >
-                                    if group.pattern == ChartPattern::Dashed {
-                                        <pattern
-                                            id=(&group.pattern_id)
-                                            patternUnits="userSpaceOnUse"
-                                            width="4"
-                                            height="4"
-                                            patternTransform="rotate(45)"
-                                        >
-                                            <rect width="2" height="4" class=(css::INK)></rect>
-                                        </pattern>
-                                    } else if group.pattern == ChartPattern::Dotted {
-                                        <pattern
-                                            id=(&group.pattern_id)
-                                            patternUnits="userSpaceOnUse"
-                                            width="4"
-                                            height="4"
-                                        >
-                                            <circle cx="2" cy="2" r="1.25" class=(css::INK)></circle>
-                                        </pattern>
-                                    }
                                     for bar in group.bars {
                                         <rect
                                             class=(css::BAR)
@@ -333,7 +292,6 @@ pub async fn bar_chart(
                                             y=(format!("{}%", coordinate(bar.rect.y)))
                                             width=(format!("{}%", coordinate(bar.rect.width)))
                                             height=(format!("{}%", coordinate(bar.rect.height)))
-                                            fill=(group.fill.clone())
                                             data-missing=(bar.missing.then_some(""))
                                             data-top=(bar.top.then_some(""))
                                         ></rect>
@@ -408,10 +366,10 @@ mod tests {
         let rects = bar_rects(&values, BarLayout::Overlap, 100.0);
         assert_eq!(heights(&rects), vec![vec![50.0, 25.0], vec![100.0, 0.0]]);
         assert_eq!(rects[0][0].y, 50.0);
-        // Two slots of 50%, each bar inset by a tenth of its slot.
-        assert_eq!(rects[0][0].x, 5.0);
-        assert_eq!(rects[1][1].x, 55.0);
-        assert_eq!(rects[0][0].width, 40.0);
+        // Two slots of 50%; each bar fills its slot (CSS clips 1px from each side).
+        assert_eq!(rects[0][0].x, 0.0);
+        assert_eq!(rects[1][1].x, 50.0);
+        assert_eq!(rects[0][0].width, 50.0);
     }
 
     #[test]
@@ -449,7 +407,7 @@ mod tests {
         let rects = bar_rects(&[vec![Some(3.0)]], BarLayout::Overlap, 3.0);
         assert_eq!(
             (rects[0][0].x, rects[0][0].width, rects[0][0].height),
-            (10.0, 80.0, 100.0)
+            (0.0, 100.0, 100.0)
         );
     }
 

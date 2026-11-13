@@ -8,8 +8,10 @@
 //!
 //! Differences from upstream: upstream shows the bar from React state
 //! (`open={dirty}`). Here the server renders `open` for a form it knows to hold
-//! unsaved values, and with `auto` the library script opens the bar at the first
-//! `input` or `change` event in its form and closes it when the form is reset. A
+//! unsaved values, and with `auto` the library script opens the bar when a field of
+//! its form changes, and closes it when the form is reset or every field is back to
+//! the value it was rendered with (its `defaultValue`, `defaultChecked` or
+//! `defaultSelected`), as upstream's examples compare their state. A
 //! script on the page can also call `bitopUi.setSaveBar(bar, open)`. Either way the
 //! bar sends a `bitop:toggle` event when it opens or closes.
 //!
@@ -37,7 +39,7 @@ use crate::css::save_bar as css;
 ///
 /// - `open` shows the bar from the start.
 /// - `auto` lets the script open it when a field of the form around it changes, and
-///   close it when the form is reset.
+///   close it when the form is reset or holds what it was rendered with again.
 /// - `message` is the status text, announced when the bar opens.
 #[component]
 pub async fn save_bar(

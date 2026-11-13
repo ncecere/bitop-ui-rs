@@ -111,6 +111,7 @@ pub enum Icon {
     Box,
     Palette,
     MessagesSquare,
+    SendHorizontal,
 }
 
 impl Icon {
@@ -214,6 +215,7 @@ impl Icon {
             Self::Box => "box",
             Self::Palette => "palette",
             Self::MessagesSquare => "messages-square",
+            Self::SendHorizontal => "send-horizontal",
         }
     }
 }

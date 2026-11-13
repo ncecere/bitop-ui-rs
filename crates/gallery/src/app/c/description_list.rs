@@ -1,10 +1,11 @@
 use bitop_ui::components::{
-    badge::{BadgeTone, badge},
+    badge::{BadgeTone, status_badge},
     description_list::{
         DescriptionLayout, DescriptionSize, description_item, description_list, facts_line,
         facts_line_item,
     },
     icon::Icon,
+    text_link::text_link,
 };
 use topcoat::{
     Result,
@@ -25,12 +26,12 @@ async fn show(cx: &Cx) -> Result<impl View> {
                 attrs: attributes! { aria-label="Source" style="inline-size: 100%" },
                 description_item(
                     label: "Start URL",
-                    <a href="#docs">"https://docs.example.com"</a>
+                    text_link(href: "#docs", "https://docs.example.com")
                 )
                 description_item(label: "Schedule", "Weekly, next on 3 October")
                 description_item(
                     label: "Status",
-                    badge(tone: BadgeTone::Success, "Ready")
+                    status_badge(tone: BadgeTone::Success, "Ready")
                 )
                 description_item(label: "Owner", blank: true)
             )
@@ -80,7 +81,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                     facts_line_item(icon: Icon::Search, "Website")
                     facts_line_item(label: "Embedding profile", "Nomic 768")
                     facts_line_item("58 documents")
-                    facts_line_item(<a href="#sync">"synced 2 h ago"</a>)
+                    facts_line_item(text_link(href: "#sync", "synced 2 h ago"))
                 )
                 facts_line(
                     show_labels: true,

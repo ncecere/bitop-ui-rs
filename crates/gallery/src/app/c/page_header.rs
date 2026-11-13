@@ -1,7 +1,8 @@
 use bitop_ui::components::{
-    badge::badge,
+    badge::{BadgeTone, status_badge},
     breadcrumbs::{breadcrumb, breadcrumbs},
     button::{ButtonVariant, button},
+    icon::{Icon, icon},
     page_header::{PageHeaderLevel, page_header as header},
 };
 use topcoat::{
@@ -34,7 +35,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                         breadcrumb(label: "Deployments")
                     )
                 },
-                meta: view! { badge("Live") },
+                meta: view! { status_badge(tone: BadgeTone::Success, "Live") },
                 facts: view! {
                     <span
                         style="color: var(--color-text-muted); font-size: var(--font-size-sm)"
@@ -43,8 +44,15 @@ async fn show(cx: &Cx) -> Result<impl View> {
                     </span>
                 },
                 actions: view! {
-                    button(variant: ButtonVariant::Secondary, "Settings")
-                    button("Deploy")
+                    button(
+                        variant: ButtonVariant::Secondary,
+                        icon(name: Icon::Settings)
+                        "Settings"
+                    )
+                    button(
+                        icon(name: Icon::Upload)
+                        "Deploy"
+                    )
                 },
                 attrs: attributes! { data-demo="full" style=(WIDE) }
             )

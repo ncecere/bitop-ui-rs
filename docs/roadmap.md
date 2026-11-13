@@ -229,14 +229,42 @@ Every component was compared with bitop-ui's docs site, side by side in a browse
   user, top bar, main and skip link; a modal drawer below 600px that traps focus. The
   gallery's shell is built from them.
 - [x] `slider`: a range with two thumbs. `input-otp`: `mask` and `normalize`.
-- [ ] Smaller ones: `scroll-area` orientation, `pagination` colours, `checkpoint`,
-  `empty-state` icon size, `bar-chart` solid fills and spacing, `save-bar` hiding when
-  the form is no longer dirty, `time`'s "—", `breadcrumbs`' "…", `filter-bar`'s custom
-  date range, `data-table`'s search icon, `context` moving focus into its card,
-  `chat-example`'s context meter.
+- [x] Smaller ones: `scroll-area`'s `orientation`, `max_height` and slim rounded
+  thumb; `pagination` (already matched after the button port); `checkpoint`'s 13px
+  Restore; `empty-state`'s 22px icon; `bar-chart` solid fills for every series (patterns
+  stay on lines only, as upstream) and 2px between bars; `save-bar` closing when the
+  form is back to its rendered values; `breadcrumbs`' text "…" (already so);
+  `filter-bar`'s "Custom" date range opening a range picker; `data-table`'s search
+  icon; `context` moving focus into its card; `chat-example`'s context meter; the
+  `button-group` gallery's chevrons and arrows.
+- [x] Gallery examples brought closer to upstream's: status badges with a dot in
+  `table`, `data-table`, `description-list` and `page-header`; text links in
+  `description-list` and `reasoning`; icons on `page-header`'s buttons; a primary Send
+  in `input-group`; a real sparkline in `stat-card`; `scroll-area`'s chip row.
 
 ## Known gaps in what is built
 
+- `scroll-area` styles the browser's own scrollbar rather than drawing one: Chromium
+  and WebKit show upstream's slim rounded thumb while the pointer is over the area,
+  Firefox its thin scrollbar in the same colours. The area is a focusable region
+  even when its content fits (knowing that needs a script).
+- `time` renders nothing for a missing value, as upstream's `Time` does by default;
+  upstream's docs pass `fallback="—"`, and so does the gallery (`time(…, "—")`).
+- `data-table`'s text filter is server-driven: Enter submits it, rather than filtering
+  as the person types (upstream filters rows held in the browser).
+- `filter-bar`'s "Custom" needs the script and is hidden without it; its picker takes no
+  `pickerProps` (such as `max`). Date ranges no longer have an "Any time" item by
+  default: as upstream's, the chosen preset clears when pressed again.
+- The chat example's context meter is recounted by the gallery's stand-in script; its
+  "New chat" is a link, always enabled, where upstream disables it while empty.
+- Seen in the comparison and left: `audio-player` and `transcription`'s speed is a
+  native select (one chevron, upstream two); `number-input` draws −/+ steppers where
+  upstream's examples show none; `copy-field`, `snippet`, `package-info`, `sandbox`,
+  `schema-display`, `stack-trace`, `terminal` and `test-results` examples size to
+  their content or a cap in the gallery where upstream's fill the width;
+  `sources`' cards are fixed width rather than a two-column grid; `carousel`'s
+  gallery slides have borders. Most "slightly smaller text" findings were the
+  comparison scaling a wider gallery column, not real size differences.
 - The first 20 components came from an earlier project and were mapped onto bitop-ui's tokens.
   They are being ported again from bitop-ui's source; see "Parity with bitop-ui" below.
 - There is also an `icon` component with a small set of Lucide icons, which bitop-ui gets from

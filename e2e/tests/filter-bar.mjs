@@ -10,7 +10,9 @@ export default async ({ page, base, check, focused, setDir }) => {
   // counts are read after the options.
   check("statusOptions", await status.getByRole("radio").evaluateAll((all) => all.map((r) => [r.closest("label").textContent.replace(/\s+/g, " ").trim(), r.value, r.checked])), [["All", "", true], ["Ready 3", "ready", false], ["Failed 2", "failed", false], ["Skipped 1", "skipped", false]]);
   check("owner", await bar.getByRole("combobox", { name: "Owner" }).evaluate((s) => [...s.options].map((o) => o.textContent.replace(/\s+/g, " ").trim())), ["Any", "Ada Lovelace", "Grace Hopper", "Alan Turing"]);
-  check("dates", await bar.getByRole("radiogroup", { name: "Updated" }).getByRole("radio").evaluateAll((all) => all.map((r) => [r.closest("label").textContent.trim(), r.value])), [["Any time", ""], ["Today", "today"], ["Last 7 days", "7d"], ["Last 30 days", "30d"], ["Last 90 days", "90d"]]);
+  check("dates", await bar.getByRole("radiogroup", { name: "Updated" }).getByRole("radio").evaluateAll((all) => all.map((r) => [r.closest("label").textContent.trim(), r.value])), [["Today", "today"], ["Last 7 days", "7d"], ["Last 30 days", "30d"], ["Last 90 days", "90d"], ["Custom", "custom"]]);
+  // As upstream's: no "Any time" item, and no range picker until Custom is chosen.
+  check("customPickerHidden", await bar.locator("[data-filter-custom-picker]").isHidden());
   check("all", [await results(), await page.locator("[data-count]").textContent(), await bar.getByRole("list", { name: "Active filters" }).count()], [["handbook.pdf", "pricing.docx", "wifi-setup.pdf", "blog/launch", "wifi-faq", "notes.docx"], "6 documents", 0]);
   // With the script a change submits at once, so Apply is hidden.
   check("enhanced", [await bar.getAttribute("data-enhanced"), await bar.locator("[data-filter-apply]").isVisible(), await bar.getByRole("button", { name: "Export" }).isVisible()], ["", false, true]);
@@ -107,13 +109,36 @@ export default async ({ page, base, check, focused, setDir }) => {
   // A custom range in the URL is read, shown as a chip, and kept when another facet changes.
   await page.goto(`${base}/c/filter-bar?updated=2026-09-01/2026-09-25&status=bogus`);
   check("customRange", [await results(), await chips().then((c) => c[0][0]), await status.getByRole("radio", { name: "All" }).isChecked()], [["pricing.docx", "wifi-setup.pdf", "wifi-faq"], "Updated: Sep 1, 2026 – Sep 25, 2026", true]);
+  // It is shown as "Custom", with the range in the picker beside the presets.
+  const customPicker = bar.locator("[data-filter-custom-picker] [data-date-picker-trigger]");
+  check("customShown", [await bar.getByRole("radio", { name: "Custom" }).isChecked(), await customPicker.isVisible(), await customPicker.getAttribute("aria-label")], [true, true, "Updated: custom Sep 1, 2026 – Sep 25, 2026"]);
   await status.getByRole("radio", { name: /Failed/ }).check();
   // The browser writes the slash of the range as %2F when it submits the form.
   await page.waitForURL("**/c/filter-bar?status=failed&updated=2026-09-01%2F2026-09-25");
   check("customRangeKept", await results(), ["wifi-setup.pdf"]);
   await bar.getByRole("radio", { name: "Today" }).check();
   await page.waitForURL("**/c/filter-bar?status=failed&updated=today");
-  check("presetReplacesRange", await results(), []);
+  check("presetReplacesRange", [await results(), await bar.locator("[data-filter-custom-picker]").isHidden()], [[], true]);
+
+  // "Custom" opens a range picker; nothing is filtered until both ends are picked.
+  await page.goto(`${base}/c/filter-bar?status=failed`);
+  await bar.getByRole("radio", { name: "Custom" }).check();
+  const rangePopup = bar.locator("[data-filter-custom-picker] [popover]");
+  await page.waitForFunction(() => document.querySelector("[data-filter-custom-picker] [popover]").matches(":popover-open") && document.querySelector("[data-filter-custom-picker] [popover]").contains(document.activeElement));
+  check("customOpens", [await url(), await rangePopup.getAttribute("aria-label"), await rangePopup.locator("[data-calendar-month]").count()], ["/c/filter-bar?status=failed", "Choose dates", 2]);
+  const days = rangePopup.locator("[data-day]");
+  const from = await days.nth(1).getAttribute("data-day");
+  const to = await days.nth(4).getAttribute("data-day");
+  await days.nth(1).click();
+  check("halfRangeWaits", [await url(), await rangePopup.evaluate((p) => p.matches(":popover-open"))], ["/c/filter-bar?status=failed", true]);
+  await days.nth(4).click();
+  await page.waitForURL(`**/c/filter-bar?status=failed&updated=${from}%2F${to}`);
+  check("customApplied", [await bar.getByRole("radio", { name: "Custom" }).isChecked(), (await chips())[0][1].startsWith("Remove filter Updated: ")], [true, true]);
+  await focusedValue("custom");
+  // Pressed again, Custom clears the range.
+  await bar.locator("label", { hasText: "Custom" }).click();
+  await page.waitForURL("**/c/filter-bar?status=failed");
+  check("customCleared", await bar.getByRole("radio", { name: "Custom" }).isChecked(), false);
 
   // The second bar: medium; a single choice with no "All" clears when chosen again.
   await page.goto(`${base}/c/filter-bar`);
@@ -166,7 +191,9 @@ export default async ({ page, base, check, focused, setDir }) => {
   await stillBar.getByRole("radio", { name: /Failed/ }).check();
   check("noScriptWaits", [await still.evaluate(() => location.search), await stillBar.getByRole("button", { name: "Apply" }).first().isVisible()], ["", true]);
   await stillBar.locator("[data-filter-apply]").click();
-  await still.waitForURL("**/c/filter-bar?q=&status=failed&owner=&updated=");
+  await still.waitForURL("**/c/filter-bar?q=&status=failed&owner=");
+  // "Custom" needs the script.
+  check("noScriptNoCustom", await stillBar.locator("[data-filter-custom-item]").isHidden());
   check("noScriptApplies", await still.locator("[data-results] li").allTextContents(), ["wifi-setup.pdf", "blog/launch"]);
   await stillBar.getByRole("link", { name: "Clear all" }).click();
   await still.waitForURL(`${base}/c/filter-bar`);

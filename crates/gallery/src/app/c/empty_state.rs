@@ -1,4 +1,8 @@
-use bitop_ui::components::{button::button, empty_state::empty_state, icon::Icon};
+use bitop_ui::components::{
+    button::{ButtonVariant, button},
+    empty_state::empty_state,
+    icon::{Icon, icon},
+};
 use topcoat::{
     Result,
     context::Cx,
@@ -16,10 +20,14 @@ async fn show(cx: &Cx) -> Result<impl View> {
             title: "With an icon and an action",
             <div style="inline-size: 100%">
                 empty_state(
-                    title: "No chats yet",
-                    description: "Start one and it will show up here.",
+                    title: "No projects yet",
+                    description: "Import a Git repository or start from a template to create your first project.",
                     icon: Some(Icon::Inbox),
-                    button("New chat")
+                    button(
+                        icon(name: Icon::Plus)
+                        "New project"
+                    )
+                    button(variant: ButtonVariant::Ghost, "Read the guide")
                 )
             </div>
         )

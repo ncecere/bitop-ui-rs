@@ -21,9 +21,17 @@ async fn show(cx: &Cx) -> Result<impl View> {
             title: "Joined",
             button_group(
                 label: "Pagination",
-                button(variant: ButtonVariant::Secondary, "Previous")
+                button(
+                    variant: ButtonVariant::Secondary,
+                    icon(name: Icon::ChevronLeft)
+                    "Previous"
+                )
                 button_group_text("Page 2 of 9")
-                button(variant: ButtonVariant::Secondary, "Next")
+                button(
+                    variant: ButtonVariant::Secondary,
+                    "Next"
+                    icon(name: Icon::ChevronRight)
+                )
             )
         )
         example(
@@ -59,19 +67,19 @@ async fn show(cx: &Cx) -> Result<impl View> {
         example(
             title: "Vertical",
             button_group(
-                label: "Zoom",
+                label: "Reorder",
                 vertical: true,
                 button(
                     variant: ButtonVariant::Secondary,
                     icon_only: true,
-                    attrs: attributes! { aria-label="Zoom in" },
-                    icon(name: Icon::Plus)
+                    attrs: attributes! { aria-label="Move up" },
+                    icon(name: Icon::ArrowUp)
                 )
                 button(
                     variant: ButtonVariant::Secondary,
                     icon_only: true,
-                    attrs: attributes! { aria-label="Zoom out" },
-                    icon(name: Icon::Minus)
+                    attrs: attributes! { aria-label="Move down" },
+                    icon(name: Icon::ArrowDown)
                 )
             )
         )

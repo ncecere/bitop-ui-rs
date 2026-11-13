@@ -19,17 +19,16 @@ export default async ({ page, check }) => {
     probe.remove();
     return out;
   });
-  // A striped or dotted square also draws its colour as an inset ring (the pattern is a gradient).
-  check("toneColours", tones.map((s) => (s.pattern === "solid" ? s.colour : s.ring)), tokens);
+  // Square swatches are solid, as upstream's: no pattern, only the colour.
+  check("toneColours", tones.map((s) => s.colour), tokens);
+  check("squaresSolid", tones.every((s) => s.pattern === undefined && s.image === "none"));
   check("toneColoursDiffer", new Set(tokens).size, 7);
   check("swatchesHidden", tones.every((s) => s.hidden === "true"));
 
-  // Patterns by position: lines solid, dashed, dotted; squares solid, striped, dotted.
+  // Line patterns by position: solid, dashed, dotted.
   const lines = await swatches("Line patterns");
   check("linePatterns", lines.map((s) => [s.text, s.pattern, s.line, s.width]), [["Answers", "solid", "solid", 20], ["Conversations", "dashed", "dashed", 20], ["Escalations", "dotted", "dotted", 20]]);
-  const squares = await swatches("Bar patterns");
-  check("squarePatterns", squares.map((s) => [s.pattern, s.image === "none", s.width]), [["solid", true, 12], ["dashed", false, 12], ["dotted", false, 12]]);
-  check("squaresDiffer", new Set(squares.map((s) => s.image)).size, 3);
+  check("squareSize", tones[0].width, 12);
   // A series may set its own tone and pattern.
   check("ownTone", (await swatches("Own tones")).map((s) => [s.tone, s.pattern, s.line]), [["neutral", "dotted", "dotted"], ["danger", "solid", "solid"]]);
 

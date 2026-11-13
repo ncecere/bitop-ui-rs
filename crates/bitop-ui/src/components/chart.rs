@@ -18,9 +18,9 @@
 //! ```
 //!
 //! Colours come from the `--color-chart-*` tokens, which are at least 3:1 on the
-//! surface and the page in every theme. Series also differ by pattern: lines are
-//! solid, dashed or dotted, and bars and square swatches solid, striped or dotted, so
-//! that colour is never the only difference.
+//! surface and the page in every theme. Lines also differ by pattern (solid, dashed or
+//! dotted), shown in their legend swatches; bars and square swatches are solid, as
+//! upstream draws them.
 //!
 //! Values: NaN and infinities are "no data". Charts leave them out of the scale and
 //! draw a gap, and the table shows "No data". A point with fewer values than there
@@ -28,7 +28,7 @@
 //!
 //! Differences from upstream: series are matched to values by position, not by key,
 //! and a series label is text. `formatValue` is a function pointer, `format_value`.
-//! Square swatches show the series pattern too, as bars do here. The data table's
+//! The data table's
 //! disclosure has no `onOpenChange`; listen for the native `toggle` event.
 
 use topcoat::{
@@ -85,8 +85,8 @@ pub const CHART_TONES: [ChartTone; 7] = [
 
 /// How a series is drawn besides its colour. Rendered as `data-pattern`.
 ///
-/// A line is solid, dashed or dotted. A bar or a square swatch is solid, striped or
-/// dotted.
+/// A line, and its legend swatch, is solid, dashed or dotted. Bars and square
+/// swatches are always solid.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum ChartPattern {
     #[default]
@@ -340,7 +340,7 @@ pub(crate) fn coordinate(n: f64) -> String {
 /// The series legend: a list of swatches and labels.
 ///
 /// `swatch` is a square for bars and a line for lines. Each swatch shows the series'
-/// colour and pattern.
+/// colour; a line also shows its pattern.
 #[component]
 pub async fn chart_legend(
     cx: &Cx,
@@ -355,7 +355,7 @@ pub async fn chart_legend(
             (
                 series.label.to_owned(),
                 series_tone(series, index).as_str(),
-                series_pattern(series, index).as_str(),
+                (swatch == ChartSwatch::Line).then(|| series_pattern(series, index).as_str()),
             )
         })
         .collect::<Vec<_>>();

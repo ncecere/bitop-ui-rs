@@ -8,34 +8,21 @@
   scale: -1 1;
 }
 
-/* A bar in its series' colour; striped and dotted bars are filled by a pattern. */
+/*
+ * A bar in its series' colour. Bars fill their slot, 1px in from each side, so that
+ * neighbours are 2px apart, as upstream's flex gap.
+ */
 .bar {
-  stroke: var(--chart-color);
-  stroke-width: 0;
-
-  [data-pattern="solid"] > & {
-    fill: var(--chart-color);
-  }
-
-  /* The pattern fills the inside; an outline shows the bar's edge. */
-  [data-pattern="dashed"] > &,
-  [data-pattern="dotted"] > & {
-    stroke-width: 2px;
-  }
+  fill: var(--chart-color);
 
   /* Only the top of a stack, and every overlapping bar, has round corners. */
   &[data-top] {
-    clip-path: inset(0 round var(--radius-1) var(--radius-1) 0 0);
+    clip-path: inset(0 1px round var(--radius-1) var(--radius-1) 0 0);
   }
 
   &:not([data-top]) {
-    clip-path: inset(0);
+    clip-path: inset(0 1px);
   }
-}
-
-/* The marks of a striped or dotted pattern. */
-.ink {
-  fill: var(--chart-color);
 }
 
 /*
@@ -43,13 +30,8 @@
  * swatch. A real colour (--chart-color-soft, >= 3:1 on surface and bg), not an
  * opacity.
  */
-.root[data-layout="overlap"] [data-series]:first-child[data-pattern="solid"] .bar,
-.root[data-layout="overlap"] [data-series]:first-child .ink {
-  fill: var(--chart-color-soft);
-}
-
 .root[data-layout="overlap"] [data-series]:first-child .bar {
-  stroke: var(--chart-color-soft);
+  fill: var(--chart-color-soft);
 }
 
 .root[data-layout="overlap"] [data-chart-legend] > li:first-child > span {

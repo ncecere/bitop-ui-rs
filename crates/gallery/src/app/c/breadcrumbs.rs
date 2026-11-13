@@ -20,7 +20,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
         example(
             title: "A trail, the first crumb with an icon",
             breadcrumbs(
-                breadcrumb(href: "/", label: "Acme", icon_name: Icon::Inbox)
+                breadcrumb(href: "/", label: "Acme", icon_name: Icon::Boxes)
                 breadcrumb(href: "/c/breadcrumbs?p=projects", label: "Projects")
                 breadcrumb(href: "/c/breadcrumbs?p=web", label: "Web")
                 breadcrumb(label: "v2.1")
@@ -30,7 +30,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
             title: "The middle collapsed into a menu",
             breadcrumbs(
                 label: "Collapsed breadcrumb",
-                breadcrumb(href: "/", label: "Acme")
+                breadcrumb(href: "/", label: "Acme", icon_name: Icon::Boxes)
                 breadcrumb_collapsed(
                     id: &hidden_id,
                     label: "Show 3 hidden levels",

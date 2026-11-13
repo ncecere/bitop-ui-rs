@@ -122,6 +122,10 @@ async fn show(cx: &Cx) -> Result<impl View> {
                 time(iso: "not a date", <span>"never"</span>)
                 time(format: TimeFormat::Date)
             </p>
+            <p data-example="dash">
+                "Expires: "
+                time(format: TimeFormat::Date, "—")
+            </p>
         )
     })
 }

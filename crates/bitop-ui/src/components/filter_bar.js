@@ -17,6 +17,14 @@ function filterSubmit(form, control) {
   form.requestSubmit();
 }
 
+// A chosen item of a single choice pressed again: nothing is chosen, nor a custom
+// range the options do not offer.
+function filterClear(radio) {
+  radio.checked = false;
+  radio.closest("[role=radiogroup]")?.querySelector("[data-filter-extra]")?.remove();
+  filterSubmit(radio.form, radio);
+}
+
 document.addEventListener("change", (event) => {
   const control = event.target;
   const form = control instanceof Element && control.closest("form[data-filter-form]");
@@ -35,9 +43,36 @@ document.addEventListener("change", (event) => {
       if (all) all.checked = false;
     }
   }
+  // "Custom" opens its range picker; the facet filters once a range is picked.
+  if (control.matches("[data-filter-custom]")) {
+    const picker = control.closest("[data-facet]").querySelector("[data-filter-custom-picker]");
+    picker.hidden = false;
+    picker.querySelector("[data-date-picker-trigger]").click();
+    return;
+  }
   // A choice replaces a value the options do not offer, such as a custom range.
   control.closest("[role=radiogroup]")?.querySelector("[data-filter-extra]")?.remove();
   filterSubmit(form, control);
+});
+
+// A custom range, once both ends are picked, is the facet's value.
+document.addEventListener("bitop:change", (event) => {
+  const picker = event.target instanceof Element && event.target.closest("[data-filter-custom-picker]");
+  const [from, to] = event.detail?.values ?? [];
+  if (!picker || !from || !to) return;
+  const custom = picker.closest("[data-facet]").querySelector("[data-filter-custom]");
+  const group = custom.closest("[role=radiogroup]");
+  let extra = group.querySelector("[data-filter-extra]");
+  if (!extra) {
+    extra = document.createElement("input");
+    extra.type = "hidden";
+    extra.name = custom.name;
+    extra.dataset.filterExtra = "";
+    group.append(extra);
+  }
+  extra.value = `${from}/${to}`;
+  custom.checked = true;
+  filterSubmit(custom.form, custom);
 });
 
 // A single choice with no "All" item is cleared by choosing it again.
@@ -52,8 +87,7 @@ document.addEventListener("click", (event) => {
   if (!(target instanceof Element)) return;
   if (target.matches("[data-clearable] input[type=radio]") && target === filterWasChecked) {
     filterWasChecked = null;
-    target.checked = false;
-    filterSubmit(target.form, target);
+    filterClear(target);
     return;
   }
   // A chip or "Clear all": note where it was, to put focus near it afterwards.
@@ -74,8 +108,7 @@ document.addEventListener("keydown", (event) => {
   if (!(target instanceof Element)) return;
   if (event.key === " " && target.matches("[data-filter-form] [data-clearable] input[type=radio]:checked")) {
     event.preventDefault();
-    target.checked = false;
-    filterSubmit(target.form, target);
+    filterClear(target);
   }
   if (event.key === "Escape") {
     const open = target.closest("details[data-filter-multi][open]");
@@ -102,13 +135,15 @@ document.addEventListener("submit", (event) => {
   }
 });
 
-// Leave empty parameters out of the URL: "All", "Any", an empty search box.
+// Leave empty parameters out of the URL: "All", "Any", an empty search box, and
+// "Custom", whose range is sent by itself.
 document.addEventListener("formdata", (event) => {
   if (!(event.target instanceof Element) || !event.target.matches("form[data-filter-form]")) return;
   const data = event.formData;
   const entries = [...data.entries()];
+  const custom = new Set([...event.target.querySelectorAll("[data-filter-custom]")].map((radio) => radio.name));
   for (const [name] of entries) data.delete(name);
-  for (const [name, value] of entries) if (value !== "") data.append(name, value);
+  for (const [name, value] of entries) if (value !== "" && !(value === "custom" && custom.has(name))) data.append(name, value);
 });
 
 function filterRestoreFocus() {

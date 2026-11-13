@@ -9,6 +9,9 @@ export default async ({ page, check, settled }) => {
   await page.keyboard.press("Enter");
   await settled(card);
   check("open", [await card.evaluate((c) => c.matches(":popover-open")), await trigger.getAttribute("aria-expanded")], [true, "true"]);
+  // Focus moves into the card, as upstream's.
+  await page.waitForFunction(() => document.activeElement?.id === "context-full");
+  check("focusInCard", await page.evaluate(() => document.activeElement.id), "context-full");
   check("dialog", [await card.getAttribute("role"), await card.getAttribute("aria-label")], ["dialog", "Context window"]);
   const meter = card.getByRole("meter", { name: "Context window" });
   check("meter", [await meter.getAttribute("aria-valuenow"), await meter.getAttribute("aria-valuemax"), await meter.getAttribute("aria-valuetext")], ["42000", "200000", "21% · 42K / 200K"]);
@@ -26,7 +29,7 @@ export default async ({ page, check, settled }) => {
   const above = await page.evaluate(() => document.getElementById("context-full").getBoundingClientRect().bottom <= document.querySelector('[popovertarget="context-full"]').getBoundingClientRect().top + 1);
   check("above", above, true);
 
-  // Escape closes it and focus stays on the trigger.
+  // Escape closes it and focus goes back to the trigger.
   await page.keyboard.press("Escape");
   await page.waitForFunction(() => !document.getElementById("context-full").matches(":popover-open"));
   check("closed", [await trigger.getAttribute("aria-expanded"), await page.evaluate(() => document.activeElement.dataset.contextTrigger)], ["false", ""]);

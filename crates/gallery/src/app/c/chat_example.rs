@@ -9,6 +9,7 @@ use bitop_ui::components::{
 use bitop_ui_ai::{
     ChatStatus,
     components::{
+        context::{ContextCost, ContextUsage, context},
         conversation::{
             EmptyTitle, conversation, conversation_announcer, conversation_content,
             conversation_empty_state, conversation_scroll_button,
@@ -40,6 +41,10 @@ use topcoat::{
 };
 
 use crate::app::kit::page_header;
+
+/// The context window's use before the first message, as upstream's example counts it:
+/// 1,800 tokens, plus 12 for every four characters of the conversation.
+const BASE_TOKENS: u64 = 1_800;
 
 const REASONING: &str = "The question is about parental leave. I'll check the 2025 policy for duration and pay, and the FAQ for whether it can be split. Cite each claim.";
 
@@ -87,6 +92,25 @@ async fn show(cx: &Cx) -> Result<impl View> {
             .description("Steps and deadlines for a request.")
             .target("reply-source-3"),
     ];
+    // Split as upstream's example splits it; `client/chat-example.js` recounts after
+    // each reply.
+    #[allow(
+        clippy::cast_precision_loss,
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss
+    )]
+    let share = |part: f64| (BASE_TOKENS as f64 * part).round() as u64;
+    let usage = ContextUsage {
+        input: Some(share(0.7)),
+        output: Some(share(0.22)),
+        reasoning: Some(share(0.08)),
+        cached: None,
+    };
+    #[allow(clippy::cast_precision_loss)]
+    let cost = ContextCost {
+        total: Some(BASE_TOKENS as f64 * 0.000_006),
+        ..ContextCost::default()
+    };
     let strings = ResponseStrings::default();
     let mut stream = ResponseStream::new();
     let mut stages = Vec::new();
@@ -135,15 +159,25 @@ async fn show(cx: &Cx) -> Result<impl View> {
                     value: "claude-sonnet",
                     size: ModelSelectorSize::Sm
                 )
-                <a
-                    href="/c/chat-example"
-                    aria-label="New chat"
-                    class=(BUTTON)
-                    data-variant="ghost"
-                    data-size="icon"
-                >
-                    icon(name: Icon::SquarePen)
-                </a>
+                <div style="display: flex; align-items: center; gap: var(--space-1)">
+                    context(
+                        id: "chat-context",
+                        used_tokens: BASE_TOKENS,
+                        max_tokens: 200_000,
+                        model_name: "Claude Sonnet",
+                        usage: usage,
+                        cost: cost
+                    )
+                    <a
+                        href="/c/chat-example"
+                        aria-label="New chat"
+                        class=(BUTTON)
+                        data-variant="ghost"
+                        data-size="icon"
+                    >
+                        icon(name: Icon::SquarePen)
+                    </a>
+                </div>
             </header>
             <div style="display: flex; min-block-size: 0">
                 conversation(

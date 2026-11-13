@@ -16,6 +16,9 @@ export default async ({ page, check, axe }) => {
     await page.getByRole("log", { name: "Chat with the handbook assistant" }).count(),
     await form.getByRole("textbox", { name: "Message" }).count(),
   ], [1, 1, 1, 1]);
+  // The context window's use, in the header, as upstream's example: 1,800 tokens to start.
+  const contextTrigger = page.locator('[popovertarget="chat-context"]');
+  check("context", [await contextTrigger.getAttribute("aria-label"), await contextTrigger.textContent()], ["Context window: 1% used, 1,800 of 200,000 tokens", "1%"]);
 
   // A suggestion sends itself: the person's turn, then the reply, announced.
   await page.evaluate(() => {
@@ -30,6 +33,16 @@ export default async ({ page, check, axe }) => {
   check("actionsHiddenWhileStreaming", await page.locator("#chat-turns [data-reply-actions]").first().isHidden(), true);
   await ready();
   check("announced", await page.evaluate(() => window.said), ["Message sent", "Assistant is responding", "Response complete"]);
+  // After the reply the context counts the conversation: the ring, its name and the card.
+  const used = await page.evaluate(() => {
+    const chars = [...document.querySelectorAll("#chat-turns [data-user-text], #chat-turns [data-response]")].reduce((n, el) => n + el.textContent.trim().length, 0);
+    return 1800 + Math.round(chars / 4) * 12;
+  });
+  const percent = Math.round((used / 200000) * 100);
+  check("contextGrew", used > 1800);
+  check("contextAfterReply", [await contextTrigger.getAttribute("aria-label"), await contextTrigger.textContent(), await contextTrigger.locator("svg").evaluate((s) => s.style.getPropertyValue("--ratio"))], [`Context window: ${percent}% used, ${used.toLocaleString("en-US")} of 200,000 tokens`, `${percent}%`, (used / 200000).toFixed(4)]);
+  const contextCard = page.locator("#chat-context");
+  check("contextCard", [await contextCard.locator("[data-context-meter]").getAttribute("aria-valuenow"), await contextCard.locator("dl dd").first().textContent()], [String(used), `${Math.round(used * 0.7).toLocaleString("en-US")} tokens`]);
   const reply = page.locator("#chat-turns [data-from=assistant]").first();
   check("reasoningClosed", await reply.locator("details[data-reply-reasoning] summary").textContent().then((t) => /Thought for \d+ seconds?/.test(t)), true);
   const answer = reply.locator("[data-response]").nth(1);

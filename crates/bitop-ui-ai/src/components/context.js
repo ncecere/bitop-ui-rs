@@ -1,6 +1,7 @@
 // Context: the card opens on click, Enter and Space through popovertarget, and also on
 // hover after a short delay. A card opened by hover closes when the pointer leaves the
-// trigger and the card; a click on the trigger then keeps it open.
+// trigger and the card; a click on the trigger then keeps it open. Opened by a click or
+// a key, the card takes focus, as upstream's popover does; Escape gives it back.
 
 let contextHoverTimer;
 let contextLeaveTimer;
@@ -67,3 +68,25 @@ document.addEventListener(
   },
   true,
 );
+
+// The toggle event is queued: focus moves only if it is not already inside the card.
+document.addEventListener(
+  "toggle",
+  (event) => {
+    const card = event.target;
+    if (!(card instanceof Element) || !card.hasAttribute("data-context-card")) return;
+    if (event.newState !== "open" || !card.matches(":popover-open") || contextHovered === card) return;
+    if (!card.contains(document.activeElement)) card.focus();
+  },
+  true,
+);
+
+// Escape returns focus to the trigger; Safari would return it to the page.
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape" || !(event.target instanceof Element)) return;
+  const card = event.target.closest("[data-context-card]");
+  if (!card || !card.matches(":popover-open")) return;
+  event.preventDefault();
+  card.hidePopover();
+  contextOwner(card)?.focus();
+});
