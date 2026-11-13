@@ -44,6 +44,8 @@ export default async ({ page, check, setDir }) => {
   await press("ArrowLeft", "tests");
   await press("ArrowLeft");
   await page.waitForFunction(() => document.querySelector('#project-tree [data-path="tests"]').getAttribute("aria-expanded") === "false");
+  // The group hides when the folder's closing has run, which can be a frame later.
+  await item("tests").locator("> [role=group]").waitFor({ state: "hidden" });
   check("closed", [await focused(), await item("tests").locator("> [role=group]").isHidden()], ["tests", true]);
   // Left on an item at the top level stays; on a child it goes to the folder.
   await item("src/lib.rs").focus();
