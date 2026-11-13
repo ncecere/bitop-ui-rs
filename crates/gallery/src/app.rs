@@ -9,7 +9,7 @@ use bitop_ui::components::{
         SIDEBAR_COOKIE, sidebar, sidebar_content, sidebar_group, sidebar_header, sidebar_item,
         sidebar_layout, sidebar_main, sidebar_toggle,
     },
-    toast::toast_region,
+    toast::toaster,
 };
 use topcoat::{
     Result,
@@ -698,7 +698,7 @@ async fn root(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                         </main>
                     )
                 )
-                toast_region()
+                toaster()
             </body>
         </html>
     })

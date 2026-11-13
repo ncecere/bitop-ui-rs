@@ -1,6 +1,6 @@
-// Tooltip: shown after a delay on hover and at once on keyboard focus.
+// Tooltip: shown after a delay on hover (the tooltip's data-delay) and at once on
+// keyboard focus.
 
-const TOOLTIP_DELAY = 500;
 let tooltipTimer;
 let tooltipTrigger;
 
@@ -33,7 +33,7 @@ document.addEventListener("pointerover", (event) => {
   if (!trigger) return;
   if (trigger === tooltipTrigger) return;
   clearTimeout(tooltipTimer);
-  tooltipTimer = setTimeout(() => showTooltip(trigger, tip), TOOLTIP_DELAY);
+  tooltipTimer = setTimeout(() => showTooltip(trigger, tip), Number(tip?.dataset.delay ?? 600));
 });
 
 document.addEventListener("pointerout", (event) => {

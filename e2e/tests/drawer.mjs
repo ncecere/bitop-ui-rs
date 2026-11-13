@@ -18,30 +18,37 @@ export default async ({ page, check, axe, button, focused, settled }) => {
   };
 
   const goal = drawer("Set your daily activity goal.");
-  await button("Set goal").click();
+  await button("Set daily goal").click();
   check("open", await goal.evaluate((d) => d.open && d.matches(":modal")));
   await settled(goal);
   const g = await box(goal);
   check("bottom", [g.x, g.width, g.y + g.height], [0, view.width, view.height]);
   check("name", await page.getByRole("dialog", { name: "Move goal" }).count(), 1);
   check("described", await goal.evaluate((d) => document.getElementById(d.getAttribute("aria-describedby")).textContent.trim()), "Set your daily activity goal.");
-  check("focusFirstField", await page.evaluate(() => document.activeElement.name), "steps");
+  check("focusFirstControl", await page.evaluate(() => document.activeElement.getAttribute("aria-label")), "Decrease goal by 10");
+  // As upstream's example: the content is a column at most 24rem wide, centred, and the
+  // footer's buttons are as wide as that column.
+  const save = goal.getByRole("button", { name: "Save goal" });
+  const s = await box(save);
+  check("footerWidth", [s.width, Math.abs(s.x * 2 + s.width - view.width) < 2], [384 - 48, true]);
+  await page.keyboard.press("Enter");
+  check("stepper", (await goal.locator("[aria-live]").textContent()).trim(), "340Calories / day");
   check("handle", await goal.locator("[data-drawer-handle]").evaluate((h) => [h.getAttribute("aria-hidden"), getComputedStyle(h).cursor]), ["true", "grab"]);
   check("axeOpen", await axe(), []);
   for (let i = 0; i < 5; i++) await page.keyboard.press("Tab");
   check("focusTrapped", await page.evaluate(() => !!document.activeElement.closest("dialog[data-drawer]")));
   await page.keyboard.press("Escape");
   check("closedByEsc", await closed(goal));
-  check("focusReturned", await focused(), "Set goal");
-  await button("Set goal").click();
+  check("focusReturned", await focused(), "Set daily goal");
+  await button("Set daily goal").click();
   await page.mouse.click(5, 5);
   check("closedByBackdrop", await closed(goal));
-  await button("Set goal").click();
+  await button("Set daily goal").click();
   await goal.getByRole("button", { name: "Cancel" }).click();
   check("closedByButton", await closed(goal));
 
   // A short drag follows the pointer and springs back.
-  await button("Set goal").click();
+  await button("Set daily goal").click();
   await settled(goal);
   const handle = goal.locator("[data-drawer-handle]");
   let release = await drag(handle, 0, 40);
@@ -75,7 +82,7 @@ export default async ({ page, check, axe, button, focused, settled }) => {
   });
   check("flickCloses", await closed(goal));
   // A long drag dismisses it, however slow.
-  await button("Set goal").click();
+  await button("Set daily goal").click();
   await settled(goal);
   release = await drag(handle, 0, Math.round(g.height * 0.6));
   await page.waitForTimeout(400);
@@ -83,8 +90,8 @@ export default async ({ page, check, axe, button, focused, settled }) => {
   check("longDragCloses", await closed(goal));
 
   // The other edges.
-  const right = drawer("A drawer on the right edge");
-  await button("Open right").click();
+  const right = drawer("Swipe right or press Escape");
+  await button("Right").click();
   await settled(right);
   const r = await box(right);
   check("right", [r.x + r.width, r.y, r.height, r.width], [view.width, 0, view.height, 384]);
@@ -93,16 +100,23 @@ export default async ({ page, check, axe, button, focused, settled }) => {
   await right.getByRole("button", { name: "Close" }).click();
   check("closedByX", await closed(right));
 
-  const left = drawer("A drawer on the left edge");
-  await button("Open left").click();
+  const left = drawer("Swipe left or press Escape");
+  await button("Left").click();
   await settled(left);
   check("left", (await box(left)).x, 0);
-  release = await drag(left.locator("[data-drawer-handle]"), -250, 0);
-  await release();
+  // No handle on the sides; a touch drags by the header.
+  await left.locator("[data-drawer-header]").evaluate((h) => {
+    const at = (type, x) =>
+      h.dispatchEvent(new PointerEvent(type, { bubbles: true, pointerId: 8, pointerType: "touch", button: 0, clientX: x, clientY: 40 }));
+    at("pointerdown", 200);
+    at("pointermove", 170);
+    at("pointermove", -100);
+    at("pointerup", -100);
+  });
   check("leftSwipeCloses", await closed(left));
 
-  const top = drawer("A drawer on the top edge.");
-  await button("Open top").click();
+  const top = drawer("Swipe up or press Escape");
+  await button("Top").click();
   await settled(top);
   check("top", [(await box(top)).y, (await box(top)).width], [0, view.width]);
   // A touch can drag by the header too; a mouse cannot, so that text can be selected.
@@ -119,4 +133,11 @@ export default async ({ page, check, axe, button, focused, settled }) => {
     at("pointerup", -140);
   });
   check("touchOnHeaderSwipes", await closed(top));
+
+  // A form in a drawer: submitting closes it.
+  const rename = drawer("The URL of existing deployments");
+  await button("Rename project…").click();
+  await settled(rename);
+  await rename.getByRole("button", { name: "Save" }).click();
+  check("formSubmitCloses", [await closed(rename), await page.locator("[data-toast]", { hasText: "Project renamed" }).count()], [true, 1]);
 };

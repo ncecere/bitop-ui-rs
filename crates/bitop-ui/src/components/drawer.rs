@@ -35,11 +35,11 @@
 use topcoat::{
     Result,
     context::Cx,
-    view::{Attributes, Child, View, class, component, view},
+    view::{Attributes, Child, View, attributes, class, component, view},
 };
 
 use super::{
-    button::{ButtonSize, ButtonVariant},
+    button::{ButtonSize, ButtonVariant, icon_button},
     icon::{Icon, icon},
 };
 use crate::css::{button as button_css, drawer as css};
@@ -135,17 +135,12 @@ pub async fn drawer(
                 (child)
                 // Last, so that focus lands on the first field and not on ×.
                 if show_close {
-                    <button
-                        type="button"
-                        commandfor=(id)
-                        command="close"
-                        aria-label=(close_label)
-                        class=(class!(button_css::ROOT, css::CLOSE))
-                        data-variant="ghost"
-                        data-size="icon"
-                    >
+                    icon_button(
+                        label: close_label,
+                        size: ButtonSize::Sm,
+                        attrs: attributes! { class=(css::CLOSE) commandfor=(id) command="close" },
                         icon(name: Icon::X)
-                    </button>
+                    )
                 }
             </div>
         </dialog>

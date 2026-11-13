@@ -264,8 +264,6 @@
 }
 
 .popup .close {
-  --button-height: 2rem;
-
   position: absolute;
   inset-block-start: var(--space-4);
   inset-inline-end: var(--space-4);

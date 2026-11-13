@@ -1,45 +1,83 @@
-/* The native <dialog> is the popup. Opened with showModal() it traps focus,
-   closes on Escape, and renders ::backdrop. */
+/* The native <dialog> is the popup. Opened with showModal() it traps focus, closes
+   on Escape and renders ::backdrop, which stands in for upstream's backdrop. Upstream
+   places the popup in a viewport padded max(4rem, 10vh) from the top; here the
+   dialog's own margins do that. */
 .popup {
   --dialog-width: 32rem;
+  --dialog-top: max(4rem, 10vh);
 
-  /* The reset removes every margin, and the browser centres a dialog with one. */
-  margin: auto;
-  inline-size: min(var(--dialog-width), calc(100vw - 2 * var(--space-4)));
-  max-block-size: calc(100dvh - 2 * var(--space-4));
-  padding: var(--space-6);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-4);
-  background: var(--color-surface-raised);
+  /* The browser centres a dialog with auto margins and caps its size; this one sits
+     near the top, as upstream. */
+  inset: 0;
+  margin: var(--dialog-top) auto var(--space-4);
+  inline-size: calc(100% - 2 * var(--space-4));
+  max-inline-size: var(--dialog-width);
+  block-size: fit-content;
+  max-block-size: calc(100dvh - var(--dialog-top) - var(--space-4));
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-dialog);
+  background-color: var(--color-surface-raised);
+  --table-background: var(--color-surface-raised);
   color: var(--color-text);
-  box-shadow: var(--shadow-3);
-  overflow-y: auto;
+  box-shadow: var(--shadow-4);
+  font-family: var(--font-family-sans);
+  font-feature-settings: var(--font-features);
+  font-size: var(--font-size-md);
+  outline: 0;
+  overflow: visible;
 
   opacity: 0;
-  scale: 0.96;
+  translate: 0 8px;
+  scale: 0.98;
   transition:
-    opacity var(--motion-duration-normal) var(--motion-ease-out),
-    scale var(--motion-duration-normal) var(--motion-ease-out),
-    overlay var(--motion-duration-normal) allow-discrete,
-    display var(--motion-duration-normal) allow-discrete;
+    opacity var(--motion-duration-slow) var(--motion-ease-out),
+    translate var(--motion-duration-slow) var(--motion-ease-out),
+    scale var(--motion-duration-slow) var(--motion-ease-out),
+    overlay var(--motion-duration-slow) allow-discrete,
+    display var(--motion-duration-slow) allow-discrete;
 
+  /* Only when open: a display value here would show the closed dialog. */
   &[open] {
+    display: flex;
+    flex-direction: column;
     opacity: 1;
+    translate: 0 0;
     scale: 1;
 
     @starting-style {
       opacity: 0;
-      scale: 0.96;
+      translate: 0 8px;
+      scale: 0.98;
     }
   }
 
+  &[data-size="sm"] {
+    --dialog-width: 26rem;
+  }
+
+  &[data-size="lg"] {
+    --dialog-width: 42rem;
+  }
+
+  &[data-size="xl"] {
+    --dialog-width: 56rem;
+  }
+
+  /* A parent behind a nested dialog shrinks slightly. No opacity change: its text
+     must keep 4.5:1 contrast (it stays in the accessibility tree). */
+  &[open]:has(.popup[open]) {
+    scale: 0.97;
+  }
+
   &::backdrop {
-    background: var(--color-overlay);
+    background-color: var(--color-overlay);
+    backdrop-filter: blur(2px);
     opacity: 0;
     transition:
-      opacity var(--motion-duration-normal) var(--motion-ease-out),
-      overlay var(--motion-duration-normal) allow-discrete,
-      display var(--motion-duration-normal) allow-discrete;
+      opacity var(--motion-duration-slow) var(--motion-ease-out),
+      overlay var(--motion-duration-slow) allow-discrete,
+      display var(--motion-duration-slow) allow-discrete;
   }
 
   &[open]::backdrop {
@@ -51,22 +89,86 @@
   }
 }
 
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-6) 0;
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-inline-size: 0;
+}
+
 .title {
-  margin: 0;
   font-size: var(--font-size-lg);
-  font-weight: 600;
-  line-height: 1.3;
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+  letter-spacing: var(--letter-spacing-snug);
+  color: var(--color-text);
 }
 
 .description {
-  margin: var(--space-2) 0 0;
-  color: var(--color-text-muted);
   font-size: var(--font-size-md);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-muted);
 }
 
-.actions {
+.popup .close {
+  position: absolute;
+  inset-block-start: var(--space-4);
+  inset-inline-end: var(--space-4);
+}
+
+.popup[data-closable] .header {
+  padding-inline-end: 3.5rem;
+}
+
+.body {
   display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-6);
+  overflow-y: auto;
+  min-block-size: 0;
+
+  /* Upstream leaves the body out when there is nothing in it: an alert dialog's
+     holds a hidden error alert until there is an error. */
+  &:empty,
+  &:has(> .slot:empty):not(:has(> :not(.slot, [hidden]))) {
+    display: none;
+  }
+
+  &[hidden],
+  & > [hidden] {
+    display: none;
+  }
+}
+
+/* An alert dialog's extra content, laid out as the body's own children. */
+.slot {
+  display: contents;
+}
+
+.header + .body:is(:empty, :has(> .slot:empty):not(:has(> :not(.slot, [hidden])))) + .footer {
+  margin-block-start: var(--space-5);
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: var(--space-2);
-  margin-block-start: var(--space-6);
+  padding: var(--space-4) var(--space-6);
+  border-block-start: 1px solid var(--color-border);
+  border-radius: 0 0 var(--radius-dialog) var(--radius-dialog);
+  background-color: var(--color-surface-sunken);
+
+  &:empty {
+    display: none;
+  }
 }

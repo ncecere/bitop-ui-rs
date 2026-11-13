@@ -41,3 +41,118 @@
     position-area: block-end;
   }
 }
+
+/* The popover part, as upstream's: the shared surface above, without a border, with
+   its title and description in a column. Every rule names data-side, so that it wins
+   over the shared data-align rules above. */
+.panel[data-side] {
+  --popover-gap: 8px;
+
+  flex-direction: column;
+  gap: var(--space-2);
+  inline-size: max-content;
+  max-inline-size: min(22rem, calc(100vw - 2rem));
+  padding: var(--space-4);
+  border: 0;
+  border-radius: var(--radius-popover);
+  box-shadow: var(--shadow-3);
+  font-family: var(--font-family-sans);
+  font-feature-settings: var(--font-features);
+  font-size: var(--font-size-md);
+  outline: 0;
+  scale: 0.97;
+  transition:
+    opacity var(--motion-duration-normal) var(--motion-ease-out),
+    translate var(--motion-duration-normal) var(--motion-ease-out),
+    scale var(--motion-duration-normal) var(--motion-ease-out),
+    overlay var(--motion-duration-normal) allow-discrete,
+    display var(--motion-duration-normal) allow-discrete;
+
+  &:popover-open {
+    display: flex;
+    scale: 1;
+
+    @starting-style {
+      scale: 0.97;
+    }
+  }
+}
+
+.panel[data-side="bottom"] {
+  position-area: block-end;
+  position-try-fallbacks: flip-block;
+  margin: var(--popover-gap) 0;
+
+  &[data-align="start"] {
+    position-area: block-end span-inline-end;
+  }
+
+  &[data-align="end"] {
+    position-area: block-end span-inline-start;
+  }
+}
+
+.panel[data-side="top"] {
+  position-area: block-start;
+  position-try-fallbacks: flip-block;
+  margin: var(--popover-gap) 0;
+  translate: 0 0.25rem;
+
+  &:popover-open {
+    translate: 0 0;
+
+    @starting-style {
+      translate: 0 0.25rem;
+    }
+  }
+
+  &[data-align="start"] {
+    position-area: block-start span-inline-end;
+  }
+
+  &[data-align="end"] {
+    position-area: block-start span-inline-start;
+  }
+}
+
+.panel[data-side="left"],
+.panel[data-side="right"] {
+  position-try-fallbacks: flip-inline;
+  margin: 0 var(--popover-gap);
+}
+
+.panel[data-side="left"] {
+  position-area: left;
+
+  &[data-align="start"] {
+    position-area: left span-bottom;
+  }
+
+  &[data-align="end"] {
+    position-area: left span-top;
+  }
+}
+
+.panel[data-side="right"] {
+  position-area: right;
+
+  &[data-align="start"] {
+    position-area: right span-bottom;
+  }
+
+  &[data-align="end"] {
+    position-area: right span-top;
+  }
+}
+
+.title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-snug);
+}
+
+.description {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-muted);
+}

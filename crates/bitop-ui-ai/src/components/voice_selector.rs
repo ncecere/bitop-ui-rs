@@ -35,7 +35,7 @@
 use bitop_ui::{
     components::{
         button::{ButtonSize, ButtonVariant},
-        dialog::{dialog, dialog_actions, dialog_close, dialog_description, dialog_title},
+        dialog::{dialog, dialog_close},
         icon::{Icon, icon},
         input::input,
         spinner::{SpinnerSize, spinner},
@@ -210,7 +210,6 @@ pub async fn voice_selector(
     let selected = voices.iter().find(|voice| voice.id == value);
     let shown = selected.map_or(placeholder, |voice| voice.name);
     let trigger_label = format!("{label}: {shown}");
-    let title_id = format!("{id}-title");
     let list_id = format!("{id}-list");
     let field = if name.is_empty() {
         format!("{id}-voice")
@@ -271,12 +270,17 @@ pub async fn voice_selector(
             </button>
             dialog(
                 id: id,
-                labelled_by: &title_id,
+                title: title,
+                description: description,
                 attrs: attributes! { class=(css::DIALOG) },
-                dialog_title(id: &title_id, (title))
-                if !description.is_empty() {
-                    dialog_description((description))
-                }
+                footer: view! {
+                    dialog_close(
+                        target: &close_id,
+                        variant: ButtonVariant::Primary,
+                        size: ButtonSize::Md,
+                        (done_label)
+                    )
+                },
                 <div class=(css::BODY)>
                     input(
                         attrs: attributes! {
@@ -358,14 +362,6 @@ pub async fn voice_selector(
                         <p class=(css::EMPTY)>(empty_text)</p>
                     </template>
                 </div>
-                dialog_actions(
-                    dialog_close(
-                        target: &close_id,
-                        variant: ButtonVariant::Primary,
-                        size: ButtonSize::Md,
-                        (done_label)
-                    )
-                )
             )
         </div>
     }))

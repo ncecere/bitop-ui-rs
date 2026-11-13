@@ -32,11 +32,17 @@ async fn show(cx: &Cx) -> Result<impl View> {
                 command_group(
                     label: "Actions",
                     command_item(
-                        attrs: attributes! { data-gallery-toast="success" },
+                        attrs: attributes! {
+                            data-gallery-toast="success"
+                            data-gallery-title="Changes saved"
+                        },
                         "Save changes"
                     )
                     command_item(
-                        attrs: attributes! { data-gallery-toast="neutral" },
+                        attrs: attributes! {
+                            data-gallery-toast="neutral"
+                            data-gallery-title="Link copied"
+                        },
                         "Copy link"
                     )
                 )

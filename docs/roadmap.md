@@ -197,12 +197,13 @@ Every component was compared with bitop-ui's docs site, side by side in a browse
 - [x] `voice-selector`: Enter in the search no longer submits the form around it.
 - [ ] `avatar`: sizes xs to xl, square shape, `decorative`, a tint chosen from the name.
 - [ ] `badge`: outline, `sm`, `dot`, `pulse`, `StatusBadge`, `StatusDot`, the ring.
-- [ ] `dialog`: sizes, the close button, the footer band, the place near the top, the
+- [x] `dialog`: sizes, the close button, the footer band, the place near the top, the
   blurred backdrop; `alert_dialog`'s `busy`, `error` and `tone`.
-- [ ] `toast`: info and warning, an action, `promise`, `close(id)`, a collapsed stack with
+- [x] `toast`: info and warning, an action, `promise`, `close(id)`, a collapsed stack with
   `limit` and `position`, F6 to the region.
-- [ ] `tooltip`: `side`, `align`, `shortcut`, `delay`.
-- [ ] `popover`: title, description, `side`, opening on hover, focus moving in.
+- [x] `tooltip`: `side`, `align`, `shortcut`, `delay`, and `tooltip_text`.
+- [x] `popover`: title, description, `side`, opening on hover, focus moving in.
+- [x] `drawer`: the footer's buttons as wide as the content, as upstream's example.
 - [ ] `tabs`: pills, counts, icons, scrolling overflow, nav tabs, manual activation.
 - [ ] `menu`, `context-menu`, `menubar`: item icons, 32px rows; ArrowDown on a trigger
   opens; hovering another menubar menu while one is open.
@@ -222,8 +223,7 @@ Every component was compared with bitop-ui's docs site, side by side in a browse
   `empty-state` icon size, `bar-chart` solid fills and spacing, `save-bar` hiding when
   the form is no longer dirty, `time`'s "—", `breadcrumbs`' "…", `model-selector`'s
   End key and badges, `filter-bar`'s custom date range, `data-table`'s search icon,
-  `drawer`'s footer width, `context` moving focus into its card, `chat-example`'s
-  context meter.
+  `context` moving focus into its card, `chat-example`'s context meter.
 
 ## Known gaps in what is built
 
@@ -246,7 +246,22 @@ Every component was compared with bitop-ui's docs site, side by side in a browse
   shared popup that changes size.
 - `date-picker` has no `DateRangePresets` (the toggle group that keeps a preset's ID for a
   URL); the presets beside the calendar are there.
-- Toasts sit below modal dialogs.
+- Toasts sit below modal dialogs, which are in the top layer. They cannot be swiped away,
+  and are not named by their title through `aria-labelledby` (the Playwright Firefox
+  crash); their text is their content.
+- `dialog`'s `initialFocus` is an `autofocus` attribute on a control in the body;
+  `finalFocus` is `final_focus`, an element's ID, which the library script focuses after
+  the browser has returned focus to the trigger. `alert_dialog`'s `onConfirm` is
+  `confirm_attrs` (a form submission, or a click a script hears) and its `error` a
+  message; `bitopUi.dialog.setBusy` and `setError` change both in the browser. The
+  alert dialog and the popover are named with `aria-label` (their title's text), for
+  the Playwright Firefox crash.
+- `popover` has no `pointerFocus`: a click or a key moves focus to the first control,
+  hover leaves it where it is. Opened by hover, it closes 150ms after the pointer leaves
+  the trigger and the popup, rather than following Base UI's safe triangle.
+- `tooltip` has no `TooltipProvider`: each tooltip waits its own `delay`, also when the
+  pointer moves from one trigger to the next. The tooltip cannot be hovered: it closes
+  when the pointer leaves its trigger.
 - The sidebar drawer on narrow screens does not trap focus.
 - The charts' data table has no `onOpenChange` or controlled `open`; listen for the native
   `toggle` event. A lone point between gaps in a `sparkline` is not drawn, as upstream.
