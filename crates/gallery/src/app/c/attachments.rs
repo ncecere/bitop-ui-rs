@@ -87,7 +87,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                     attachment(name: "data.csv", size: 4096, id: "f3", removable: true)
                 )
                 button(
-                    variant: ButtonVariant::Outline,
+                    variant: ButtonVariant::Secondary,
                     attrs: attributes! { id="after-removing" style="justify-self: start" },
                     "Focus goes here when the list is empty"
                 )

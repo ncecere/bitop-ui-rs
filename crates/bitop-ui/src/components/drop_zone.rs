@@ -127,7 +127,7 @@ pub async fn drop_zone(
                 type="button"
                 id=(id)
                 class=(button_css::ROOT)
-                data-variant="outline"
+                data-variant="secondary"
                 data-size="md"
                 data-drop-zone-button=""
                 aria-describedby=((!description.is_empty()).then_some(&description_id))

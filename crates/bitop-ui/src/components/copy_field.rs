@@ -83,7 +83,7 @@ pub async fn copy_field(
                     data-label=(copy_label.replace("{name}", name))
                     data-copied-label=(copied_label.replace("{name}", name))
                     aria-label=(copy_label.replace("{name}", name))
-                    data-variant=(ButtonVariant::Outline.as_str())
+                    data-variant=(ButtonVariant::Secondary.as_str())
                     data-size=(ButtonSize::Sm.as_str())
                     class=(class!(button_css::ROOT, copy_button_css::BUTTON, css::BUTTON))
                 >

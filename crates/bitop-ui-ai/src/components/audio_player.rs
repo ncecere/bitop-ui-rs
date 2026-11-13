@@ -155,7 +155,7 @@ pub async fn audio_player(
                 aria-label=(play_label)
                 disabled=(no_source)
                 data-player-play=""
-                data-variant="outline"
+                data-variant="secondary"
                 data-size="icon"
                 class=(class!(button_css::ROOT, css::BUTTON, css::PLAY))
             >

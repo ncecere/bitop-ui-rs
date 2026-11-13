@@ -1,72 +1,203 @@
+/* Ported from bitop-ui's button.module.css. Disabled is the native attribute or
+   aria-disabled (for links styled as buttons) rather than data-disabled. */
 .root {
-  --button-bg: var(--color-primary);
-  --button-bg-hover: var(--color-primary-hover);
-  --button-fg: var(--color-primary-contrast);
-  --button-border: transparent;
-  --button-height: 2.25rem;
-  --button-padding: var(--space-4);
+  --btn-bg: transparent;
+  --btn-bg-hover: var(--color-surface-hover);
+  --btn-bg-active: var(--color-surface-active);
+  --btn-fg: var(--color-text);
+  --btn-shadow: none;
+  --btn-shadow-hover: var(--btn-shadow);
 
+  position: relative;
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  block-size: var(--button-height);
-  padding-inline: var(--button-padding);
-  border: 1px solid var(--button-border);
+  height: var(--control-height-md);
+  padding: 0 0.875rem;
+  border: 0;
   border-radius: var(--radius-control);
-  background: var(--button-bg);
-  color: var(--button-fg);
-  font: inherit;
+  background-color: var(--btn-bg);
+  color: var(--btn-fg);
+  box-shadow: var(--btn-shadow);
+  font-family: inherit;
   font-size: var(--font-size-md);
-  font-weight: 500;
-  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  letter-spacing: -0.005em;
   white-space: nowrap;
+  text-decoration: none;
   cursor: pointer;
   user-select: none;
-  transition: background-color var(--motion-duration-fast) var(--motion-ease-out);
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--motion-duration-fast) var(--motion-ease-out),
+    box-shadow var(--motion-duration-fast) var(--motion-ease-out),
+    color var(--motion-duration-fast) var(--motion-ease-out),
+    transform var(--motion-duration-fast) var(--motion-ease-out);
 
-  &:hover {
-    background: var(--button-bg-hover);
+  & :is(svg, [data-icon]) {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+
+  @media (hover: hover) {
+    &:hover:not(:disabled, [aria-disabled="true"]) {
+      background-color: var(--btn-bg-hover);
+      box-shadow: var(--btn-shadow-hover);
+    }
+  }
+
+  &:active:not(:disabled, [aria-disabled="true"]) {
+    background-color: var(--btn-bg-active);
+    transform: translateY(0) scale(0.985);
   }
 
   &:disabled,
   &[aria-disabled="true"] {
-    opacity: 0.5;
-    pointer-events: none;
+    cursor: not-allowed;
+    opacity: 0.55;
   }
 
-  &[data-variant="outline"] {
-    --button-bg: transparent;
-    --button-bg-hover: var(--color-surface-hover);
-    --button-fg: var(--color-text);
-    --button-border: var(--color-border-strong);
+  &[data-loading] {
+    cursor: progress;
+    opacity: 0.8;
   }
 
-  &[data-variant="ghost"] {
-    --button-bg: transparent;
-    --button-bg-hover: var(--color-surface-hover);
-    --button-fg: var(--color-text);
+  &[data-block] {
+    width: 100%;
+  }
+
+  /* ----- sizes ----- */
+  &[data-size="sm"] {
+    height: var(--control-height-sm);
+    padding: 0 0.625rem;
+    gap: 0.375rem;
+    font-size: var(--font-size-sm);
+
+    & :is(svg, [data-icon]) {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+  }
+
+  &[data-icon-only] {
+    width: var(--control-height-md);
+    padding: 0;
+  }
+
+  &[data-icon-only][data-size="sm"] {
+    width: var(--control-height-sm);
+  }
+
+  /* ----- variants ----- */
+  &[data-variant="primary"] {
+    --btn-bg: var(--color-primary);
+    --btn-bg-hover: var(--color-primary-hover);
+    --btn-bg-active: var(--color-primary-active);
+    --btn-fg: var(--color-primary-contrast);
+    --btn-shadow: var(--shadow-primary);
+    --btn-shadow-hover: var(--shadow-primary-hover);
   }
 
   &[data-variant="danger"] {
-    --button-bg: var(--color-danger);
-    --button-bg-hover: var(--color-danger-hover);
-    --button-fg: var(--color-danger-contrast);
+    --btn-bg: var(--color-danger);
+    --btn-bg-hover: var(--color-danger-hover);
+    --btn-bg-active: var(--color-danger-hover);
+    --btn-fg: var(--color-danger-contrast);
+    --btn-shadow: var(--shadow-danger);
+    --btn-shadow-hover: var(--shadow-danger-hover);
   }
 
-  &[data-size="sm"] {
-    --button-height: 2rem;
-    --button-padding: var(--space-3);
+  @media (hover: hover) {
+    &[data-variant="primary"]:hover:not(:disabled, [aria-disabled="true"]),
+    &[data-variant="danger"]:hover:not(:disabled, [aria-disabled="true"]) {
+      transform: translateY(-1px);
+    }
   }
 
-  &[data-size="lg"] {
-    --button-height: 2.5rem;
-    --button-padding: 1.25rem;
+  &[data-variant="secondary"] {
+    --btn-bg: var(--color-control);
+    --btn-bg-hover: var(--color-control-hover);
+    --btn-bg-active: var(--color-surface-sunken);
+    --btn-fg: var(--color-text);
+    --btn-shadow: var(--shadow-control);
+    --btn-shadow-hover: var(--shadow-control-hover);
   }
 
-  &[data-size="icon"] {
-    --button-padding: 0;
-    inline-size: var(--button-height);
+  &[data-variant="ghost"] {
+    --btn-fg: var(--color-text-muted);
+
+    @media (hover: hover) {
+      &:hover:not(:disabled, [aria-disabled="true"]) {
+        color: var(--color-text);
+      }
+    }
+  }
+
+  &[data-variant="link"] {
+    --btn-fg: var(--color-link);
+    --btn-bg-hover: transparent;
+    --btn-bg-active: transparent;
+    height: auto;
+    padding: 0;
+    font-weight: var(--font-weight-medium);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+    text-underline-offset: 3px;
+
+    @media (hover: hover) {
+      &:hover:not(:disabled, [aria-disabled="true"]) {
+        color: var(--color-link-hover);
+        text-decoration-color: currentColor;
+      }
+    }
+
+    &:active:not(:disabled, [aria-disabled="true"]) {
+      transform: none;
+    }
+  }
+}
+
+/* The spinner is drawn by the button itself, so that a script can turn loading on
+   with an attribute (bitopUi.button.setLoading). The drawing is the spinner's. */
+.root[data-loading]::before {
+  content: "";
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  margin-inline-start: -0.125rem;
+  background-color: currentColor;
+  mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.5"><circle cx="12" cy="12" r="9" stroke-opacity="0.2"/><path d="M21 12a9 9 0 0 0-9-9" stroke-linecap="round"/></svg>')
+    center / contain no-repeat;
+  animation: button-spin 700ms linear infinite;
+}
+
+.root[data-loading][data-size="sm"]::before {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+/* An icon-only button shows the spinner in place of its icon. */
+.root[data-loading][data-icon-only] {
+  & > * {
+    display: none;
+  }
+
+  &::before {
+    margin: 0;
+  }
+}
+
+@keyframes button-spin {
+  to {
+    transform: rotate(360deg);
   }
 }

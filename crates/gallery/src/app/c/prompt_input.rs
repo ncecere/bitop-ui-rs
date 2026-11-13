@@ -77,7 +77,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                     for status in ["ready", "submitted", "streaming", "error"] {
                         button(
                             size: ButtonSize::Sm,
-                            variant: ButtonVariant::Outline,
+                            variant: ButtonVariant::Secondary,
                             attrs: attributes! {
                                 data-gallery-attr="data-status"
                                 data-gallery-target="streaming-composer"

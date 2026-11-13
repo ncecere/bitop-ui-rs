@@ -19,7 +19,7 @@ export default async ({ page, check, focused, setDir }) => {
   check("markerSize", [Math.round(marker.width), Math.round(marker.height)], [24, 24]);
 
   // Actions are links; the current step's is the solid one. A done step has none.
-  check("actions", await started.locator("ol a").evaluateAll((all) => all.map((a) => [a.textContent.trim(), a.getAttribute("href"), a.dataset.variant])), [["Create", "#create", "solid"], ["Invite", "#invite", "outline"]]);
+  check("actions", await started.locator("ol a").evaluateAll((all) => all.map((a) => [a.textContent.trim(), a.getAttribute("href"), a.dataset.variant])), [["Create", "#create", "primary"], ["Invite", "#invite", "secondary"]]);
   check("doneHasNoAction", await list("Account setup").locator("ol a").count(), 0);
   const title = await steps.nth(1).getByText("Create a knowledge base").boundingBox();
   const action = await steps.nth(1).getByRole("link").boundingBox();

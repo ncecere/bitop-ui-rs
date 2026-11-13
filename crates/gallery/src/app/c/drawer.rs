@@ -91,7 +91,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                 drawer_footer(
                     drawer_close(
                         target: &left_id,
-                        variant: ButtonVariant::Solid,
+                        variant: ButtonVariant::Primary,
                         "Done"
                     )
                 )

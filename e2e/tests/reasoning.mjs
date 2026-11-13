@@ -25,7 +25,8 @@ export default async ({ page, check }) => {
   await page.waitForFunction(() => !document.getElementById("live-reasoning").querySelector("[data-shimmer][data-active]"));
   check("measured", /^Thought for \d+ seconds?$/.test(await label(live)), true);
   check("stillOpen", await live.evaluate((d) => d.open), true);
-  await page.waitForFunction(() => !document.getElementById("live-reasoning").open);
+  // The toggle event that records the time is queued after the close itself.
+  await page.waitForFunction(() => window.closeTimes.closed !== undefined);
   check("closedAfterDelay", await page.evaluate(() => window.closeTimes.closed - window.closeTimes.ended >= 950), true);
   check("focusToTrigger", await page.evaluate(() => document.activeElement.tagName), "SUMMARY");
   // Streaming again opens it; it closes on its own only once.

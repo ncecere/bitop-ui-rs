@@ -184,10 +184,51 @@ Crate: `bitop-ui-ai`.
 - [x] `audio-player`
 - [x] `transcription`
 
+## Parity with bitop-ui
+
+Every component was compared with bitop-ui's docs site, side by side in a browser
+(`e2e/compare.mjs`) and by using both. What differed, and is being fixed:
+
+- [x] The Inter font is served with the library (`bitop_ui::font`), as bitop-ui bundles it.
+- [x] `button`: ported again: primary, secondary, ghost, danger and link; `loading`,
+  `block`, `icon_only`, and `icon_button`.
+- [x] `avatar`'s initials follow bitop-ui (first two words, punctuation and particles
+  skipped, "?" for none).
+- [x] `voice-selector`: Enter in the search no longer submits the form around it.
+- [ ] `avatar`: sizes xs to xl, square shape, `decorative`, a tint chosen from the name.
+- [ ] `badge`: outline, `sm`, `dot`, `pulse`, `StatusBadge`, `StatusDot`, the ring.
+- [ ] `dialog`: sizes, the close button, the footer band, the place near the top, the
+  blurred backdrop; `alert_dialog`'s `busy`, `error` and `tone`.
+- [ ] `toast`: info and warning, an action, `promise`, `close(id)`, a collapsed stack with
+  `limit` and `position`, F6 to the region.
+- [ ] `tooltip`: `side`, `align`, `shortcut`, `delay`.
+- [ ] `popover`: title, description, `side`, opening on hover, focus moving in.
+- [ ] `tabs`: pills, counts, icons, scrolling overflow, nav tabs, manual activation.
+- [ ] `menu`, `context-menu`, `menubar`: item icons, 32px rows; ArrowDown on a trigger
+  opens; hovering another menubar menu while one is open.
+- [ ] `select`: a styled list with icons, descriptions and a check, and the field props.
+- [ ] `combobox`: several values as chips, a clear button, free text, option hints and
+  icons, `size`, `auto_highlight`, `limit`.
+- [ ] `command`: a trigger with its shortcut, item icons, hints and shortcuts, the footer,
+  matching each word with ranking.
+- [ ] `checkbox` and `switch`: indeterminate, groups, descriptions, the switch's label,
+  description and position, its size and off colour.
+- [ ] `field` and `input`: `Fieldset`, `Form`, `FormActions`; label and error sizes, the
+  error's icon; `input`'s `size` and start icon.
+- [ ] `sidebar`: the icon rail when collapsed; item icons, badges, dots and descriptions;
+  collapsible sections; brand, workspace switcher, user, top bar and skip link.
+- [ ] `slider`: a range with two thumbs. `input-otp`: `mask` and `normalize`.
+- [ ] Smaller ones: `scroll-area` orientation, `pagination` colours, `checkpoint`,
+  `empty-state` icon size, `bar-chart` solid fills and spacing, `save-bar` hiding when
+  the form is no longer dirty, `time`'s "—", `breadcrumbs`' "…", `model-selector`'s
+  End key and badges, `filter-bar`'s custom date range, `data-table`'s search icon,
+  `drawer`'s footer width, `context` moving focus into its card, `chat-example`'s
+  context meter.
+
 ## Known gaps in what is built
 
 - The first 20 components came from an earlier project and were mapped onto bitop-ui's tokens.
-  Their look has not yet been compared part by part with bitop-ui's.
+  They are being ported again from bitop-ui's source; see "Parity with bitop-ui" below.
 - There is also an `icon` component with a small set of Lucide icons, which bitop-ui gets from
   a React package.
 - `menu` items have no `shortcut` hint, and there is no `MenuHeader`.

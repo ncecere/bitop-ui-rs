@@ -189,7 +189,7 @@ pub async fn pagination_link(
     #[default] child: Child<'_>,
 ) -> Result<impl View> {
     let class = class!(button_css::ROOT, css::PAGE, attrs.remove("class"));
-    let variant = if active { "outline" } else { "ghost" };
+    let variant = if active { "secondary" } else { "ghost" };
     let label = (!label.is_empty()).then_some(label);
     Ok(view! {
         if disabled {
@@ -471,7 +471,7 @@ pub async fn paginator(
                                     aria-label=(label)
                                     aria-current=(active.then_some("page"))
                                     class=(class!(button_css::ROOT, css::PAGE))
-                                    data-variant=(if active { "outline" } else { "ghost" })
+                                    data-variant=(if active { "secondary" } else { "ghost" })
                                     data-size=(size)
                                     data-active=(active.then_some(""))
                                 >

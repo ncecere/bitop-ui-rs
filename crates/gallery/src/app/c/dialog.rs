@@ -36,7 +36,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                     dialog_close(target: &dialog_id, "Cancel")
                     dialog_close(
                         target: &dialog_id,
-                        variant: ButtonVariant::Solid,
+                        variant: ButtonVariant::Primary,
                         "Rename"
                     )
                 )

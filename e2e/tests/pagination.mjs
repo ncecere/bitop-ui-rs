@@ -8,7 +8,7 @@ export default async ({ page, base, check, focused, setDir }) => {
   // the current one, and an ellipsis where pages are skipped.
   check("range", await entries(main), ["Go to previous page", "Page 1", "More pages", "Page 4", "Page 5", "Page 6", "More pages", "Page 20", "Go to next page"]);
   const current = main.locator("[aria-current=page]");
-  check("current", [await current.count(), await current.textContent(), await current.getAttribute("aria-label"), await current.getAttribute("data-variant")], [1, "5", "Page 5", "outline"]);
+  check("current", [await current.count(), await current.textContent(), await current.getAttribute("aria-label"), await current.getAttribute("data-variant")], [1, "5", "Page 5", "secondary"]);
   check("links", await main.getByRole("link").evaluateAll((all) => all.map((a) => a.getAttribute("href").split("=")[1])), ["4", "1", "4", "5", "6", "20", "6"]);
   check("rel", [await main.getByRole("link", { name: "Go to previous page" }).getAttribute("rel"), await main.getByRole("link", { name: "Go to next page" }).getAttribute("rel")], ["prev", "next"]);
   check("stepText", [await main.getByRole("link", { name: "Go to previous page" }).textContent(), await main.getByRole("link", { name: "Go to next page" }).textContent()], ["Previous", "Next"]);

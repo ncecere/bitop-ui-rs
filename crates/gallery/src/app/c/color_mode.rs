@@ -18,7 +18,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
         example(
             title: "Toggle between light and dark",
             color_mode_toggle()
-            color_mode_toggle(label: "Dark theme", variant: ButtonVariant::Outline)
+            color_mode_toggle(label: "Dark theme", variant: ButtonVariant::Secondary)
         )
         example(title: "Select, with the system setting", color_mode_select())
     })

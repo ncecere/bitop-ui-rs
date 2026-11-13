@@ -10,9 +10,9 @@
 //! ```ignore
 //! view! {
 //!     button_group(label: "Pagination",
-//!         button(variant: ButtonVariant::Outline, "Previous")
+//!         button(variant: ButtonVariant::Secondary, "Previous")
 //!         button_group_text("Page 2 of 9")
-//!         button(variant: ButtonVariant::Outline, "Next")
+//!         button(variant: ButtonVariant::Secondary, "Next")
 //!     )
 //! }
 //! ```

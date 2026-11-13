@@ -215,7 +215,7 @@ pub async fn conversation_scroll_button(
                 aria-label=(label)
                 aria-describedby=(has_tooltip.then_some(tooltip))
                 data-tooltip=(has_tooltip.then_some(tooltip))
-                data-variant="outline"
+                data-variant="secondary"
                 data-size="icon"
                 class=(class!(button_css::ROOT, css::SCROLL))
             >

@@ -179,7 +179,7 @@ pub async fn carousel_previous(
     cx: &Cx,
     target: &str,
     #[default("Previous slide")] label: &str,
-    #[default(ButtonVariant::Outline)] variant: ButtonVariant,
+    #[default(ButtonVariant::Secondary)] variant: ButtonVariant,
     #[default] mut attrs: Attributes,
 ) -> Result<impl View> {
     Ok(view! {
@@ -204,7 +204,7 @@ pub async fn carousel_next(
     cx: &Cx,
     target: &str,
     #[default("Next slide")] label: &str,
-    #[default(ButtonVariant::Outline)] variant: ButtonVariant,
+    #[default(ButtonVariant::Secondary)] variant: ButtonVariant,
     #[default] mut attrs: Attributes,
 ) -> Result<impl View> {
     Ok(view! {

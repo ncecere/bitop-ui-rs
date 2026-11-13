@@ -409,7 +409,7 @@ pub async fn prompt_input_submit(
             data-label-stop=(stop_label)
             data-label-sending=(sending_label)
             data-labelled=(show_label.then_some(""))
-            data-variant="solid"
+            data-variant="primary"
             data-size=(if show_label { "sm" } else { "icon" })
             class=(class!(button_css::ROOT, css::SUBMIT, attrs.remove("class")))
             (attrs)

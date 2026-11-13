@@ -250,7 +250,7 @@ pub async fn voice_selector(
                 aria-label=(&trigger_label)
                 disabled=(disabled)
                 data-voice-trigger=""
-                data-variant="outline"
+                data-variant="secondary"
                 data-size=(if size == VoiceSelectorSize::Sm { "sm" } else { "md" })
                 class=(class!(button_css::ROOT, css::TRIGGER))
             >
@@ -361,7 +361,7 @@ pub async fn voice_selector(
                 dialog_actions(
                     dialog_close(
                         target: &close_id,
-                        variant: ButtonVariant::Solid,
+                        variant: ButtonVariant::Primary,
                         size: ButtonSize::Md,
                         (done_label)
                     )

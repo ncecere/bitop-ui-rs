@@ -30,7 +30,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                 target: &code_id,
                 label: "code",
                 show_text: true,
-                variant: ButtonVariant::Outline,
+                variant: ButtonVariant::Secondary,
                 timeout_ms: 600
             )
         )

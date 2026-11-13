@@ -435,7 +435,7 @@ pub async fn data_table(
                         menu_trigger(
                             target: &menu_id,
                             size: ButtonSize::Sm,
-                            variant: ButtonVariant::Outline,
+                            variant: ButtonVariant::Secondary,
                             icon(
                                 name: Icon::Columns3,
                                 attrs: attributes! { class=(css::COLUMNS_ICON) }
@@ -746,7 +746,7 @@ pub async fn data_table_more(
         <a
             href=(href)
             class=(class!(button_css::ROOT, attrs.remove("class")))
-            data-variant="outline"
+            data-variant="secondary"
             data-size="sm"
             (attrs)
         >

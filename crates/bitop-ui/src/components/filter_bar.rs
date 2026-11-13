@@ -842,7 +842,7 @@ pub async fn filter_bar(
                                     <button
                                         type="submit"
                                         class=(button_css::ROOT)
-                                        data-variant="solid"
+                                        data-variant="primary"
                                         data-size="sm"
                                     >
                                         (apply_label)
@@ -903,7 +903,7 @@ pub async fn filter_bar(
                     <button
                         type="submit"
                         class=(class!(button_css::ROOT, css::APPLY))
-                        data-variant="outline"
+                        data-variant="secondary"
                         data-size=(size)
                         data-filter-apply=""
                     >

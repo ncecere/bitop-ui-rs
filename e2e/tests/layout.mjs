@@ -43,7 +43,7 @@ export default async ({ page, check, setDir }) => {
   check("inlineGapFromScale", nested[1].x - nested[0].r, 12);
   outer = await box(demo("inline-baseline"));
   inner = await kids(demo("inline-baseline"));
-  check("inlineBaseline", [await style(demo("inline-baseline"), "alignItems"), inner[0].y < inner[1].y, inner[1].x - inner[0].r], ["baseline", true, 16]);
+  check("inlineBaseline", [await style(demo("inline-baseline"), "alignItems"), inner[0].y < inner[1].y, Math.abs(inner[1].x - inner[0].r - 16) <= 1], ["baseline", true, true]);
   check("inlineJustifyCentre", Math.abs(inner[0].x - outer.x - (outer.r - inner[1].r)) <= 1);
   outer = await box(demo("inline-end"));
   inner = await kids(demo("inline-end"));

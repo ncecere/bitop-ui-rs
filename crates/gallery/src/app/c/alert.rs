@@ -47,7 +47,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                     actions: view! {
                         button(
                             size: ButtonSize::Sm,
-                            variant: ButtonVariant::Outline,
+                            variant: ButtonVariant::Secondary,
                             "Try again"
                         )
                     },

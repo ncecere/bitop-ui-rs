@@ -43,7 +43,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                     </span>
                 },
                 actions: view! {
-                    button(variant: ButtonVariant::Outline, "Settings")
+                    button(variant: ButtonVariant::Secondary, "Settings")
                     button("Deploy")
                 },
                 attrs: attributes! { data-demo="full" style=(WIDE) }

@@ -22,7 +22,7 @@
 //!         confirmation_rejected("Rejected. Nothing was sent.")
 //!         confirmation_actions(action: "/tool-calls/7",
 //!             <input type="hidden" name="call" value="7">
-//!             confirmation_action(value: "reject", variant: ButtonVariant::Outline,
+//!             confirmation_action(value: "reject", variant: ButtonVariant::Secondary,
 //!                 "Reject")
 //!             confirmation_action(value: "approve", "Approve")
 //!         )

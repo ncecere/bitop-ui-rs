@@ -47,7 +47,7 @@ use crate::css::{button as button_css, menu as css, popover as popover_css};
 pub async fn menu_trigger(
     cx: &Cx,
     target: &str,
-    #[default(ButtonVariant::Outline)] variant: ButtonVariant,
+    #[default(ButtonVariant::Secondary)] variant: ButtonVariant,
     #[default] size: ButtonSize,
     #[default] mut attrs: Attributes,
     #[default] child: Child<'_>,

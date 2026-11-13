@@ -48,7 +48,8 @@ pub async fn color_mode_toggle(
             data-color-mode-toggle=""
             class=(class!(button_css::ROOT, css::TOGGLE, attrs.remove("class")))
             data-variant=(variant.as_str())
-            data-size=(ButtonSize::Icon.as_str())
+            data-size=(ButtonSize::Md.as_str())
+            data-icon-only=""
             (attrs)
         >
             icon(name: Icon::Sun)

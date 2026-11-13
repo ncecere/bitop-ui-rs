@@ -153,7 +153,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                                 table_actions(
                                     button(
                                         size: ButtonSize::Sm,
-                                        variant: ButtonVariant::Outline,
+                                        variant: ButtonVariant::Secondary,
                                         attrs: attributes! { aria-label=(format!("Roll back deployment {n}")) },
                                         "Roll back"
                                     )

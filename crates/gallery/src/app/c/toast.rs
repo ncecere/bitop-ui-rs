@@ -15,17 +15,17 @@ async fn show(cx: &Cx) -> Result<impl View> {
         example(
             title: "Raised by a script",
             button(
-                variant: ButtonVariant::Outline,
+                variant: ButtonVariant::Secondary,
                 attrs: attributes! { data-gallery-toast="neutral" },
                 "Show toast"
             )
             button(
-                variant: ButtonVariant::Outline,
+                variant: ButtonVariant::Secondary,
                 attrs: attributes! { data-gallery-toast="success" },
                 "Show success"
             )
             button(
-                variant: ButtonVariant::Outline,
+                variant: ButtonVariant::Secondary,
                 attrs: attributes! { data-gallery-toast="danger" },
                 "Show error"
             )

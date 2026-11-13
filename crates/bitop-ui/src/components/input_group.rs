@@ -140,11 +140,6 @@ pub async fn input_group_button(
     #[default] child: Child<'_>,
 ) -> Result<impl View> {
     let typed = attrs.contains_key("type");
-    let size = if icon_only {
-        ButtonSize::Icon
-    } else {
-        ButtonSize::Sm
-    };
     Ok(view! {
         <button
             if !typed {
@@ -152,7 +147,8 @@ pub async fn input_group_button(
             }
             class=(class!(button_css::ROOT, css::BUTTON, attrs.remove("class")))
             data-variant=(variant.as_str())
-            data-size=(size.as_str())
+            data-size=(ButtonSize::Sm.as_str())
+            data-icon-only=(icon_only.then_some(""))
             (attrs)
         >
             (child)

@@ -43,7 +43,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                         <input type="hidden" name="call" value="call-7">
                         confirmation_action(
                             value: "reject",
-                            variant: ButtonVariant::Outline,
+                            variant: ButtonVariant::Secondary,
                             "Reject"
                         )
                         confirmation_action(value: "approve", "Approve")
@@ -64,7 +64,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                     confirmation_actions(
                         confirmation_action(
                             value: "reject",
-                            variant: ButtonVariant::Outline,
+                            variant: ButtonVariant::Secondary,
                             "Keep it"
                         )
                         confirmation_action(
