@@ -1,7 +1,7 @@
 # Roadmap
 
 The target is every component in [bitop-ui](https://github.com/ncecere/bitop-ui): 120 in all.
-109 are built. The base set comes first, then the AI set as its own crate.
+120 are built. The base set comes first, then the AI set as its own crate.
 
 Names are bitop-ui's. A few live together here, as they do there: `switch` is in the `checkbox`
 module, `textarea` in `input`, `alert dialog` in `dialog`, and `app-shell` is `sidebar`.
@@ -158,21 +158,21 @@ Crate: `bitop-ui-ai`.
 - [x] `question`
 - [x] `questionnaire`
 
-## AI: code and developer (0 of 11)
+## AI: code and developer (11 of 11)
 
 Crate: `bitop-ui-ai`.
 
-- [ ] `snippet`
-- [ ] `terminal`
-- [ ] `file-tree`
-- [ ] `commit`
-- [ ] `stack-trace`
-- [ ] `test-results`
-- [ ] `schema-display`
-- [ ] `environment-variables`
-- [ ] `package-info`
-- [ ] `sandbox`
-- [ ] `web-preview`
+- [x] `snippet`
+- [x] `terminal`
+- [x] `file-tree`
+- [x] `commit`
+- [x] `stack-trace`
+- [x] `test-results`
+- [x] `schema-display`
+- [x] `environment-variables`
+- [x] `package-info`
+- [x] `sandbox`
+- [x] `web-preview`
 
 ## AI: voice (5 of 5)
 
@@ -243,3 +243,21 @@ Crate: `bitop-ui-ai`.
 - The context card, the plan, the confirmation, question, artifact and agent cards, and
   their sections are named with `aria-label` rather than by an element inside them,
   because of a crash in Playwright's Firefox (see the contributing guide).
+- The code and developer components render on the server too. `stack-trace`,
+  `terminal` and `schema-display` parse on the server (a stack, ANSI codes, a JSON
+  Schema through the base set's JSON parser); callbacks (`onFrameClick`, `onClear`,
+  `onSelect`, `onExpandedChange`, `onUrlChange`, `onShowValuesChange`) are DOM events or
+  the native `change` and `toggle` events, and controlled values are initial values.
+  Each module's documentation lists its differences.
+- `terminal` streams by having the app append server-rendered spans
+  (`terminal_chunk`): ANSI styles start fresh at each chunk, and a `\r` rewrites only
+  lines within the chunk it arrives in.
+- `web-preview`'s spinner shows only for loads the script starts, not the first one.
+  There is no `useWebPreview`.
+- `commit`'s and `stack-trace`'s triggers are buttons with `aria-expanded` (upstream's
+  collapsible) beside other buttons; `test-results`, `sandbox` and the sections of
+  `schema-display` are `<details>`. `file-tree` items are named by their row's text, not
+  through `aria-labelledby`, because of the Playwright Firefox crash.
+- `package-info`, `environment-variables`, `test-results` and `schema-display` show the
+  base badge in upstream's small size and info colour with styles of their own, as the
+  base badge has neither.

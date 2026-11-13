@@ -1,0 +1,196 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  min-inline-size: 0;
+  border-radius: var(--radius-3);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-ring);
+  /* Lets the panel's height run from 0 to auto where the browser can do that. */
+  interpolate-size: allow-keywords;
+}
+
+/* The panel opens through the box the browser puts around a <details>'s content. A
+   rule of its own: a browser that does not know the pseudo-element drops the rule. */
+.root::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition:
+    block-size var(--motion-duration-normal) var(--motion-ease-out),
+    content-visibility var(--motion-duration-normal) allow-discrete;
+}
+
+.root[open]::details-content {
+  block-size: auto;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  inline-size: 100%;
+  min-block-size: var(--control-height-lg);
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  border-radius: var(--radius-3);
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  text-align: start;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color var(--motion-duration-fast) var(--motion-ease-out);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--color-surface-hover);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+
+  .root[open] > & {
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+  }
+}
+
+/* Safari draws the disclosure triangle with its own pseudo-element. */
+.trigger::-webkit-details-marker {
+  display: none;
+}
+
+.icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--color-text-muted);
+
+  & [data-icon] {
+    inline-size: 0.9375rem;
+    block-size: 0.9375rem;
+  }
+}
+
+.title {
+  min-inline-size: 0;
+  overflow: hidden;
+  font-weight: var(--font-weight-medium);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.badge {
+  flex: none;
+}
+
+.summary {
+  min-inline-size: 0;
+  overflow: hidden;
+  color: var(--color-text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  flex: none;
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+  margin-inline-start: auto;
+  color: var(--color-text-muted);
+  transition: rotate var(--motion-duration-fast) var(--motion-ease-out);
+
+  .root[open] > .trigger & {
+    rotate: 180deg;
+  }
+}
+
+.content {
+  border-block-start: 1px solid var(--color-border);
+}
+
+.tabs {
+  gap: 0;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-inline: var(--space-3);
+  box-shadow: inset 0 -1px 0 var(--color-border);
+}
+
+.list {
+  flex: 1;
+  min-inline-size: 0;
+  border-block-end: 0;
+}
+
+.tab {
+  font-size: var(--font-size-sm);
+}
+
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+
+  &:empty {
+    display: none;
+  }
+}
+
+.tabPanel {
+  padding: var(--space-3);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.output {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-2);
+  background-color: var(--color-danger-subtle);
+  box-shadow: inset 0 0 0 1px var(--color-danger-border);
+  color: var(--color-danger-text);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.errorIcon {
+  flex: none;
+  inline-size: 1rem;
+  block-size: 1rem;
+  margin-block-start: 0.125rem;
+}
+
+.empty {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trigger,
+  .chevron,
+  .root::details-content {
+    transition: none;
+  }
+}

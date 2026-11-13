@@ -1,6 +1,7 @@
 mod c;
 mod healthz;
 mod kit;
+mod preview;
 
 use bitop_ui::components::{
     select::select,
@@ -527,6 +528,66 @@ pub const GROUPS: &[Group] = &[
                 "questionnaire",
                 "Questionnaire",
                 "Several questions, one step at a time, with a review."
+            ),
+        ],
+    },
+    Group {
+        title: "AI: code and developer",
+        entries: &[
+            entry!(
+                "snippet",
+                "Snippet",
+                "A one-line command with a copy button."
+            ),
+            entry!(
+                "package-info",
+                "Package info",
+                "A dependency change: versions, kind of change and dependencies."
+            ),
+            entry!(
+                "environment-variables",
+                "Environment variables",
+                "Variables with masked values, a reveal toggle and copy."
+            ),
+            entry!(
+                "commit",
+                "Commit",
+                "A commit's message, author and hash, and the files it changed."
+            ),
+            entry!(
+                "test-results",
+                "Test results",
+                "A test run: counts, pass rate, suites and failures."
+            ),
+            entry!(
+                "stack-trace",
+                "Stack trace",
+                "An error's stack, parsed, with internal frames folded."
+            ),
+            entry!(
+                "schema-display",
+                "Schema display",
+                "An API endpoint or a JSON Schema, with nested properties."
+            ),
+            entry!(
+                "file-tree",
+                "File tree",
+                "Folders and files as a tree, with the keyboard model of one."
+            ),
+            entry!(
+                "terminal",
+                "Terminal",
+                "Command output with ANSI colours that follows the stream."
+            ),
+            entry!(
+                "sandbox",
+                "Sandbox",
+                "Code an assistant ran, with its output, in tabs."
+            ),
+            entry!(
+                "web-preview",
+                "Web preview",
+                "A sandboxed frame with an address bar and a console."
             ),
         ],
     },

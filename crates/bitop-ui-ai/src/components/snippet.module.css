@@ -1,0 +1,50 @@
+.root {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  max-inline-size: 100%;
+  min-block-size: 2.5rem;
+  padding-block: var(--space-1);
+  padding-inline: var(--space-3) var(--space-1);
+  border-radius: var(--radius-3);
+  background-color: var(--color-surface-sunken);
+  box-shadow: var(--shadow-ring);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+}
+
+/* The prompt and the command, left to right in any page. */
+.line {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--space-2);
+  min-inline-size: 0;
+}
+
+.prefix {
+  flex: none;
+  color: var(--color-text-subtle);
+  user-select: none;
+}
+
+.code {
+  flex: 1;
+  min-inline-size: 0;
+  overflow-x: auto;
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: inherit;
+  white-space: nowrap;
+  scrollbar-width: thin;
+
+  &:focus-visible {
+    border-radius: var(--radius-1);
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.copy {
+  flex: none;
+}
