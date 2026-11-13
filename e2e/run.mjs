@@ -15,7 +15,14 @@ const names = readdirSync(new URL("./tests/", import.meta.url))
   .filter((name) => only.length === 0 || only.includes(name))
   .sort();
 
-const browser = await playwright[engine].launch();
+// Fake media devices, where the engine has them, for the voice pages: a fake
+// microphone that is allowed without a prompt. No other page uses media devices, so
+// this changes nothing for them. WebKit has no such switch; its checks feature-test.
+const launchOptions = {
+  chromium: { args: ["--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream"] },
+  firefox: { firefoxUserPrefs: { "media.navigator.streams.fake": true, "media.navigator.permission.disabled": true } },
+};
+const browser = await playwright[engine].launch(launchOptions[engine] ?? {});
 let total = 0;
 const failures = [];
 

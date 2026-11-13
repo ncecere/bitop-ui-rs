@@ -1,7 +1,7 @@
 # Roadmap
 
 The target is every component in [bitop-ui](https://github.com/ncecere/bitop-ui): 120 in all.
-92 are built. The base set comes first, then the AI set as its own crate.
+109 are built. The base set comes first, then the AI set as its own crate.
 
 Names are bitop-ui's. A few live together here, as they do there: `switch` is in the `checkbox`
 module, `textarea` in `input`, `alert dialog` in `dialog`, and `app-shell` is `sidebar`.
@@ -141,22 +141,22 @@ Crate: `bitop-ui-ai`.
 - [x] `image`
 - [x] `open-in-chat`
 
-## AI: agents and tools (0 of 12)
+## AI: agents and tools (12 of 12)
 
 Crate: `bitop-ui-ai`.
 
-- [ ] `tool`
-- [ ] `confirmation`
-- [ ] `task`
-- [ ] `plan`
-- [ ] `chain-of-thought`
-- [ ] `queue`
-- [ ] `checkpoint`
-- [ ] `context`
-- [ ] `agent`
-- [ ] `artifact`
-- [ ] `question`
-- [ ] `questionnaire`
+- [x] `tool`
+- [x] `confirmation`
+- [x] `task`
+- [x] `plan`
+- [x] `chain-of-thought`
+- [x] `queue`
+- [x] `checkpoint`
+- [x] `context`
+- [x] `agent`
+- [x] `artifact`
+- [x] `question`
+- [x] `questionnaire`
 
 ## AI: code and developer (0 of 11)
 
@@ -174,15 +174,15 @@ Crate: `bitop-ui-ai`.
 - [ ] `sandbox`
 - [ ] `web-preview`
 
-## AI: voice (0 of 5)
+## AI: voice (5 of 5)
 
 Crate: `bitop-ui-ai`.
 
-- [ ] `speech-input`
-- [ ] `mic-selector`
-- [ ] `voice-selector`
-- [ ] `audio-player`
-- [ ] `transcription`
+- [x] `speech-input`
+- [x] `mic-selector`
+- [x] `voice-selector`
+- [x] `audio-player`
+- [x] `transcription`
 
 ## Known gaps in what is built
 
@@ -226,3 +226,20 @@ Crate: `bitop-ui-ai`.
 - `image` turns bytes into a `data:` URL on the server rather than an object URL. Its
   loading placeholder is not shown on its gallery page, as nothing there loads slowly;
   the check reaches it.
+- The agent and voice components render on the server too. `plan`'s toggle, the steps of
+  a `questionnaire` and every voice part need the library script; without it a plan stays
+  as rendered, a questionnaire shows its first step only, and the voice controls stay
+  disabled. Callbacks (`onRestore`, `onSubmit`, `onSkip`, `onSeek`, `onPreview`,
+  `onTranscriptionChange`, `onAudioRecorded`) are form submissions, DOM events, or a
+  target text box; controlled values are initial values.
+- `tool` and `agent` take their input, output and schemas as text the caller has
+  formatted; upstream's `formatToolValue` (any value to JSON) is not ported.
+- `question`'s multiple-choice group is a `<fieldset>` of the base checkboxes, as the base
+  set has no checkbox group. `questionnaire`'s Edit is a ghost button (no link variant).
+- `context` writes numbers the English way and money through a format string, not `Intl`;
+  1,250,000 tokens round to "1.2M" where `Intl` says "1.3M".
+- `mic-selector` has no `useAudioInputs` or `formatLabel`; `voice-selector` has no voice
+  icons or custom trigger; `transcription` has no render function for segments.
+- The context card, the plan, the confirmation, question, artifact and agent cards, and
+  their sections are named with `aria-label` rather than by an element inside them,
+  because of a crash in Playwright's Firefox (see the contributing guide).

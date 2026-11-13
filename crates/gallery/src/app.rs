@@ -465,6 +465,101 @@ pub const GROUPS: &[Group] = &[
             ),
         ],
     },
+    Group {
+        title: "AI: agents and tools",
+        entries: &[
+            entry!(
+                "checkpoint",
+                "Checkpoint",
+                "A marker for a saved state, with a button that restores it."
+            ),
+            entry!(
+                "task",
+                "Task",
+                "A unit of agent work that opens to show what it touched."
+            ),
+            entry!(
+                "plan",
+                "Plan",
+                "The steps an agent proposes, as they stream in."
+            ),
+            entry!(
+                "chain-of-thought",
+                "Chain of thought",
+                "An agent's visible steps, as a timeline."
+            ),
+            entry!(
+                "queue",
+                "Queue",
+                "Messages waiting to be sent, or an agent's to-do list."
+            ),
+            entry!(
+                "context",
+                "Context",
+                "How much of the model's context window is used."
+            ),
+            entry!(
+                "confirmation",
+                "Confirmation",
+                "Approve or reject a tool call before it runs."
+            ),
+            entry!(
+                "tool",
+                "Tool",
+                "One tool call, with its state, input and output."
+            ),
+            entry!(
+                "artifact",
+                "Artifact",
+                "A panel for something the assistant made."
+            ),
+            entry!(
+                "agent",
+                "Agent",
+                "An agent's model, instructions, tools and output schema."
+            ),
+            entry!(
+                "question",
+                "Question",
+                "A question an agent asks, answered in the chat."
+            ),
+            entry!(
+                "questionnaire",
+                "Questionnaire",
+                "Several questions, one step at a time, with a review."
+            ),
+        ],
+    },
+    Group {
+        title: "AI: voice",
+        entries: &[
+            entry!(
+                "transcription",
+                "Transcription",
+                "A timed transcript that follows playback and seeks."
+            ),
+            entry!(
+                "audio-player",
+                "Audio player",
+                "Play, seek, volume and speed for an audio clip."
+            ),
+            entry!(
+                "mic-selector",
+                "Mic selector",
+                "Choose a microphone, after asking for access."
+            ),
+            entry!(
+                "voice-selector",
+                "Voice selector",
+                "Choose a voice in a dialog, with search and previews."
+            ),
+            entry!(
+                "speech-input",
+                "Speech input",
+                "A microphone toggle that turns speech into text."
+            ),
+        ],
+    },
 ];
 
 pub fn router() -> RouterBuilder {

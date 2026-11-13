@@ -89,3 +89,38 @@ document.addEventListener("click", async (event) => {
   if (announcer) announcer.dataset.status = "ready";
   button.disabled = false;
 });
+
+// The confirmation page's card that is answered in script: the page cancels the form
+// and sets the state itself, as an app that calls its server with fetch would.
+document.addEventListener("bitop:confirmation", (event) => {
+  const card = event.target;
+  if (!(card instanceof Element) || !card.hasAttribute("data-gallery-confirm")) return;
+  event.preventDefault();
+  card.dataset.state = event.detail.value === "approve" ? "accepted" : "rejected";
+});
+
+// The question page's card that is answered in script.
+document.addEventListener("bitop:question-submit", (event) => {
+  const form = event.target;
+  if (!(form instanceof Element) || !form.hasAttribute("data-gallery-answer")) return;
+  event.preventDefault();
+  form.dataset.state = event.detail.skipped ? "skipped" : "answered";
+});
+
+// The questionnaire page's forms that are sent in script.
+document.addEventListener("bitop:questionnaire-submit", (event) => {
+  const form = event.target;
+  if (!(form instanceof Element) || !form.hasAttribute("data-gallery-questionnaire")) return;
+  event.preventDefault();
+  form.dataset.sent = JSON.stringify(event.detail.answers);
+});
+
+// The voice selector page's list whose previews the page plays itself (here it only
+// marks the voice as playing).
+document.addEventListener("bitop:voice-preview", (event) => {
+  const root = event.target;
+  if (!(root instanceof Element) || !root.hasAttribute("data-gallery-voice")) return;
+  event.preventDefault();
+  if (event.detail.playing) delete root.dataset.previewing;
+  else root.dataset.previewing = event.detail.id;
+});

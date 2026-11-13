@@ -1,0 +1,59 @@
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  box-sizing: border-box;
+  inline-size: 100%;
+  min-inline-size: 0;
+  padding: var(--space-2);
+  border-radius: var(--radius-3);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-ring);
+  font-size: var(--font-size-sm);
+}
+
+.audio {
+  display: none;
+}
+
+.button[data-size] {
+  --button-height: 2rem;
+}
+
+.play[data-size] {
+  border-radius: var(--radius-full);
+}
+
+/* The play button shows Play or Pause, the mute button one volume icon. */
+.root:not([data-playing]) .play [data-icon="pause"],
+.root[data-playing] .play [data-icon="play"] {
+  display: none;
+}
+
+.time {
+  flex: none;
+  min-inline-size: 2.5rem;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.seek {
+  flex: 1 1 8rem;
+  min-inline-size: 6rem;
+}
+
+.volume {
+  flex: 0 1 5rem;
+  min-inline-size: 3.5rem;
+}
+
+.rate {
+  flex: none;
+
+  & select {
+    min-inline-size: 4.5rem;
+  }
+}

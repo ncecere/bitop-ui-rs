@@ -1,0 +1,204 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-inline-size: 0;
+  /* Lets the panel's height run from 0 to auto where the browser can do that. */
+  interpolate-size: allow-keywords;
+}
+
+/* The panel opens through the box the browser puts around a <details>'s content. A
+   rule of its own: a browser that does not know the pseudo-element drops the rule. */
+.root::details-content {
+  inline-size: 100%;
+  block-size: 0;
+  overflow: clip;
+  transition:
+    block-size var(--motion-duration-normal) var(--motion-ease-out),
+    content-visibility var(--motion-duration-normal) allow-discrete;
+}
+
+.root[open]::details-content {
+  block-size: auto;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: var(--control-height-sm);
+  padding: 0 var(--space-2);
+  margin-inline-start: calc(var(--space-2) * -1);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--color-surface-hover);
+      color: var(--color-text);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+/* Safari draws the disclosure triangle with its own pseudo-element. */
+.trigger::-webkit-details-marker {
+  display: none;
+}
+
+.triggerIcon {
+  display: inline-flex;
+
+  & [data-icon] {
+    inline-size: 1rem;
+    block-size: 1rem;
+  }
+}
+
+.chevron {
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+  transition: rotate var(--motion-duration-fast) var(--motion-ease-out);
+
+  .root[open] > .trigger & {
+    rotate: 180deg;
+  }
+}
+
+.panel {
+  inline-size: 100%;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  position: relative;
+  display: flex;
+  gap: var(--space-3);
+  padding-block-end: var(--space-4);
+
+  /* The connecting line between markers. */
+  &:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    inset-block: 1.5rem 0.25rem;
+    inset-inline-start: 0.6875rem;
+    inline-size: 1px;
+    background-color: var(--color-border-emphasis);
+  }
+
+  &:last-child {
+    padding-block-end: 0;
+  }
+}
+
+.marker {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: 1.375rem;
+  block-size: 1.375rem;
+  border-radius: var(--radius-full);
+  background-color: var(--color-neutral-subtle);
+  color: var(--color-text-muted);
+
+  & [data-icon] {
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+  }
+
+  .step[data-status="complete"] & {
+    background-color: var(--color-success-subtle);
+    color: var(--color-success-text);
+  }
+
+  .step[data-status="active"] & {
+    background-color: var(--color-primary-subtle);
+    color: var(--color-primary-subtle-text);
+  }
+}
+
+/* The active step's marker: a filled dot. */
+.dot {
+  inline-size: 0.5rem;
+  block-size: 0.5rem;
+  border-radius: var(--radius-full);
+  background-color: currentColor;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-inline-size: 0;
+  padding-block-start: 0.0625rem;
+}
+
+.label {
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+  line-height: 1.25rem;
+
+  .step[data-status="pending"] & {
+    color: var(--color-text-muted);
+  }
+}
+
+.description {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.results {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-block-start: var(--space-1);
+}
+
+.result {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  block-size: 1.5rem;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-pill);
+  background-color: var(--color-neutral-subtle);
+  color: var(--color-neutral-text);
+  font-size: var(--font-size-xs);
+
+  & [data-icon],
+  & img {
+    inline-size: 0.875rem;
+    block-size: 0.875rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root::details-content {
+    transition: none;
+  }
+
+  .chevron {
+    transition: none;
+  }
+}

@@ -1,0 +1,41 @@
+.root {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  inline-size: 100%;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.line {
+  flex: 1;
+  block-size: 1px;
+  background-color: var(--color-border-emphasis);
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-weight: var(--font-weight-medium);
+}
+
+.icon {
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+}
+
+.time {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-regular);
+
+  &::before {
+    content: "·";
+    margin-inline: var(--space-1);
+  }
+}
+
+/* Two classes: the button module's size rule has one. */
+.root .restore {
+  font-size: var(--font-size-xs);
+}

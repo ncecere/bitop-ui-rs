@@ -1,0 +1,88 @@
+.root {
+  display: flex;
+  gap: var(--space-3);
+  inline-size: 100%;
+  padding: var(--space-4);
+  border-radius: var(--radius-card);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-1);
+  outline: 0;
+
+  &:focus-visible {
+    box-shadow: var(--shadow-1), var(--shadow-focus);
+  }
+
+  &[data-state="requested"] {
+    background-color: var(--color-warning-subtle);
+    box-shadow: inset 0 0 0 1px var(--color-warning-border);
+  }
+
+  &[data-state="requested"]:focus-visible {
+    box-shadow: inset 0 0 0 1px var(--color-warning-border), var(--shadow-focus);
+  }
+}
+
+.icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--color-text-muted);
+
+  & [data-icon] {
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+  }
+
+  .root[data-state="requested"] & {
+    color: var(--color-warning-text);
+  }
+
+  .root[data-state="accepted"] & {
+    color: var(--color-success-text);
+  }
+
+  .root[data-state="rejected"] & {
+    color: var(--color-danger-text);
+  }
+}
+
+/* Every state's icon and text are rendered; the state shows its own. */
+.root:not([data-state="requested"]) [data-when="requested"],
+.root:not([data-state="accepted"]) [data-when="accepted"],
+.root:not([data-state="rejected"]) [data-when="rejected"] {
+  display: none;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-inline-size: 0;
+}
+
+.title {
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.25rem;
+}
+
+.text {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+
+  .root[data-state="requested"] & {
+    color: var(--color-warning-text);
+  }
+}
+
+.outcome {
+  color: var(--color-text-muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-block-start: var(--space-1);
+}
