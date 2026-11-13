@@ -52,6 +52,15 @@ for (const name of names) {
     axe,
     button: (label) => page.getByRole("button", { name: label, exact: true }),
     focused: () => page.evaluate(() => document.activeElement?.textContent?.trim()),
+    // The focused element's text without what is hidden from assistive technology,
+    // such as a menu item's shortcut hint.
+    focusedLabel: () =>
+      page.evaluate(() => {
+        const element = document.activeElement?.cloneNode(true);
+        if (!element) return undefined;
+        for (const hidden of element.querySelectorAll('[aria-hidden="true"]')) hidden.remove();
+        return element.textContent.trim();
+      }),
     // Waits for an entry transition to end. Headless WebKit starts transitions late,
     // so a fixed wait is not reliable, and neither is one look at the style: before the
     // transition starts, the style already has its end values. The element must also

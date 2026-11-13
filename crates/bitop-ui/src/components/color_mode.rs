@@ -27,7 +27,7 @@ use topcoat::{
 use super::{
     button::{ButtonSize, ButtonVariant},
     icon::{Icon, icon},
-    select::select,
+    select::native_select,
 };
 use crate::css::{button as button_css, color_mode as css};
 
@@ -71,7 +71,7 @@ pub async fn color_mode_select(
 ) -> Result<impl View> {
     let class = attrs.remove("class");
     Ok(view! {
-        select(
+        native_select(
             attrs: attributes! {
                 aria-label=(label)
                 data-color-mode-select=""

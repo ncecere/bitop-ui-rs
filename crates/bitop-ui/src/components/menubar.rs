@@ -9,9 +9,12 @@
 //! does moving the pointer over another top-level menu. Escape closes the menu and
 //! returns focus to its button.
 //!
-//! Differences from upstream: the items are [`menu`](super::menu)'s, re-exported
-//! under `menubar_*` names, checkbox items, radio items, groups and submenus
-//! included. The gap between the bar and a popup is the CSS variable `--popover-gap`,
+//! The items are [`menu`](super::menu)'s, re-exported under `menubar_*` names: icons,
+//! shortcut hints, the danger tone, links, checkbox and radio items, groups and
+//! submenus.
+//!
+//! Differences from upstream: the bar is not modal, so the page behind an open menu can
+//! still be pointed at; a click outside closes the menu. The gap between the bar and a popup is the CSS variable `--popover-gap`,
 //! not a prop.
 //!
 //! ```ignore
@@ -38,7 +41,7 @@ use topcoat::{
 };
 
 pub use super::menu::{
-    MenuItemVariant, menu_checkbox_item as menubar_checkbox_item, menu_group as menubar_group,
+    MenuItemTone, menu_checkbox_item as menubar_checkbox_item, menu_group as menubar_group,
     menu_item as menubar_item, menu_radio_group as menubar_radio_group,
     menu_radio_item as menubar_radio_item, menu_separator as menubar_separator,
     menu_submenu as menubar_submenu,
@@ -106,11 +109,13 @@ pub async fn menubar_menu(
         <div
             id=(id)
             popover="auto"
-            class=(class!(popover_css::POPUP, css::POPUP))
+            class=(class!(popover_css::SURFACE, css::POPUP))
             data-align=(align.as_str())
             data-menubar-popup=""
         >
-            <div role="menu" aria-label=(label) class=(menu_css::LIST)>(child)</div>
+            <div role="menu" tabindex="-1" aria-label=(label) class=(menu_css::LIST)>
+                (child)
+            </div>
         </div>
     })
 }

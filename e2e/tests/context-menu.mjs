@@ -1,21 +1,25 @@
-export default async ({ page, check, axe, button, focused, settled, setDir }) => {
+export default async ({ page, check, axe, button, focusedLabel: focused, settled, setDir }) => {
   const area = page.getByRole("group", { name: "Canvas" });
-  const popup = page.locator("[data-context-menu-popup]", { hasText: "Duplicate" });
+  const popup = page.locator("[data-context-menu-popup]", { hasText: "Paste in place" });
   const open = (p = popup) => p.evaluate((el) => el.matches(":popover-open"));
   // Waits, with the usual time limit, for a popover to be open or closed.
   const untilOpen = async (popup, want) =>
     page.waitForFunction(([el, w]) => el.matches(":popover-open") === w, [await popup.elementHandle(), want]);
   const a = await area.boundingBox();
 
-  // Right-click opens the menu at the pointer, with focus on the first item.
+  // Right-click opens the menu at the pointer, with focus on the menu, as upstream:
+  // no item is highlighted until a key or the pointer moves to one.
   await page.mouse.click(a.x + 60, a.y + 40, { button: "right" });
   await untilOpen(popup, true);
   await settled(popup);
   let p = await popup.boundingBox();
   check("atPointer", [Math.round(p.x - a.x), Math.round(p.y - a.y)], [60, 40]);
   check("menu", await page.getByRole("menu", { name: "Canvas actions" }).count(), 1);
-  await page.waitForFunction(() => document.activeElement?.getAttribute("role") === "menuitem");
+  await page.waitForFunction(() => document.activeElement?.getAttribute("role") === "menu");
+  check("menuFocused", await page.evaluate(() => document.activeElement.getAttribute("aria-label")), "Canvas actions");
+  await page.keyboard.press("ArrowDown");
   check("firstFocus", await focused(), "Copy");
+  check("itemIcon", await page.evaluate(() => document.activeElement.querySelector("[data-icon]")?.dataset.icon), "copy");
   check("triggerMarked", await area.evaluate((el) => el.hasAttribute("data-popup-open")));
   check("axeOpen", await axe(), []);
 
@@ -90,7 +94,7 @@ export default async ({ page, check, axe, button, focused, settled, setDir }) =>
   check("enterChooses", await open(), false);
 
   // Around a control: the key works from the control inside the area.
-  const report = page.locator("[data-context-menu-popup]", { hasText: "Rename" });
+  const report = page.locator("[data-context-menu-popup]:has([aria-label=\"Report actions\"])");
   await button("Quarterly report").focus();
   await page.keyboard.press("Shift+F10");
   await untilOpen(report, true);
@@ -107,6 +111,8 @@ export default async ({ page, check, axe, button, focused, settled, setDir }) =>
   const untilFocused = (text) => page.waitForFunction((t) => document.activeElement?.textContent.trim() === t, text);
   await layer.click({ button: "right", position: { x: 30, y: 30 } });
   await untilOpen(layerMenu, true);
+  await page.waitForFunction(() => document.activeElement?.getAttribute("role") === "menu");
+  await page.keyboard.press("ArrowDown");
   await untilFocused("Visible");
   const visibleItem = layerMenu.getByRole("menuitemcheckbox", { name: "Visible" });
   await page.keyboard.press("Enter");
@@ -134,6 +140,21 @@ export default async ({ page, check, axe, button, focused, settled, setDir }) =>
   await untilOpen(layerMenu, false);
   await page.waitForFunction(() => !document.querySelector("[data-popup-open]"));
   check("chooseInSubmenuClosesAll", [await open(arrange), await layer.evaluate((el) => el.hasAttribute("data-popup-open"))], [false, false]);
+
+  // Upstream's file row: icons, shortcut hints, a link, a submenu with an icon, danger.
+  const file = page.locator("[data-context-menu]", { hasText: "quarterly-report.pdf" });
+  const fileMenu = page.locator("[data-context-menu-popup]", { hasText: "Move to trash" });
+  await file.click({ button: "right", position: { x: 40, y: 10 } });
+  await untilOpen(fileMenu, true);
+  await page.waitForFunction(() => document.activeElement?.getAttribute("role") === "menu");
+  check("fileItems", await fileMenu.locator(":scope > [role=menu] > [role=menuitem]").evaluateAll((all) => all.map((el) => [el.querySelector("[data-icon]")?.dataset.icon, el.querySelector("[aria-hidden=true]:not([data-icon])")?.textContent ?? ""].join(" ").trim())), [
+    "pencil F2", "copy ⌘D", "download", "share-2", "trash-2 ⌫",
+  ]);
+  check("fileDanger", await fileMenu.getByRole("menuitem", { name: "Move to trash" }).getAttribute("data-tone"), "danger");
+  await page.keyboard.press("End");
+  check("fileEnd", await focused(), "Move to trash");
+  await page.keyboard.press("Escape");
+  await untilOpen(fileMenu, false);
 
   // Disabled: nothing of ours opens, and the event is left to the browser.
   const prevented = await page.getByText("Nothing of ours opens here").evaluate((el) => {

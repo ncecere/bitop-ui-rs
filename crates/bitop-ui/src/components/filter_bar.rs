@@ -60,7 +60,7 @@ use topcoat::{
 use super::{
     calendar::Date,
     icon::{Icon, icon},
-    select::select,
+    select::native_select,
 };
 use crate::{
     css::{button as button_css, checkbox as checkbox_css, filter_bar as css},
@@ -780,7 +780,7 @@ pub async fn filter_bar(
                                 (facet.label.clone())
                             </label>
                             <div class=(css::SELECT)>
-                                select(
+                                native_select(
                                     attrs: attributes! {
                                         id=(facet.label_id.clone())
                                         name=(facet.id.clone())

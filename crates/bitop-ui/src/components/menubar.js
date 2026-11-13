@@ -43,10 +43,18 @@ function barKeys(bar) {
 // Opens the trigger's menu with focus on its first item, or its last. The click goes
 // through the button, so that the browser anchors the popup to it and returns focus to
 // it when the menu closes.
-function openBarMenu(trigger, last = false) {
+function openBarMenu(trigger, last = false, byPointer = false) {
   const popup = barPopup(trigger);
   if (!popup) return;
   trigger.focus();
+  if (byPointer) {
+    // As a click: focus goes to the menu, not to an item.
+    if (!popup.matches(":popover-open")) {
+      window.bitopUi.menu.focusMenu(popup);
+      trigger.click();
+    }
+    return;
+  }
   if (!popup.matches(":popover-open")) {
     // Focus moves in at once, below. The toggle listeners here and in menu.js only
     // place it if it is not already in the menu, for example when the button could
@@ -158,5 +166,5 @@ document.addEventListener("pointerover", (event) => {
   const bar = trigger && trigger.closest(BAR);
   if (!bar || trigger.disabled || trigger.contains(event.relatedTarget)) return;
   const open = bar.querySelector("[data-menubar-popup]:popover-open");
-  if (open && open !== barPopup(trigger)) openBarMenu(trigger);
+  if (open && open !== barPopup(trigger)) openBarMenu(trigger, false, true);
 });

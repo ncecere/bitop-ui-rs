@@ -4,7 +4,7 @@ mod kit;
 mod preview;
 
 use bitop_ui::components::{
-    select::select,
+    select::native_select,
     sidebar::{
         SIDEBAR_COOKIE, sidebar, sidebar_content, sidebar_group, sidebar_header, sidebar_item,
         sidebar_layout, sidebar_main, sidebar_toggle,
@@ -62,11 +62,15 @@ pub const GROUPS: &[Group] = &[
                 "Input and field",
                 "Text inputs with a label, help text and errors."
             ),
-            entry!("select", "Select", "Choose one value from a short list."),
+            entry!(
+                "select",
+                "Select",
+                "A select for options with icons and hints, and the native select."
+            ),
             entry!(
                 "combobox",
                 "Combobox",
-                "Choose one value from a list you can filter."
+                "A filterable select: one value, several as chips, or free text."
             ),
             entry!(
                 "button-group",
@@ -679,13 +683,13 @@ async fn root(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                         >
                             sidebar_toggle(target: &sidebar_id)
                             <span style="flex: 1"></span>
-                            select(
+                            native_select(
                                 attrs: attributes! { aria-label="Theme" data-gallery-set="theme" },
                                 <option value="system">"System theme"</option>
                                 <option value="light">"Light"</option>
                                 <option value="dark">"Dark"</option>
                             )
-                            select(
+                            native_select(
                                 attrs: attributes! { aria-label="Text direction" data-gallery-set="dir" },
                                 <option value="ltr">"Left to right"</option>
                                 <option value="rtl">"Right to left"</option>

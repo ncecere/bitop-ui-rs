@@ -62,6 +62,17 @@ function choose(parts, option) {
 }
 
 document.addEventListener(
+  "beforetoggle",
+  (event) => {
+    const parts = selectorParts(event.target);
+    if (parts && event.target === parts.popup) {
+      parts.trigger.setAttribute("aria-expanded", String(event.newState === "open"));
+    }
+  },
+  true,
+);
+
+document.addEventListener(
   "toggle",
   (event) => {
     const parts = selectorParts(event.target);
@@ -99,6 +110,11 @@ document.addEventListener("keydown", (event) => {
       activate(parts, options[(from + step + options.length) % options.length]);
       return;
     }
+    case "Home":
+    case "End":
+      event.preventDefault();
+      activate(parts, event.key === "Home" ? options[0] : options.at(-1));
+      return;
     case "Enter":
       event.preventDefault();
       if (index !== -1) choose(parts, options[index]);

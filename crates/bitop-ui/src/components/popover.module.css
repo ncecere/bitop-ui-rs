@@ -156,3 +156,198 @@
   line-height: var(--line-height-normal);
   color: var(--color-text-muted);
 }
+
+/* The surface of menus and list popups, and their rows: upstream's popup.module.css.
+   Every rule is under :where(), with no specificity, so that a component's own rules
+   win whatever order the modules load in. A surface does not take the .popup class. */
+:where(.surface) {
+  --popover-gap: 6px;
+
+  position-area: block-end span-inline-end;
+  position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+  inset: auto;
+  box-sizing: border-box;
+  min-inline-size: 12rem;
+  max-block-size: 100%;
+  margin: var(--popover-gap) 0;
+  padding: var(--space-1);
+  overflow-y: auto;
+  border: 0;
+  border-radius: var(--radius-popover);
+  background-color: var(--color-surface-raised);
+  color: var(--color-text);
+  box-shadow: var(--shadow-3);
+  font-family: var(--font-family-sans);
+  font-feature-settings: var(--font-features);
+  font-size: var(--font-size-md);
+  outline: 0;
+  opacity: 0;
+  scale: 0.97;
+  translate: 0 -4px;
+  transition:
+    opacity var(--motion-duration-normal) var(--motion-ease-out),
+    translate var(--motion-duration-normal) var(--motion-ease-out),
+    scale var(--motion-duration-normal) var(--motion-ease-out),
+    overlay var(--motion-duration-normal) allow-discrete,
+    display var(--motion-duration-normal) allow-discrete;
+}
+
+:where(.surface:popover-open) {
+  opacity: 1;
+  scale: 1;
+  translate: 0 0;
+
+  @starting-style {
+    opacity: 0;
+    scale: 0.97;
+    translate: 0 -4px;
+  }
+}
+
+:where(.surface[data-align="end"]) {
+  position-area: block-end span-inline-start;
+}
+
+:where(.surface[data-align="center"]) {
+  position-area: block-end;
+}
+
+:where(.surface[data-side="top"]) {
+  position-area: block-start span-inline-end;
+  translate: 0 4px;
+}
+
+:where(.surface[data-side="top"]:popover-open) {
+  translate: 0 0;
+
+  @starting-style {
+    translate: 0 4px;
+  }
+}
+
+:where(.surface[data-side="top"][data-align="end"]) {
+  position-area: block-start span-inline-start;
+}
+
+:where(.surface[data-side="top"][data-align="center"]) {
+  position-area: block-start;
+}
+
+:where(.surface[data-side="left"], .surface[data-side="right"]) {
+  position-try-fallbacks: flip-inline, flip-block;
+  margin: 0 var(--popover-gap);
+}
+
+:where(.surface[data-side="left"]) {
+  position-area: left span-bottom;
+}
+
+:where(.surface[data-side="left"][data-align="end"]) {
+  position-area: left span-top;
+}
+
+:where(.surface[data-side="left"][data-align="center"]) {
+  position-area: left;
+}
+
+:where(.surface[data-side="right"]) {
+  position-area: right span-bottom;
+}
+
+:where(.surface[data-side="right"][data-align="end"]) {
+  position-area: right span-top;
+}
+
+:where(.surface[data-side="right"][data-align="center"]) {
+  position-area: right;
+}
+
+/* As wide as the trigger at least. */
+:where(.surface[data-width="trigger"]) {
+  min-inline-size: anchor-size(inline);
+}
+
+/* A row: a menu item or a list option. A menu's items take focus, so focus is the
+   highlight; a list driven from a text input marks its row with data-active. The
+   pointer moves the highlight too. */
+:where(.item) {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--space-2);
+  box-sizing: border-box;
+  inline-size: 100%;
+  min-block-size: 2rem;
+  padding: 0 var(--space-2);
+  border: 0;
+  border-radius: var(--radius-2);
+  background: none;
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--font-size-md);
+  line-height: 1.25rem;
+  text-align: start;
+  text-decoration: none;
+  cursor: default;
+  user-select: none;
+  outline: 0;
+  scroll-margin-block: var(--space-1);
+
+  & > [data-icon] {
+    inline-size: 1rem;
+    block-size: 1rem;
+    color: var(--color-text-muted);
+  }
+}
+
+:where(.item:focus, .item[data-active]) {
+  background-color: var(--color-surface-active);
+}
+
+:where(.item[aria-disabled="true"]) {
+  color: var(--color-text-subtle);
+  cursor: not-allowed;
+}
+
+:where(.item[hidden]) {
+  display: none;
+}
+
+:where(.item[data-tone="danger"]) {
+  color: var(--color-danger-text);
+
+  & > [data-icon] {
+    color: currentColor;
+  }
+}
+
+:where(.item[data-tone="danger"]:focus, .item[data-tone="danger"][data-active]) {
+  background-color: var(--color-danger-subtle);
+}
+
+/* A keyboard shortcut hint at the end of a row. */
+:where(.itemShortcut) {
+  margin-inline-start: auto;
+  padding-inline-start: var(--space-4);
+  color: var(--color-text-subtle);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.02em;
+}
+
+:where(.separator) {
+  flex-shrink: 0;
+  block-size: 1px;
+  margin: var(--space-1) calc(var(--space-1) * -1);
+  border: 0;
+  background-color: var(--color-border);
+}
+
+:where(.groupLabel) {
+  padding: var(--space-2) var(--space-2) var(--space-1);
+  color: var(--color-text-subtle);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  cursor: default;
+  user-select: none;
+}

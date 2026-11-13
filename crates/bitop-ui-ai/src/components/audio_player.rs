@@ -25,7 +25,7 @@
 use bitop_ui::{
     components::{
         icon::{Icon, icon},
-        select::select,
+        select::native_select,
         slider::{SliderSize, slider},
     },
     css::button as button_css,
@@ -231,7 +231,7 @@ pub async fn audio_player(
             }
             if !options.is_empty() {
                 <span class=(css::RATE)>
-                    select(
+                    native_select(
                         attrs: attributes! { aria-label=(rate_label) data-player-rate="" },
                         for (value, text, chosen) in options {
                             <option value=(value) selected=(chosen)>(text)</option>

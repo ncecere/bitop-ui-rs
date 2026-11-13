@@ -11,7 +11,7 @@ export default async ({ page, check, axe }) => {
   // Empty: a greeting with suggestions, and the composer.
   check("empty", [await page.locator("#chat-empty h2").textContent(), await page.locator("#chat-turns").isHidden()], ["Ask the handbook", true]);
   check("parts", [
-    await page.getByRole("button", { name: "Model: Claude Sonnet" }).count(),
+    await page.getByRole("combobox", { name: "Model: Claude Sonnet" }).count(),
     await page.getByRole("link", { name: "New chat" }).count(),
     await page.getByRole("log", { name: "Chat with the handbook assistant" }).count(),
     await form.getByRole("textbox", { name: "Message" }).count(),

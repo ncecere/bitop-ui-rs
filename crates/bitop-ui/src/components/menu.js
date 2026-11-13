@@ -57,15 +57,34 @@ function setChecked(item, checked) {
   if (input) input.disabled = !checked;
 }
 
-window.bitopUi.menu = { items: menuItems, setChecked };
+// `focusMenu` marks a menu that is about to open from the pointer: focus goes to the
+// menu itself, not to its first item.
+window.bitopUi.menu = { items: menuItems, setChecked, focusMenu: (popup) => openedByClick.add(popup) };
+
+// The buttons that open a popup: a menu's trigger, a submenu's item, a menubar's menu.
+function triggersOf(popup) {
+  return popup.id ? document.querySelectorAll(`[popovertarget="${CSS.escape(popup.id)}"]`) : [];
+}
+
+// A menu's trigger that is not itself an item of a menu or a menubar.
+const MENU_TRIGGER = '[aria-haspopup="menu"][popovertarget]:not([role="menuitem"])';
+
+// Menus opened by a click of the pointer on their trigger: focus goes to the menu
+// itself, not its first item, as upstream. Menus opened by ArrowUp: their last item.
+const openedByClick = new WeakSet();
+const openOnLast = new WeakSet();
 
 // beforetoggle is sent as the popover opens or closes, so aria-expanded is never behind.
 document.addEventListener(
   "beforetoggle",
   (event) => {
     const popup = event.target;
-    if (!(popup instanceof HTMLElement) || !popup.matches("[data-submenu]")) return;
-    submenuTrigger(popup)?.setAttribute("aria-expanded", String(event.newState === "open"));
+    if (!(popup instanceof HTMLElement) || !menuOf(popup)) return;
+    for (const trigger of triggersOf(popup)) {
+      if (trigger.hasAttribute("aria-expanded")) {
+        trigger.setAttribute("aria-expanded", String(event.newState === "open"));
+      }
+    }
   },
   true,
 );
@@ -78,13 +97,53 @@ document.addEventListener(
   "toggle",
   (event) => {
     const popup = event.target;
-    if (!(popup instanceof HTMLElement) || event.newState !== "open") return;
+    if (!(popup instanceof HTMLElement)) return;
+    if (event.newState !== "open") {
+      openedByClick.delete(popup);
+      openOnLast.delete(popup);
+      return;
+    }
     if (openedByPointer.delete(popup)) return;
     const menu = menuOf(popup);
-    if (menu && !menu.contains(document.activeElement)) menuItems(menu)[0]?.focus();
+    if (!menu || menu.contains(document.activeElement)) return;
+    if (openedByClick.delete(popup)) menu.focus({ preventScroll: true });
+    else if (openOnLast.delete(popup)) menuItems(menu).at(-1)?.focus();
+    else menuItems(menu)[0]?.focus();
   },
   true,
 );
+
+// A click of the pointer on a menu's trigger (Enter and Space send one with no detail).
+document.addEventListener(
+  "click",
+  (event) => {
+    const trigger =
+      event.target instanceof Element && event.target.closest(`${MENU_TRIGGER}, [data-menubar-trigger]`);
+    if (!trigger || event.detail === 0) return;
+    const popup = document.getElementById(trigger.getAttribute("popovertarget"));
+    if (popup && menuOf(popup) && !popup.matches(":popover-open")) openedByClick.add(popup);
+  },
+  true,
+);
+
+// ArrowDown on a menu's trigger opens the menu on its first item, ArrowUp on its last.
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+  if (event.ctrlKey || event.metaKey || event.altKey || event.defaultPrevented) return;
+  const trigger = event.target instanceof Element && event.target.closest(MENU_TRIGGER);
+  if (!trigger || trigger.closest('[role="menu"], [role="menubar"]')) return;
+  const popup = document.getElementById(trigger.getAttribute("popovertarget"));
+  const menu = popup && menuOf(popup);
+  if (!menu || trigger.disabled) return;
+  event.preventDefault();
+  if (popup.matches(":popover-open")) {
+    const items = menuItems(menu);
+    (event.key === "ArrowUp" ? items.at(-1) : items[0])?.focus();
+    return;
+  }
+  if (event.key === "ArrowUp") openOnLast.add(popup);
+  trigger.click();
+});
 
 let typed = "";
 let typedAt = 0;
@@ -119,12 +178,28 @@ document.addEventListener("keydown", (event) => {
     return;
   }
 
+  if (
+    event.key === "Escape" &&
+    popup &&
+    !popup.matches("[data-menubar-popup], [data-context-menu-popup]")
+  ) {
+    // Safari does not focus a button when it is clicked, so the browser would return
+    // focus to the page: close here and focus the trigger.
+    const trigger = [...triggersOf(popup)].find((other) => other.matches(MENU_TRIGGER));
+    if (trigger) {
+      event.preventDefault();
+      popup.hidePopover();
+      trigger.focus();
+      return;
+    }
+  }
+
   switch (event.key) {
     case "ArrowDown":
       next = items[(index + 1) % items.length];
       break;
     case "ArrowUp":
-      next = items[(index - 1 + items.length) % items.length];
+      next = index === -1 ? items.at(-1) : items[(index - 1 + items.length) % items.length];
       break;
     case "Home":
       next = items[0];
@@ -164,6 +239,11 @@ document.addEventListener("keydown", (event) => {
 // on the document. Checkbox and radio items change and keep the menu open.
 document.addEventListener("click", (event) => {
   if (!(event.target instanceof Element)) return;
+  // A disabled item does nothing: no link is followed and no submenu opens.
+  if (event.target.closest('[role^="menuitem"][aria-disabled="true"]')) {
+    event.preventDefault();
+    return;
+  }
   const item = event.target.closest(ITEM);
   const menu = item?.closest('[role="menu"]');
   if (!menu) return;
@@ -222,4 +302,27 @@ document.addEventListener("pointerover", (event) => {
     }
     if (item.matches(SUB_TRIGGER)) openSubmenu(item, false);
   }, 120);
+});
+
+// The pointer moves the highlight, which is focus: pointing at an item focuses it, and
+// pointing at a disabled item or leaving the items focuses the menu, so that one item
+// at most is highlighted.
+const ANY_ITEM = '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]';
+
+document.addEventListener("pointermove", (event) => {
+  if (event.pointerType === "touch" || !(event.target instanceof Element)) return;
+  const item = event.target.closest(ANY_ITEM);
+  const menu = item?.closest('[role="menu"]');
+  if (!menu) return;
+  const next = item.matches(ITEM) ? item : menu;
+  if (next !== document.activeElement) next.focus({ preventScroll: true });
+});
+
+document.addEventListener("pointerout", (event) => {
+  if (event.pointerType === "touch" || !(event.target instanceof Element)) return;
+  const item = event.target.closest(ANY_ITEM);
+  if (!item || item !== document.activeElement) return;
+  const to = event.relatedTarget;
+  if (to instanceof Element && (item.contains(to) || to.closest(ANY_ITEM))) return;
+  item.closest('[role="menu"]')?.focus({ preventScroll: true });
 });

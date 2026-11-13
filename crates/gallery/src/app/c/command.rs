@@ -1,6 +1,6 @@
 use bitop_ui::components::{
-    command::{command_group, command_item, command_palette},
-    dialog::dialog_trigger,
+    command::{command_group, command_item, command_palette, command_palette_trigger},
+    icon::Icon,
 };
 use topcoat::{
     Result,
@@ -18,33 +18,53 @@ async fn show(cx: &Cx) -> Result<impl View> {
     Ok(view! {
         page_header(slug: "command")
         example(
-            title: "Open with the button or Ctrl+K",
-            dialog_trigger(target: &palette_id, "Open palette")
+            title: "Palette: press Ctrl+K (⌘K) on this page too",
+            command_palette_trigger(target: &palette_id, label: "Search or jump to…")
             command_palette(
                 id: &palette_id,
-                label: "Command palette",
                 shortcut: "k",
                 command_group(
-                    label: "Go to",
-                    command_item(href: "/", "Home")
-                    command_item(href: "/c/button", keywords: "components", "Button")
+                    label: "Jump to",
+                    command_item(
+                        href: "/",
+                        icon: Icon::ArrowRight,
+                        hint: "Page",
+                        "Projects"
+                    )
+                    command_item(
+                        href: "/c/button",
+                        icon: Icon::ArrowRight,
+                        hint: "Page",
+                        keywords: "invoices",
+                        "Billing"
+                    )
                 )
                 command_group(
                     label: "Actions",
                     command_item(
+                        icon: Icon::Bell,
                         attrs: attributes! {
                             data-gallery-toast="success"
-                            data-gallery-title="Changes saved"
+                            data-gallery-title="Hello from the palette"
                         },
-                        "Save changes"
+                        "Show a toast"
                     )
                     command_item(
+                        icon: Icon::Moon,
+                        shortcut: &["shift", "D"],
                         attrs: attributes! {
-                            data-gallery-toast="neutral"
-                            data-gallery-title="Link copied"
+                            data-gallery-toast="info"
+                            data-gallery-title="Use the header toggle"
                         },
-                        "Copy link"
+                        "Toggle dark mode"
                     )
+                )
+                command_group(
+                    label: "Settings",
+                    command_item(keywords: "people, team", "Add member")
+                    command_item(keywords: "rules", "Retention policy")
+                    command_item(keywords: "budget, spend", "Usage")
+                    command_item("Legal holds")
                 )
             )
         )

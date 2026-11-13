@@ -1,5 +1,5 @@
 export default async ({ page, check, settled, axe }) => {
-  const trigger = page.getByRole("button", { name: "Model: Claude Sonnet" });
+  const trigger = page.getByRole("combobox", { name: "Model: Claude Sonnet" });
   const popup = page.locator("#model");
   const search = popup.getByRole("combobox", { name: "Search models" });
   const value = () => page.locator("input[type=hidden][name=model]").inputValue();
@@ -7,13 +7,23 @@ export default async ({ page, check, settled, axe }) => {
   const active = () => popup.locator("[data-active]").evaluate((o) => o.dataset.name);
   const isOpen = () => popup.evaluate((p) => p.matches(":popover-open"));
 
-  check("trigger", [await trigger.getAttribute("aria-haspopup"), await value()], ["dialog", "claude-sonnet"]);
+  // As upstream: a combobox with a dialog popup, which says whether it is open.
+  check("trigger", [await trigger.getAttribute("aria-haspopup"), await trigger.getAttribute("aria-expanded"), await value()], ["dialog", "false", "claude-sonnet"]);
 
   // Opening from the keyboard: the search box takes focus, the chosen model is active.
   await trigger.focus();
   await page.keyboard.press("Enter");
   await page.waitForFunction(() => document.activeElement?.matches("[data-model-search]"));
-  check("opens", await isOpen(), true);
+  check("opens", [await isOpen(), await trigger.getAttribute("aria-expanded")], [true, "true"]);
+  // Capabilities are small outlined badges; a toned one is soft.
+  check("outlineBadge", await popup.locator("[data-value=claude-sonnet] [data-variant]").first().evaluate((b) => {
+    const style = getComputedStyle(b);
+    return [Math.round(b.getBoundingClientRect().height), style.fontSize, style.boxShadow.includes("inset")];
+  }), [18, "11px", true]);
+  await page.keyboard.press("End");
+  check("end", await active(), "Llama 8B");
+  await page.keyboard.press("Home");
+  check("home", await active(), "Claude Sonnet");
   await settled(popup);
   const t = await trigger.boundingBox();
   const p = await popup.boundingBox();
