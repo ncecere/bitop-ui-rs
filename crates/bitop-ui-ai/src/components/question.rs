@@ -34,8 +34,8 @@
 //! event above, and a controlled `value` is the initial `selected` and `text`. The
 //! choices' labels are text. The form is named with `aria-label` rather than by its
 //! prompt's ID, as Playwright's Firefox crashes on an element named by one inside it.
-//! The multiple-choice group is a `<fieldset>` of the base set's checkboxes, as the
-//! base set has no checkbox group.
+//! The groups are drawn with the base set's radio group and checkbox styles around
+//! the question's own `<fieldset>`, which carries the question's state.
 
 use bitop_ui::{
     components::{
@@ -320,25 +320,14 @@ pub async fn question_fields(
                                         (option.label)
                                     )
                                 } else {
-                                    <label class=(radio_css::ITEM)>
-                                        <span class=(radio_css::LABEL)>
-                                            checkbox(
-                                                attrs: attributes! {
-                                                    name=(name)
-                                                    value=(option.value)
-                                                    checked=(selected.contains(&option.value))
-                                                    disabled=(option.disabled)
-                                                    class=(css::CHECKBOX)
-                                                }
-                                            )
-                                            <span class=(radio_css::TEXT)>(option.label)</span>
-                                        </span>
-                                        if !option.description.is_empty() {
-                                            <span class=(radio_css::DESCRIPTION)>
-                                                (option.description)
-                                            </span>
-                                        }
-                                    </label>
+                                    checkbox(
+                                        name: name,
+                                        value: option.value,
+                                        checked: selected.contains(&option.value),
+                                        disabled: option.disabled,
+                                        description: option.description,
+                                        (option.label)
+                                    )
                                 }
                             }
                             if allow_other {
@@ -351,20 +340,13 @@ pub async fn question_fields(
                                         (other_label)
                                     )
                                 } else {
-                                    <label class=(radio_css::ITEM)>
-                                        <span class=(radio_css::LABEL)>
-                                            checkbox(
-                                                attrs: attributes! {
-                                                    name=(name)
-                                                    value=(other_value)
-                                                    checked=(other_checked)
-                                                    data-question-other=""
-                                                    class=(css::CHECKBOX)
-                                                }
-                                            )
-                                            <span class=(radio_css::TEXT)>(other_label)</span>
-                                        </span>
-                                    </label>
+                                    checkbox(
+                                        name: name,
+                                        value: other_value,
+                                        checked: other_checked,
+                                        attrs: attributes! { data-question-other="" },
+                                        (other_label)
+                                    )
                                 }
                             }
                         </div>

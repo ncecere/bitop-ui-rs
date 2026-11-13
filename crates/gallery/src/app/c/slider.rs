@@ -1,89 +1,109 @@
-use bitop_ui::components::slider::{SliderSize, slider};
+use bitop_ui::components::{
+    layout::{inline, stack},
+    slider::{SliderSize, slider},
+};
 use topcoat::{
     Result,
     context::Cx,
     router::page,
-    view::{View, attributes, element_id, view},
+    view::{View, attributes, view},
 };
 
 use crate::app::kit::{example, page_header};
 
 #[page]
 async fn show(cx: &Cx) -> Result<impl View> {
-    let volume_id = element_id(cx);
-    let zoom_id = element_id(cx);
-    let opacity_id = element_id(cx);
-    let level_id = element_id(cx);
-    let locked_id = element_id(cx);
     Ok(view! {
         page_header(slug: "slider")
         example(
-            title: "With a label and a value",
-            <form id="volume-form" style="inline-size: 100%; max-inline-size: 20rem">
+            title: "Labels, value readout and sizes",
+            stack(
+                gap: 6,
+                attrs: attributes! { style="inline-size: 100%" },
                 slider(
-                    id: &volume_id,
-                    name: "volume",
-                    label: "Volume",
-                    value: 40.0,
+                    id: "temperature",
+                    name: "temperature",
+                    label: "Temperature",
+                    value: 0.7,
+                    max: 2.0,
+                    step: 0.1,
                     show_value: true
+                )
+                slider(
+                    id: "opacity",
+                    name: "opacity",
+                    label: "Opacity",
+                    value: 80.0,
+                    step: 5.0,
+                    show_value: true,
+                    format: "{value}%",
+                    value_text: "{value} percent",
+                    size: SliderSize::Sm
+                )
+                slider(
+                    id: "volume",
+                    value: 40.0,
+                    disabled: true,
+                    attrs: attributes! { aria-label="Volume" }
+                )
+            )
+        )
+        example(
+            title: "Range with per-thumb names",
+            <form id="price-form" style="inline-size: 100%">
+                slider(
+                    id: "price",
+                    name: "price",
+                    label: "Price",
+                    range: (40.0, 160.0),
+                    max: 250.0,
+                    step: 5.0,
+                    min_steps_between: 2.0,
+                    thumb_labels: &["Minimum price", "Maximum price"],
+                    show_value: true,
+                    format: "${value}"
                 )
             </form>
         )
         example(
-            title: "Steps, a formatted value and value text",
-            <div style="inline-size: 100%; max-inline-size: 20rem">
-                slider(
-                    id: &zoom_id,
-                    name: "zoom",
-                    label: "Zoom",
-                    min: 25.0,
-                    max: 400.0,
-                    step: 25.0,
-                    value: 100.0,
-                    show_value: true,
-                    format: "{value}%",
-                    value_text: "{value} percent"
-                )
-            </div>
-        )
-        example(
-            title: "Small, named by aria-label",
-            <div style="inline-size: 100%; max-inline-size: 20rem">
-                slider(
-                    id: &opacity_id,
-                    name: "opacity",
-                    max: 1.0,
-                    step: 0.1,
-                    value: 0.5,
-                    size: SliderSize::Sm,
-                    attrs: attributes! { aria-label="Opacity" }
-                )
-            </div>
-        )
-        example(
             title: "Vertical",
-            <div style="block-size: 10rem">
+            inline(
+                gap: 8,
+                nowrap: true,
                 slider(
-                    id: &level_id,
+                    id: "bass",
+                    name: "bass",
+                    value: 60.0,
+                    vertical: true,
+                    attrs: attributes! { aria-label="Bass" }
+                )
+                slider(
+                    id: "mid",
+                    name: "mid",
+                    value: 45.0,
+                    vertical: true,
+                    attrs: attributes! { aria-label="Mid" }
+                )
+                slider(
+                    id: "treble",
+                    name: "treble",
+                    value: 70.0,
+                    vertical: true,
+                    attrs: attributes! { aria-label="Treble" }
+                )
+            )
+        )
+        example(
+            title: "A form with a single value",
+            <form id="level-form" style="inline-size: 100%; max-inline-size: 20rem">
+                slider(
+                    id: "level",
                     name: "level",
                     label: "Level",
-                    hide_label: true,
-                    value: 30.0,
-                    vertical: true
+                    value: 40.0,
+                    show_value: true
                 )
-            </div>
-        )
-        example(
-            title: "Disabled",
-            <div style="inline-size: 100%; max-inline-size: 20rem">
-                slider(
-                    id: &locked_id,
-                    label: "Disabled",
-                    value: 60.0,
-                    show_value: true,
-                    disabled: true
-                )
-            </div>
+            </form>
         )
     })
 }

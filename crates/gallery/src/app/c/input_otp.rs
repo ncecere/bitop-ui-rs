@@ -1,83 +1,120 @@
 use bitop_ui::components::{
-    field::{field, field_description, field_label},
-    input_otp::{InputOtpSize, input_otp},
+    button::button,
+    field::{
+        FormActionsAlign, field, field_description, field_error, field_label, form, form_actions,
+    },
+    input_otp::{InputOtpSize, OtpNormalize, OtpValidation, input_otp},
+    layout::stack,
 };
 use topcoat::{
     Result,
     context::Cx,
     router::page,
-    view::{View, attributes, element_id, view},
+    view::{View, attributes, view},
 };
 
-use crate::app::kit::{example, page_header};
+use crate::app::kit::{example, page_header, query_param};
 
 #[page]
 async fn show(cx: &Cx) -> Result<impl View> {
-    let code_id = element_id(cx);
-    let code_help_id = element_id(cx);
-    let pin_id = element_id(cx);
-    let invite_id = element_id(cx);
-    let wrong_id = element_id(cx);
-    let locked_id = element_id(cx);
+    // The form sends the code back to this page, which checks it.
+    let code = query_param(cx, "code");
+    let verified = code.as_deref() == Some("424242");
+    let wrong = code.is_some() && !verified;
+    let described_by = if wrong {
+        "code-description code-error"
+    } else {
+        "code-description"
+    };
     Ok(view! {
         page_header(slug: "input-otp")
         example(
-            title: "Six digits in two groups",
-            <form id="code-form">
+            title: "Verification code in a form",
+            form(
+                attrs: attributes! { id="code-form" action="/c/input-otp" },
                 field(
-                    field_label(target: &code_id, "Verification code")
+                    field_label(target: "code", "Verification code")
                     input_otp(
-                        id: &code_id,
+                        id: "code",
                         name: "code",
                         length: 6,
                         groups: &[3, 3],
-                        attrs: attributes! { aria-describedby=(&code_help_id) }
+                        invalid: wrong,
+                        attrs: attributes! { aria-describedby=(described_by) }
                     )
                     field_description(
-                        id: &code_help_id,
-                        "We sent it to the number ending in 4821."
+                        id: "code-description",
+                        if verified {
+                            "Verified. You can close this window."
+                        } else {
+                            "Enter the 6-digit code we sent to •••• 4821. Try 424242."
+                        }
                     )
+                    if wrong {
+                        field_error(
+                            id: "code-error",
+                            "That code is incorrect or has expired."
+                        )
+                    }
                 )
-            </form>
-        )
-        example(
-            title: "Small, with a value and no visible label",
-            input_otp(
-                id: &pin_id,
-                name: "pin",
-                length: 4,
-                value: "12",
-                label: "PIN",
-                size: InputOtpSize::Sm
+                form_actions(
+                    align: FormActionsAlign::Start,
+                    button(attrs: attributes! { type="submit" }, "Verify")
+                )
             )
         )
         example(
-            title: "Letters and digits",
+            title: "Alphanumeric, masked, small and disabled",
+            stack(
+                gap: 5,
+                field(
+                    field_label(target: "recovery", "Recovery code")
+                    input_otp(
+                        id: "recovery",
+                        name: "recovery",
+                        length: 8,
+                        groups: &[4, 4],
+                        validation: OtpValidation::Alphanumeric,
+                        normalize: OtpNormalize::Upper,
+                        attrs: attributes! { aria-describedby="recovery-description" }
+                    )
+                    field_description(
+                        id: "recovery-description",
+                        "Letters and numbers, e.g. A7C9-XZ42."
+                    )
+                )
+                field(
+                    field_label(target: "pin", "PIN")
+                    input_otp(
+                        id: "pin",
+                        name: "pin",
+                        length: 4,
+                        mask: true,
+                        size: InputOtpSize::Sm,
+                        attrs: attributes! { aria-describedby="pin-description" }
+                    )
+                    field_description(id: "pin-description", "Hidden as you type.")
+                )
+                field(
+                    field_label(target: "locked", "Disabled")
+                    input_otp(
+                        id: "locked",
+                        name: "locked",
+                        length: 6,
+                        value: "123",
+                        disabled: true
+                    )
+                )
+            )
+        )
+        example(
+            title: "No visible label",
             input_otp(
-                id: &invite_id,
+                id: "invite",
                 name: "invite",
                 length: 5,
                 label: "Invite code",
-                alphanumeric: true
-            )
-        )
-        example(
-            title: "Invalid, and disabled",
-            input_otp(
-                id: &wrong_id,
-                name: "wrong",
-                length: 4,
-                value: "9999",
-                label: "Wrong code",
-                invalid: true
-            )
-            input_otp(
-                id: &locked_id,
-                name: "locked",
-                length: 4,
-                value: "1234",
-                label: "Disabled code",
-                disabled: true
+                value: "12"
             )
         )
     })

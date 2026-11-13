@@ -13,14 +13,16 @@ export default async ({ page, check, button, setDir }) => {
   check("copy", await done.getByRole("button", { name: "Copy Python code" }).count(), 1);
   check("action", await button("Run again").count(), 1);
 
-  // The arrow keys move between tabs and show their panels.
+  // The arrow keys move between tabs, and Enter shows the focused tab's panel.
   await tabs.first().focus();
   await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("Enter");
   await page.waitForFunction(() => document.getElementById("analyze-output-tab").getAttribute("aria-selected") === "true");
   check("output", [await page.locator("#analyze-output").isVisible(), await page.locator("#analyze-code").isHidden(), await page.evaluate(() => document.activeElement.id)], [true, true, "analyze-output-tab"]);
   const output = page.locator("#analyze-output");
   check("outputBlock", [(await output.locator("code").textContent()).includes("West     1411.25"), await output.locator("[data-code-block] > div > span").first().textContent(), await output.getByRole("button", { name: "Copy output" }).count()], [true, "Output", 1]);
   await page.keyboard.press("Home");
+  await page.keyboard.press("Space");
   await page.waitForFunction(() => document.getElementById("analyze-code-tab").getAttribute("aria-selected") === "true");
 
   // The header closes and opens the card from the keyboard.

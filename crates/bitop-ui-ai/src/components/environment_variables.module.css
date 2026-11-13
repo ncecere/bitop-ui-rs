@@ -27,10 +27,6 @@
   font-weight: var(--font-weight-semibold);
 }
 
-.toggle {
-  font-size: var(--font-size-xs);
-}
-
 .list {
   display: flex;
   flex-direction: column;

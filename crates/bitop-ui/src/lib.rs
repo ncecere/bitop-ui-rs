@@ -43,18 +43,24 @@ pub const COLOR_MODE_SCRIPT: Asset = asset!("./color-mode.js");
 /// Joins a part's own inline style with the `style` a caller passed in `attrs`, which
 /// is taken out of `attrs` so that the element gets one `style` attribute.
 pub fn merge_style(attrs: &mut topcoat::view::Attributes, own: &str) -> Option<String> {
-    use topcoat::view::AttributeValue;
-    let theirs = match attrs.remove("style") {
-        Some(AttributeValue::PromotedStr { value, .. }) => (*value).to_owned(),
-        Some(AttributeValue::StaticStr { value, .. }) => value.to_owned(),
-        Some(AttributeValue::String { value, .. }) => value,
-        _ => String::new(),
-    };
+    let theirs = take_attribute(attrs, "style").unwrap_or_default();
     match (own.is_empty(), theirs.is_empty()) {
         (true, true) => None,
         (false, true) => Some(own.to_owned()),
         (true, false) => Some(theirs),
         (false, false) => Some(format!("{own}; {theirs}")),
+    }
+}
+
+/// Takes the attribute `key` out of `attrs`, as text. `None` if it is not there or
+/// has no text, such as a boolean attribute.
+pub(crate) fn take_attribute(attrs: &mut topcoat::view::Attributes, key: &str) -> Option<String> {
+    use topcoat::view::AttributeValue;
+    match attrs.remove(key)? {
+        AttributeValue::PromotedStr { value, .. } => Some((*value).to_owned()),
+        AttributeValue::StaticStr { value, .. } => Some(value.to_owned()),
+        AttributeValue::String { value, .. } => Some(value),
+        _ => None,
     }
 }
 

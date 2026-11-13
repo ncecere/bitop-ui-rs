@@ -20,16 +20,17 @@ export default async ({ page, check, axe, button, focused, settled, setDir }) =>
   const text = await rtl.locator("p").first().evaluate((el) => getComputedStyle(el).textAlign);
   check("rtlTextStart", text, "start");
 
-  // And so do the arrow keys, which scripts read from the computed direction.
-  const selected = (scope) => scope.locator("[role=tab][aria-selected=true]").evaluate((el) => el.id);
+  // And so do the arrow keys, which scripts read from the computed direction. They move
+  // focus; the tabs are activated by hand, as upstream's.
+  const selected = () => page.evaluate(() => document.activeElement.id);
   await tabs.nth(0).focus();
   await page.keyboard.press("ArrowLeft");
-  check("rtlLeftIsNext", await selected(rtl), "dir-models-tab");
+  check("rtlLeftIsNext", await selected(), "dir-models-tab");
   await page.keyboard.press("ArrowRight");
-  check("rtlRightIsPrevious", await selected(rtl), "dir-general-tab");
+  check("rtlRightIsPrevious", await selected(), "dir-general-tab");
   await ltr.getByRole("tab").nth(0).focus();
   await page.keyboard.press("ArrowRight");
-  check("ltrRightIsNext", await selected(ltr), "dir-en-models-tab");
+  check("ltrRightIsNext", await selected(), "dir-en-models-tab");
 
   // A popup belongs to its section: a submenu opens with ArrowLeft, on the left.
   const menu = rtl.locator("[popover]").first();
@@ -62,5 +63,5 @@ export default async ({ page, check, axe, button, focused, settled, setDir }) =>
   check("ltrSectionInRtlPage", [await dir(ltr), a.x < b.x, await dir(page.locator("main"))], ["ltr", true, "rtl"]);
   await ltr.getByRole("tab").nth(1).focus();
   await page.keyboard.press("ArrowLeft");
-  check("ltrKeysInRtlPage", await selected(ltr), "dir-en-general-tab");
+  check("ltrKeysInRtlPage", await selected(), "dir-en-general-tab");
 };

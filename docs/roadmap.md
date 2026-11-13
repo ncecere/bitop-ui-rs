@@ -204,7 +204,7 @@ Every component was compared with bitop-ui's docs site, side by side in a browse
 - [x] `tooltip`: `side`, `align`, `shortcut`, `delay`, and `tooltip_text`.
 - [x] `popover`: title, description, `side`, opening on hover, focus moving in.
 - [x] `drawer`: the footer's buttons as wide as the content, as upstream's example.
-- [ ] `tabs`: pills, counts, icons, scrolling overflow, nav tabs, manual activation.
+- [x] `tabs`: pills, counts, icons, scrolling overflow, nav tabs, manual activation.
 - [x] `menu`, `context-menu`, `menubar`: item icons, shortcut hints, the danger tone,
   `menu_header`, 32px rows on upstream's shared popup surface; ArrowDown and ArrowUp on
   a trigger open on the first and last item, the trigger's `aria-expanded`; a click
@@ -218,13 +218,13 @@ Every component was compared with bitop-ui's docs site, side by side in a browse
   button and the footer, matching each word with ranking.
 - [x] `model-selector`: Home and End, the trigger's combobox role and `aria-expanded`,
   small outlined capability badges.
-- [ ] `checkbox` and `switch`: indeterminate, groups, descriptions, the switch's label,
+- [x] `checkbox` and `switch`: indeterminate, groups, descriptions, the switch's label,
   description and position, its size and off colour.
-- [ ] `field` and `input`: `Fieldset`, `Form`, `FormActions`; label and error sizes, the
+- [x] `field` and `input`: `Fieldset`, `Form`, `FormActions`; label and error sizes, the
   error's icon; `input`'s `size` and start icon.
 - [ ] `sidebar`: the icon rail when collapsed; item icons, badges, dots and descriptions;
   collapsible sections; brand, workspace switcher, user, top bar and skip link.
-- [ ] `slider`: a range with two thumbs. `input-otp`: `mask` and `normalize`.
+- [x] `slider`: a range with two thumbs. `input-otp`: `mask` and `normalize`.
 - [ ] Smaller ones: `scroll-area` orientation, `pagination` colours, `checkpoint`,
   `empty-state` icon size, `bar-chart` solid fills and spacing, `save-bar` hiding when
   the form is no longer dirty, `time`'s "—", `breadcrumbs`' "…", `filter-bar`'s custom
@@ -283,6 +283,20 @@ Every component was compared with bitop-ui's docs site, side by side in a browse
 - `tooltip` has no `TooltipProvider`: each tooltip waits its own `delay`, also when the
   pointer moves from one trigger to the next. The tooltip cannot be hovered: it closes
   when the pointer leaves its trigger.
+- A checkbox's or a switch's description is inside its `<label>`, so it is read as part
+  of the name, not through `aria-describedby`; the radio does the same. Indeterminate is
+  drawn from `data-indeterminate` and set as the property by the library script.
+- `field` does not wire its parts: the caller gives the IDs and `aria-describedby`.
+  There is no Base UI validation: a form shows the browser's own messages for
+  `required`, `type` and `pattern`, and a server's error is a `field_error`.
+- `slider` has at most two thumbs. Its readout is a template, so there is no `Intl`
+  `format`; a range's thumbs cannot pass each other, and a press on the track moves
+  the nearer thumb.
+- `input-otp`'s `normalizeValue` is a choice of case (`OtpNormalize`), not a function.
+  Its slots are not compacted when one in the middle is cleared, as Base UI's are.
+- `tabs` pair a tab with its panel by ID, not by `value`; `onValueChange` is the
+  `bitop:change` event. Tab counts are grouped the English way. `NavTab` has no
+  `render` for a router's link: it is an `<a>`.
 - The sidebar drawer on narrow screens does not trap focus.
 - The charts' data table has no `onOpenChange` or controlled `open`; listen for the native
   `toggle` event. A lone point between gaps in a `sparkline` is not drawn, as upstream.
@@ -311,8 +325,8 @@ Every component was compared with bitop-ui's docs site, side by side in a browse
   target text box; controlled values are initial values.
 - `tool` and `agent` take their input, output and schemas as text the caller has
   formatted; upstream's `formatToolValue` (any value to JSON) is not ported.
-- `question`'s multiple-choice group is a `<fieldset>` of the base checkboxes, as the base
-  set has no checkbox group. `questionnaire`'s Edit is a ghost button (no link variant).
+- `question`'s groups are its own `<fieldset>` with the base radios and checkboxes in
+  it, not the base `radio_group` and `checkbox_group`. `questionnaire`'s Edit is a ghost button (no link variant).
 - `context` writes numbers the English way and money through a format string, not `Intl`;
   1,250,000 tokens round to "1.2M" where `Intl` says "1.3M".
 - `mic-selector` has no `useAudioInputs` or `formatLabel`; `voice-selector` has no voice

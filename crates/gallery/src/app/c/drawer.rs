@@ -5,7 +5,7 @@ use bitop_ui::components::{
         DrawerSide, drawer, drawer_body, drawer_close, drawer_description, drawer_footer,
         drawer_header, drawer_title, drawer_trigger,
     },
-    field::{field, field_choice, field_label},
+    field::{field, field_label},
     icon::{Icon, icon},
     input::input,
 };
@@ -140,18 +140,9 @@ async fn show(cx: &Cx) -> Result<impl View> {
                         )
                     )
                     drawer_body(
-                        field_choice(
-                            switch(attrs: attributes! { checked=(true) })
-                            "Deployment failures"
-                        )
-                        field_choice(
-                            switch()
-                            "Weekly usage report"
-                        )
-                        field_choice(
-                            switch(attrs: attributes! { checked=(true) })
-                            "New team members"
-                        )
+                        switch(checked: true, "Deployment failures")
+                        switch("Weekly usage report")
+                        switch(checked: true, "New team members")
                     )
                     drawer_footer(drawer_close(target: id, "Done"))
                 )
