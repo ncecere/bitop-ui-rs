@@ -1,4 +1,5 @@
 use bitop_ui::components::{
+    button::ButtonVariant,
     field::{field, field_error, field_label},
     icon::{Icon, icon},
     input_group::{
@@ -105,7 +106,11 @@ async fn show(cx: &Cx) -> Result<impl View> {
                             align: InputGroupAlign::BlockEnd,
                             input_group_text("0 / 280")
                             <span style="flex: 1"></span>
-                            input_group_button("Send")
+                            input_group_button(
+                                variant: ButtonVariant::Primary,
+                                icon(name: Icon::SendHorizontal)
+                                "Send"
+                            )
                         )
                     )
                 )

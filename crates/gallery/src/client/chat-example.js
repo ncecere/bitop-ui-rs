@@ -50,6 +50,39 @@ if (root) {
     turns.append(turn);
   }
 
+  // The context window, counted as upstream's example counts it: 1,800 tokens, plus 12
+  // for every four characters of the conversation. A server would render the context
+  // again; this stand-in writes the numbers into the one it rendered.
+  const contextCard = document.getElementById("chat-context");
+  const contextTrigger = document.querySelector('[popovertarget="chat-context"]');
+  const MAX_TOKENS = 200_000;
+  const grouped = new Intl.NumberFormat("en-US");
+  const compact = new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 });
+  const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 4 });
+
+  function updateContext() {
+    const texts = [...turns.querySelectorAll("[data-user-text], [data-response]")];
+    const chars = texts.reduce((n, el) => n + el.textContent.trim().length, 0);
+    const used = 1_800 + Math.round(chars / 4) * 12;
+    const ratio = Math.min(used / MAX_TOKENS, 1);
+    const percent = Math.round(ratio * 100);
+    contextTrigger.querySelector("svg").style.setProperty("--ratio", ratio.toFixed(4));
+    contextTrigger.querySelector(":scope > span").textContent = `${percent}%`;
+    contextTrigger.setAttribute("aria-label", `Context window: ${percent}% used, ${grouped.format(used)} of ${grouped.format(MAX_TOKENS)} tokens`);
+    contextTrigger.dataset.level = ratio >= 0.9 ? "critical" : ratio >= 0.75 ? "high" : "normal";
+    const meter = contextCard.querySelector("[data-context-meter]");
+    const text = `${percent}% · ${compact.format(used)} / ${compact.format(MAX_TOKENS)}`;
+    meter.setAttribute("aria-valuenow", String(used));
+    meter.setAttribute("aria-valuetext", text);
+    meter.querySelector("[aria-hidden]").lastChild.textContent = text;
+    meter.querySelector("[style]").style.width = `${(ratio * 100).toFixed(4)}%`;
+    const shares = [0.7, 0.22, 0.08];
+    contextCard.querySelectorAll("dd > span:first-child").forEach((span, i) => {
+      span.textContent = `${grouped.format(Math.round(used * shares[i]))} tokens`;
+    });
+    contextCard.querySelector("dl + div > span:last-child").textContent = `$${money.format(used * 0.000006)}`;
+  }
+
   function finish(reply, stopped) {
     reply.querySelector("[data-reply-reasoning]")?.removeAttribute("data-streaming");
     const answer = reply.querySelectorAll("[data-response]")[1];
@@ -58,6 +91,7 @@ if (root) {
     else reply.querySelector("[data-reply-sources]").hidden = false;
     reply.querySelector("[data-reply-actions]").hidden = false;
     setStatus("ready");
+    updateContext();
   }
 
   async function respond(replace) {

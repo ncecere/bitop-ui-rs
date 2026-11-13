@@ -35,7 +35,10 @@
   }
 }
 
-/* Two classes: the button module's size rule has one. */
+/*
+ * Upstream sets --font-size-xs here too, but its button's size rule wins, so the
+ * button shows at the small button's 13px. Keep what it shows.
+ */
 .root .restore {
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-sm);
 }

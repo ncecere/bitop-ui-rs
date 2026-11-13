@@ -45,6 +45,8 @@ export default async ({ page, base, check }) => {
 
   // A missing or invalid value renders the fallback, or nothing.
   check("missing", [await page.locator("[data-example=missing]").textContent().then((t) => t.replace(/\s+/g, " ").trim()), await page.locator("[data-example=missing] time").count()], ["Last sign-in: never", 0]);
+  // Upstream's example: a dash where a table cell would otherwise be empty.
+  check("dash", await page.locator("[data-example=dash]").textContent().then((t) => t.replace(/\s+/g, " ").trim()), "Expires: —");
 
   // A time added to the page later is localised too.
   await page.evaluate((iso) => {

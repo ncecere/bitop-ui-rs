@@ -1,5 +1,7 @@
 use bitop_ui::components::{
     icon::Icon,
+    line_chart::LineVariant,
+    sparkline::sparkline,
     stat_card::{StatDelta, StatSentiment, StatTrend, stat_card},
 };
 use topcoat::{
@@ -65,18 +67,11 @@ async fn show(cx: &Cx) -> Result<impl View> {
                     label: "Storage",
                     value: "1.5 GB",
                     chart: view! {
-                        <svg
-                            role="img"
-                            aria-label="Storage over the last week"
-                            viewBox="0 0 120 24"
-                            width="120"
-                            height="24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.5"
-                        >
-                            <path d="M1 20 L20 16 L40 18 L60 10 L80 12 L100 5 L119 3"></path>
-                        </svg>
+                        sparkline(
+                            values: &[2.0, 4.0, 3.0, 7.0, 6.0, 9.0, 10.0],
+                            variant: LineVariant::Area,
+                            label: "Storage over the last week"
+                        )
                     }
                 )
                 stat_card(label: "Plain", value: "7")

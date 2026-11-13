@@ -297,3 +297,26 @@
     transition: none;
   }
 }
+
+/* A facet's control, and for a date range the custom range picker beside it. */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+/* Shown while "Custom" is chosen; the script shows it when Custom is pressed. */
+.custom {
+  display: inline-flex;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+/* "Custom" needs the script, which opens its picker. */
+.root:not([data-enhanced]) .toggle[data-filter-custom-item] {
+  display: none;
+}

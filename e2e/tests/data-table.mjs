@@ -89,7 +89,9 @@ export default async ({ page, base, check, focused, settled, setDir }) => {
   await page.evaluate(() => localStorage.removeItem("gallery-invoices-columns"));
   await page.reload();
 
-  // The filter is a search form of its own; the result count is announced.
+  // The filter is a search form of its own, with a search icon as upstream's; Enter
+  // submits it; the result count is announced.
+  check("searchIcon", await page.getByRole("searchbox", { name: "Filter invoices" }).evaluate((i) => [i.parentElement.querySelector("[data-icon]")?.dataset.icon, Math.round(i.getBoundingClientRect().height)]), ["search", 32]);
   await page.getByRole("searchbox", { name: "Filter invoices" }).fill("in");
   await page.keyboard.press("Enter");
   await page.waitForURL("**/c/data-table?q=in");

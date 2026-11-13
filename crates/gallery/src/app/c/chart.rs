@@ -59,13 +59,6 @@ async fn show(cx: &Cx) -> Result<impl View> {
             )
         )
         example(
-            title: "Square swatches: solid, striped and dotted",
-            chart_legend(
-                series: &lines,
-                attrs: attributes! { aria-label="Bar patterns" }
-            )
-        )
-        example(
             title: "A tone and a pattern of its own",
             chart_legend(
                 series: &own,

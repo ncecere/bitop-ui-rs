@@ -1,4 +1,7 @@
-use bitop_ui::components::button::{ButtonSize, ButtonVariant, button};
+use bitop_ui::components::{
+    button::{ButtonSize, ButtonVariant, button},
+    text_link::text_link,
+};
 use bitop_ui_ai::components::reasoning::{reasoning, reasoning_content, reasoning_trigger};
 use topcoat::{
     Result,
@@ -27,7 +30,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                         <p>
                             "The question is about parental leave. I'll search the handbook, then check the 2025 policy for duration and pay."
                         </p>
-                        <p><a href="#policy">"The 2025 policy"</a></p>
+                        <p>text_link(href: "#policy", "The 2025 policy")</p>
                     )
                 )
                 <div style="display: flex; gap: var(--space-2)">

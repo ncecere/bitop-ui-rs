@@ -8,7 +8,7 @@ export default async ({ page, check, setDir }) => {
       const area = svg.getBoundingClientRect();
       return [...svg.querySelectorAll("[data-series]")].map((g) =>
         [...g.querySelectorAll(":scope > rect")].map((r) => {
-          // The fill's box: Firefox counts the stroke of a patterned bar in its client rect.
+          // The geometry's box: Firefox counts a stroke in the client rect.
           const g = r.getBBox();
           const b = r.getBoundingClientRect();
           return { height: g.height, bottom: Math.round(area.height - g.y - g.height), share: g.height / area.height, missing: r.hasAttribute("data-missing"), centre: b.left + b.width / 2, width: g.width / area.width };
@@ -30,11 +30,14 @@ export default async ({ page, check, setDir }) => {
   check("fromTheBase", [...back, ...front].every((b) => Math.abs(b.bottom) <= 1));
   check("peak", await figure(week).locator("[data-chart-plot] > span").first().textContent(), "96");
   check("axis", await figure(week).locator("[aria-hidden=true] > span").allTextContents(), ["Sep 1", "Sep 7"]);
-  // Series differ by pattern, not colour alone: solid, then striped; the back one is paler.
-  const fills = await figure(week).locator("[data-series]").evaluateAll((all) => all.map((g) => [g.dataset.pattern, g.querySelector(":scope > rect").getAttribute("fill")?.startsWith("url(#") ?? false, g.querySelector("pattern") !== null]));
-  check("patterns", fills, [["solid", false, false], ["dashed", true, true]]);
-  const legend = await figure(week).locator("[data-chart-legend] li span").evaluateAll((all) => all.map((s) => [s.dataset.pattern, getComputedStyle(s).backgroundImage === "none"]));
-  check("legendPatterns", legend, [["solid", true], ["dashed", false]]);
+  // Bars are solid, as upstream's: no patterns, in the plot or the legend.
+  check("solid", await figure(week).locator("[data-series]").evaluateAll((all) => all.map((g) => [g.dataset.pattern ?? null, g.querySelector("pattern") !== null, g.querySelector(":scope > rect").getAttribute("fill")])), [[null, false, null], [null, false, null]]);
+  const legend = await figure(week).locator("[data-chart-legend] li span").evaluateAll((all) => all.map((s) => [s.dataset.pattern ?? null, getComputedStyle(s).backgroundImage]));
+  check("legendSolid", legend, [[null, "none"], [null, "none"]]);
+  // Bars fill their slot, 1px in from each side: 2px between neighbours, as upstream's gap.
+  const clips = await figure(week).locator("[data-series] > rect").evaluateAll((all) => [...new Set(all.map((r) => getComputedStyle(r).clipPath.replace(/ round.*\)/, ")")))]);
+  check("gap", clips, ["inset(0px 1px)"]);
+  check("slotWide", Math.round(back[0].width * 1000), Math.round(1000 / 7));
   const colours = await figure(week).locator("[data-series]").evaluateAll((all) => all.map((g) => getComputedStyle(g.querySelector(":scope > rect")).fill));
   const soft = await page.evaluate(() => { const p = document.createElement("span"); document.body.append(p); p.style.color = "var(--color-chart-primary-soft)"; const c = getComputedStyle(p).color; p.remove(); return c; });
   check("backIsSoft", colours[0], soft);
@@ -85,7 +88,7 @@ export default async ({ page, check, setDir }) => {
   const totals = [[40, 20, 10], [50, 30, 20], [30, 25, 5], [60, 35, 25]];
   check("stackShares", layers.every((series, i) => near(series.map((b) => b.share), totals.map((t) => t[i] / 120), sh)));
   check("stackedOnTop", layers[1].every((b, j) => Math.abs(b.bottom - Math.round(layers[0][j].height)) <= 1) && layers[2].every((b, j) => Math.abs(b.bottom - Math.round(layers[0][j].height + layers[1][j].height)) <= 1));
-  check("stackPatterns", await figure(stacked).locator("[data-series]").evaluateAll((all) => all.map((g) => [g.dataset.pattern, g.dataset.tone])), [["solid", "primary"], ["dashed", "success"], ["dotted", "accent"]]);
+  check("stackTones", await figure(stacked).locator("[data-series]").evaluateAll((all) => all.map((g) => [g.dataset.tone, getComputedStyle(g.querySelector("rect")).fill])), await page.evaluate(() => ["primary", "success", "accent"].map((t) => { const p = document.createElement("span"); document.body.append(p); p.style.color = `var(--color-chart-${t})`; const c = getComputedStyle(p).color; p.remove(); return [t, c]; })));
   check("onlyTopRounded", await figure(stacked).locator("[data-series]").nth(2).locator("rect").evaluateAll((all) => all.every((r) => r.hasAttribute("data-top"))) && (await figure(stacked).locator("[data-series]").first().locator("rect[data-top]").count()) === 0);
   check("stackHeader", await figure(stacked).locator("details summary").textContent().then((t) => t.trim()), "Show data");
 
@@ -118,9 +121,9 @@ export default async ({ page, check, setDir }) => {
   await errorTable.waitFor();
   check("gapTable", await errorTable.locator("tbody td").allTextContents(), ["4", "No data", "-2", "8", "2"]);
 
-  // One point fills the width less an inset; sizes; no legend or axis.
+  // One point fills the width; sizes; no legend or axis.
   const [single] = await bars("Errors today: 18");
-  check("single", [single.length, Math.round(single[0].width * 100), Math.round(single[0].share * 100)], [1, 80, 100]);
+  check("single", [single.length, Math.round(single[0].width * 100), Math.round(single[0].share * 100)], [1, 100, 100]);
   check("singleAxis", await figure("Errors today: 18").locator("[aria-hidden=true] > span").allTextContents(), ["Today"]);
   const plotHeight = (name) => plot(name).evaluate((p) => Math.round(p.getBoundingClientRect().height));
   check("sizes", [await plotHeight("Errors today: 18"), await plotHeight(week), await plotHeight(stacked)], [96, 160, 224]);
@@ -141,7 +144,7 @@ export default async ({ page, check, setDir }) => {
   await page.waitForFunction(() => Math.round([...document.querySelectorAll("figure")][2].querySelector("svg").getBoundingClientRect().width) === 300);
   const [narrow] = await bars(cpu);
   check("narrowShares", near(narrow.map((b) => b.share), [0.42, 0.875, 1, 0.64], await areaHeight(cpu)));
-  check("narrowWidths", narrow.every((b) => Math.abs(b.width * 300 - 60) <= 1));
+  check("narrowWidths", narrow.every((b) => Math.abs(b.width * 300 - 75) <= 1));
   await figure(cpu).evaluate((f, v) => (f.style.inlineSize = v), narrowBefore);
 
   // Right to left: the time axis runs from the right, as the arrow keys do.

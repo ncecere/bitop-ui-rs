@@ -247,6 +247,7 @@ pub async fn context(
             popover="auto"
             role="dialog"
             aria-label=(label)
+            tabindex="-1"
             data-context-card=""
             data-align=(PopupAlign::Start.as_str())
             class=(class!(popover_css::POPUP, css::CARD))

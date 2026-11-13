@@ -89,7 +89,8 @@ pub fn time_text(timestamp: i64, format: TimeFormat, now: i64) -> String {
 ///   time does not tick. The default is the server's clock, then the visitor's.
 /// - `title` replaces the title; by default a relative time has its full date there.
 /// - `child` is rendered instead of the `<time>` when the value is missing or is not
-///   a date. The default is nothing.
+///   a date. The default is nothing, as upstream's; pass `"—"` where an empty table
+///   cell would look like a mistake.
 #[component]
 pub async fn time(
     cx: &Cx,

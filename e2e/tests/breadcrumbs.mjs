@@ -11,7 +11,7 @@ export default async ({ page, check, axe, focused, settled, setDir }) => {
   check("current", [await current.textContent(), await current.evaluate((el) => el.tagName), await plain.locator("li").last().locator("[data-icon]").count()], ["v2.1", "SPAN", 0]);
   check("hrefs", await plain.getByRole("link").evaluateAll((all) => all.map((a) => a.getAttribute("href"))), ["/", "/c/breadcrumbs?p=projects", "/c/breadcrumbs?p=web"]);
   check("separators", await plain.locator("li > [data-icon=chevron-right]").evaluateAll((all) => all.map((i) => i.getAttribute("aria-hidden"))), ["true", "true", "true"]);
-  check("icon", await plain.getByRole("link", { name: "Acme" }).locator("[data-icon=inbox]").count(), 1);
+  check("icon", await plain.getByRole("link", { name: "Acme" }).locator("[data-icon=boxes]").count(), 1);
   check("titles", await plain.getByRole("link", { name: "Projects" }).getAttribute("title"), "Projects");
   const boxes = await plain.locator("ol > li").evaluateAll((all) => all.map((li) => li.getBoundingClientRect()).map((b) => [Math.round(b.x), Math.round(b.y)]));
   check("oneLineInOrder", [new Set(boxes.map((b) => b[1])).size, boxes.every((b, i) => i === 0 || b[0] > boxes[i - 1][0])], [1, true]);

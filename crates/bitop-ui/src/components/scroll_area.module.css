@@ -1,10 +1,66 @@
+/*
+ * Upstream draws its own scrollbars (Base UI): a 0.625rem bar with 0.125rem of
+ * padding around a pill thumb, shown while the pointer is over the area. Here the
+ * browser's scrollbar is styled the same way where it can be (Chromium, WebKit);
+ * Firefox gets its thin scrollbar in the same colours.
+ */
 .root {
+  --scroll-area-bar-size: 0.625rem;
+
+  min-block-size: 0;
   overflow: auto;
   overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-border-strong) transparent;
+  border-radius: inherit;
+
+  &[data-orientation="vertical"] {
+    overflow-x: hidden;
+  }
+
+  &[data-orientation="horizontal"] {
+    overflow-y: hidden;
+  }
 
   &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
     outline-offset: -2px;
+  }
+
+  &::-webkit-scrollbar {
+    inline-size: var(--scroll-area-bar-size);
+    block-size: var(--scroll-area-bar-size);
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  /* The thumb uses --color-border-strong (>= 3:1 against surfaces). */
+  &::-webkit-scrollbar-thumb {
+    border: 0.125rem solid transparent;
+    border-radius: var(--radius-full);
+    background-color: transparent;
+    background-clip: padding-box;
+  }
+
+  &:hover::-webkit-scrollbar-thumb,
+  &:focus-visible::-webkit-scrollbar-thumb {
+    background-color: var(--color-border-strong);
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-border-hover);
+  }
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  .root {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+
+    &:hover,
+    &:focus-visible {
+      scrollbar-color: var(--color-border-strong) transparent;
+    }
   }
 }

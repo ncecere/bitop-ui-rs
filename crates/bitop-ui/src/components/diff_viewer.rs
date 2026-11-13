@@ -41,7 +41,7 @@ use topcoat::{
 };
 
 use super::{
-    scroll_area::scroll_area,
+    scroll_area::{ScrollOrientation, scroll_area},
     toggle::{ToggleSize, ToggleVariant},
     toggle_group::{toggle_group, toggle_group_item},
 };
@@ -1215,6 +1215,7 @@ pub async fn diff_viewer(
             if !empty {
                 scroll_area(
                     label: label,
+                    orientation: ScrollOrientation::Both,
                     attrs: attributes! { class=(css::SCROLL) style=(scroll_style) },
                     if json {
                         <table class=(css::TABLE) data-table="unified">

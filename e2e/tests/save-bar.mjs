@@ -44,6 +44,20 @@ export default async ({ page, check, axe, button, focused, settled, setDir }) =>
   b = await box(bar);
   check("restsAtEnd", [b.y - about.b, s.b - b.b], [16, 33]);
 
+  // Typed back to what it was, the form is no longer dirty and the bar closes; typed
+  // again, it opens.
+  await name.focus();
+  await page.keyboard.press("End");
+  await page.keyboard.press("Backspace");
+  await page.keyboard.press("Backspace");
+  await page.waitForFunction(() => !document.querySelector('[data-demo="form"] [data-save-bar]').hasAttribute("data-open"));
+  check("cleanCloses", [await name.inputValue(), await status.textContent(), await form.getByRole("button", { name: "Save" }).count()], ["Ada", "", 0]);
+  await page.keyboard.type("!");
+  await page.waitForFunction(() => document.querySelector('[data-demo="form"] [data-save-bar]').hasAttribute("data-open"));
+  check("eventsDirtyAgain", await page.evaluate(() => window.barEvents), [true, false, true]);
+  await settled(bar);
+  await scroller.evaluate((el) => el.scrollTo(0, el.scrollHeight));
+
   // The actions are in the tab order after the fields.
   await page.getByLabel("About").focus();
   await page.keyboard.press("Tab");
@@ -55,11 +69,15 @@ export default async ({ page, check, axe, button, focused, settled, setDir }) =>
   await page.keyboard.press("Shift+Tab");
   await page.keyboard.press("Enter");
   check("reset", [await name.inputValue(), await bar.evaluate((el) => el.hasAttribute("data-open")), await status.textContent(), await form.getByRole("button", { name: "Save" }).count()], ["Ada", false, "", 0]);
-  check("eventsAfterReset", await page.evaluate(() => window.barEvents), [true, false]);
+  check("eventsAfterReset", await page.evaluate(() => window.barEvents), [true, false, true, false]);
 
-  // A change event (a select, a checkbox) opens it too, and so can a script.
+  // A change event that leaves the form as it was does not open it; one that changes a
+  // field (a select, a checkbox) does, and so can a script.
   await name.evaluate((el) => el.dispatchEvent(new Event("change", { bubbles: true })));
+  check("cleanChangeStaysClosed", await bar.evaluate((el) => el.hasAttribute("data-open")), false);
+  await name.evaluate((el) => { el.value = "Grace"; el.dispatchEvent(new Event("change", { bubbles: true })); });
   check("changeOpens", await bar.evaluate((el) => el.hasAttribute("data-open")));
+  await form.evaluate((el) => el.reset());
   await bar.evaluate((el) => window.bitopUi.setSaveBar(el, false));
   check("scriptCloses", [await bar.evaluate((el) => el.hasAttribute("data-open")), await status.textContent()], [false, ""]);
   await bar.evaluate((el) => window.bitopUi.setSaveBar(el, true));

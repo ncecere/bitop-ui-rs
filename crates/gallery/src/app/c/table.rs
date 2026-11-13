@@ -1,5 +1,5 @@
 use bitop_ui::components::{
-    badge::{BadgeTone, badge},
+    badge::{BadgeTone, status_badge},
     button::{ButtonSize, ButtonVariant, button},
     empty_state::empty_state,
     icon::Icon,
@@ -43,7 +43,7 @@ async fn show(cx: &Cx) -> Result<impl View> {
                         td(numeric: true, (size))
                         td(
                             muted: true,
-                            badge(
+                            status_badge(
                                 tone: if status == "Ready" {
                                     BadgeTone::Success
                                 } else {
