@@ -75,6 +75,20 @@ pub enum Icon {
     VolumeX,
     Mic,
     AudioLines,
+    Package,
+    Eye,
+    EyeOff,
+    GitCommitHorizontal,
+    CircleMinus,
+    LoaderCircle,
+    FileBraces,
+    FileCode,
+    FileImage,
+    Folder,
+    FolderOpen,
+    Eraser,
+    SquareTerminal,
+    ArrowLeft,
 }
 
 impl Icon {
@@ -142,6 +156,20 @@ impl Icon {
             Self::VolumeX => "volume-x",
             Self::Mic => "mic",
             Self::AudioLines => "audio-lines",
+            Self::Package => "package",
+            Self::Eye => "eye",
+            Self::EyeOff => "eye-off",
+            Self::GitCommitHorizontal => "git-commit-horizontal",
+            Self::CircleMinus => "circle-minus",
+            Self::LoaderCircle => "loader-circle",
+            Self::FileBraces => "file-braces",
+            Self::FileCode => "file-code",
+            Self::FileImage => "file-image",
+            Self::Folder => "folder",
+            Self::FolderOpen => "folder-open",
+            Self::Eraser => "eraser",
+            Self::SquareTerminal => "square-terminal",
+            Self::ArrowLeft => "arrow-left",
         }
     }
 }

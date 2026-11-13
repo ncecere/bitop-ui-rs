@@ -13,7 +13,8 @@ its design tokens and themes, so a Rust site and a React site can look the same.
 - **Checked.** Every component has a gallery page and browser checks for keyboard behaviour,
   focus and accessibility (axe), run in Chromium, Firefox and WebKit.
 
-Status: early. 109 of 120 components are built; see the [roadmap](docs/roadmap.md) for the rest.
+Status: every component in bitop-ui is ported: 120 of 120. What differs from upstream is listed
+under "Known gaps" in the [roadmap](docs/roadmap.md#known-gaps-in-what-is-built).
 Topcoat itself is experimental, and this library pins one exact version of it.
 
 ## See it
@@ -30,7 +31,7 @@ moment the copy was made. Run the gallery locally (below) for those.
 | Crate | Contents |
 | --- | --- |
 | `bitop-ui` | The base set: buttons, forms, overlays, navigation, layout |
-| `bitop-ui-ai` | Chat, agent and voice components built on the base set (conversation, message, prompt input, tool calls, plans, questions, an audio player, speech input and more); code components are next. Render `bitop_ui_ai::head()` after `bitop_ui::head()` |
+| `bitop-ui-ai` | Chat, agent and voice components built on the base set (conversation, message, prompt input, tool calls, plans, questions, an audio player, speech input, and code and developer components: terminal, file tree, stack trace, test results, web preview and more). Render `bitop_ui_ai::head()` after `bitop_ui::head()` |
 | `bitop-ui-build` | Build-script helper: CSS Modules to one stylesheet, component scripts to one file |
 | `gallery` | A Topcoat app with one page per component |
 

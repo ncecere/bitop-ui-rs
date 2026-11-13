@@ -17,7 +17,9 @@ export default async ({ page, check }) => {
   await page.evaluate(() => {
     const d = document.getElementById("live-reasoning");
     window.closeTimes = { ended: performance.now() };
-    d.addEventListener("toggle", () => (window.closeTimes.closed = performance.now()), { once: true });
+    // The first close, not the first toggle: the toggle event of the open is queued
+    // and may arrive now.
+    d.addEventListener("toggle", (e) => e.newState === "closed" && (window.closeTimes.closed ??= performance.now()));
     d.removeAttribute("data-streaming");
   });
   await page.waitForFunction(() => !document.getElementById("live-reasoning").querySelector("[data-shimmer][data-active]"));

@@ -36,7 +36,9 @@ export default async ({ page, check, settled }) => {
   if (hover) {
     await page.evaluate(() => {
       const card = document.getElementById("context-full");
-      card.addEventListener("toggle", (e) => e.newState === "open" && (window.openedAt = performance.now()), { once: true });
+      // Not { once: true }: the toggle event of the close by Escape above is queued and
+      // may arrive first, which would use the listener up.
+      card.addEventListener("toggle", (e) => e.newState === "open" && (window.openedAt ??= performance.now()));
       document.querySelector('[popovertarget="context-full"]').addEventListener("pointerover", () => (window.hoveredAt ??= performance.now()));
     });
     await trigger.hover();

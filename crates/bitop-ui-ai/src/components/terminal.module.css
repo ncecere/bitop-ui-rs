@@ -1,0 +1,231 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+  overflow: hidden;
+  border-radius: var(--radius-3);
+  background-color: var(--color-surface-sunken);
+  box-shadow: var(--shadow-ring);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: 2.25rem;
+  padding-block: var(--space-1);
+  padding-inline: var(--space-3) var(--space-1);
+  border-block-end: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-inline-size: 0;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.titleIcon {
+  display: inline-flex;
+  flex: none;
+
+  & [data-icon] {
+    inline-size: 0.9375rem;
+    block-size: 0.9375rem;
+  }
+}
+
+/* Shown while the root says output is streaming. */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: none;
+  color: var(--color-text-muted);
+
+  .root:not([data-streaming]) & {
+    display: none;
+  }
+}
+
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-inline-start: auto;
+}
+
+.action[data-size] {
+  --button-height: 2rem;
+}
+
+.content {
+  --terminal-max-height: 24rem;
+
+  max-block-size: var(--terminal-max-height);
+  overflow: auto;
+  overscroll-behavior: contain;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: -2px;
+  }
+}
+
+.pre {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  tab-size: 4;
+}
+
+.output {
+  font-family: inherit;
+  font-size: inherit;
+  background: none;
+}
+
+/* Shown while there is no output and nothing is streaming. */
+.placeholder {
+  display: none;
+  color: var(--color-text-subtle);
+  font-style: italic;
+
+  .output:empty + & {
+    display: inline;
+  }
+
+  .root[data-streaming] & {
+    display: none;
+  }
+}
+
+/* ANSI colours map to theme text tokens (AA on the sunken surface). */
+.span {
+  --ansi-fg: inherit;
+  --ansi-bg: transparent;
+
+  color: var(--ansi-fg);
+  background-color: var(--ansi-bg);
+
+  &[data-fg="black"] {
+    --ansi-fg: var(--color-text-muted);
+  }
+
+  &[data-fg="gray"] {
+    --ansi-fg: var(--color-text-subtle);
+  }
+
+  &[data-fg="red"] {
+    --ansi-fg: var(--color-danger-text);
+  }
+
+  &[data-fg="green"] {
+    --ansi-fg: var(--color-success-text);
+  }
+
+  &[data-fg="yellow"] {
+    --ansi-fg: var(--color-warning-text);
+  }
+
+  &[data-fg="blue"],
+  &[data-fg="cyan"] {
+    --ansi-fg: var(--color-info-text);
+  }
+
+  &[data-fg="magenta"] {
+    --ansi-fg: var(--color-primary-subtle-text);
+  }
+
+  &[data-fg="white"] {
+    --ansi-fg: var(--color-text);
+  }
+
+  &[data-bg="black"],
+  &[data-bg="gray"],
+  &[data-bg="white"] {
+    --ansi-bg: var(--color-neutral-subtle);
+  }
+
+  &[data-bg="red"] {
+    --ansi-bg: var(--color-danger-subtle);
+  }
+
+  &[data-bg="green"] {
+    --ansi-bg: var(--color-success-subtle);
+  }
+
+  &[data-bg="yellow"] {
+    --ansi-bg: var(--color-warning-subtle);
+  }
+
+  &[data-bg="blue"],
+  &[data-bg="cyan"] {
+    --ansi-bg: var(--color-info-subtle);
+  }
+
+  &[data-bg="magenta"] {
+    --ansi-bg: var(--color-primary-subtle);
+  }
+
+  &[data-bold] {
+    font-weight: var(--font-weight-bold);
+  }
+
+  &[data-dim] {
+    color: var(--color-text-muted);
+  }
+
+  &[data-italic] {
+    font-style: italic;
+  }
+
+  &[data-underline] {
+    text-decoration: underline;
+  }
+
+  &[data-inverse] {
+    background-color: var(--color-text);
+    color: var(--color-text-inverse);
+  }
+}
+
+/* Shown while streaming. */
+.cursor {
+  display: none;
+  inline-size: 0.55em;
+  block-size: 1.1em;
+  margin-inline-start: 0.125rem;
+  background-color: var(--color-text);
+  vertical-align: text-bottom;
+  animation: blink 1s steps(1) infinite;
+
+  .root[data-streaming] & {
+    display: inline-block;
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor {
+    animation: none;
+  }
+}

@@ -124,3 +124,51 @@ document.addEventListener("bitop:voice-preview", (event) => {
   if (event.detail.playing) delete root.dataset.previewing;
   else root.dataset.previewing = event.detail.id;
 });
+
+// The stack trace page's frames that send events: the page writes what it heard.
+document.addEventListener("bitop:stack-frame", (event) => {
+  const root = event.target;
+  if (!(root instanceof Element) || !root.hasAttribute("data-gallery-frames")) return;
+  const out = root.parentElement.querySelector("[data-frame-clicked]");
+  if (out) out.textContent = `${event.detail.file}:${event.detail.line}:${event.detail.column}`;
+});
+
+// The file tree page's tree: the page writes the last event it heard.
+for (const name of ["bitop:file-tree-select", "bitop:file-tree-toggle"]) {
+  document.addEventListener(name, (event) => {
+    const tree = event.target;
+    if (!(tree instanceof Element) || !tree.hasAttribute("data-gallery-tree")) return;
+    const out = tree.parentElement.querySelector("[data-tree-event]");
+    const detail = event.detail;
+    if (out) out.textContent = name.endsWith("select") ? `Selected ${detail.path} (${detail.kind})` : `${detail.open ? "Opened" : "Closed"} ${detail.path}`;
+  });
+}
+
+// The terminal page's stand-in for a server streaming output: each template holds a
+// chunk of spans rendered by the server, appended one at a time.
+document.addEventListener("click", async (event) => {
+  const button = event.target instanceof Element && event.target.closest("[data-gallery-terminal]");
+  if (!button) return;
+  const id = button.dataset.galleryTerminal;
+  const root = document.getElementById(id);
+  const output = document.getElementById(`${id}-output`);
+  const chunks = [...document.querySelectorAll(`[data-terminal-chunks="${id}"] > template`)];
+  button.disabled = true;
+  output.replaceChildren();
+  root.setAttribute("data-streaming", "");
+  for (const chunk of chunks) {
+    await new Promise((resolve) => setTimeout(resolve, 60));
+    output.append(chunk.content.cloneNode(true));
+  }
+  root.removeAttribute("data-streaming");
+  root.dataset.streamed = "";
+  button.disabled = false;
+});
+
+// The web preview page's preview: the page writes the last address it went to.
+document.addEventListener("bitop:web-preview-navigate", (event) => {
+  const root = event.target;
+  if (!(root instanceof Element) || !root.hasAttribute("data-gallery-preview")) return;
+  const out = root.parentElement.querySelector("[data-preview-event]");
+  if (out) out.textContent = `Went to ${event.detail.url}`;
+});

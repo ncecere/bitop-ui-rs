@@ -1,0 +1,365 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  min-inline-size: 0;
+  border-radius: var(--radius-3);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-ring);
+  font-size: var(--font-size-sm);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-block-end: 1px solid var(--color-border);
+}
+
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.summaryBadge [data-icon] {
+  inline-size: 0.75rem;
+  block-size: 0.75rem;
+}
+
+.duration {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.progress {
+  --passed: 0%;
+  --failed: 0%;
+  --skipped: 0%;
+
+  padding: var(--space-3) var(--space-4);
+  border-block-end: 1px solid var(--color-border);
+}
+
+.meter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.track {
+  display: flex;
+  block-size: 0.5rem;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface-sunken);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+}
+
+.passedSegment,
+.failedSegment,
+.skippedSegment {
+  display: block;
+  flex: none;
+  block-size: 100%;
+  transition: inline-size var(--motion-duration-slow) var(--motion-ease-out);
+}
+
+.passedSegment {
+  inline-size: var(--passed);
+  background-color: var(--color-success-dot);
+}
+
+.failedSegment {
+  inline-size: var(--failed);
+  background-color: var(--color-danger-dot);
+}
+
+.skippedSegment {
+  inline-size: var(--skipped);
+  background-color: var(--color-warning-dot);
+}
+
+.progressText {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.progressLabel {
+  color: inherit;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+
+.suite {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+  border-radius: var(--radius-2);
+  box-shadow: var(--shadow-ring);
+  interpolate-size: allow-keywords;
+}
+
+/* The panels open through the box the browser puts around a <details>'s content. A
+   rule of its own: a browser that does not know the pseudo-element drops the rule. */
+.suite::details-content,
+.testDetailsRoot::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition:
+    block-size var(--motion-duration-normal) var(--motion-ease-out),
+    content-visibility var(--motion-duration-normal) allow-discrete;
+}
+
+.suite[open]::details-content,
+.testDetailsRoot[open]::details-content {
+  block-size: auto;
+}
+
+.testDetailsRoot {
+  interpolate-size: allow-keywords;
+}
+
+.suiteTrigger,
+.testTrigger {
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  text-align: start;
+  list-style: none;
+  cursor: pointer;
+  transition: background-color var(--motion-duration-fast) var(--motion-ease-out);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--color-surface-hover);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: -2px;
+  }
+}
+
+/* Safari draws the disclosure triangle with its own pseudo-element. */
+.suiteTrigger::-webkit-details-marker,
+.testTrigger::-webkit-details-marker {
+  display: none;
+}
+
+.suiteTrigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  inline-size: 100%;
+  min-block-size: var(--control-height-md);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-2);
+}
+
+.suiteName {
+  min-inline-size: 0;
+  overflow: hidden;
+  font-family: var(--font-family-mono);
+  font-weight: var(--font-weight-medium);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Points to the end while closed, down while open. */
+.chevron {
+  flex: none;
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+  color: var(--color-text-muted);
+  transition: rotate var(--motion-duration-fast) var(--motion-ease-out);
+
+  &:dir(rtl) {
+    scale: -1 1;
+  }
+
+  details[open] > summary > & {
+    rotate: 90deg;
+  }
+
+  details[open] > summary > &:dir(rtl) {
+    rotate: -90deg;
+  }
+}
+
+.spacer {
+  flex: none;
+  inline-size: 0.875rem;
+}
+
+.statusIcon {
+  display: inline-flex;
+  flex: none;
+
+  & [data-icon] {
+    inline-size: 1rem;
+    block-size: 1rem;
+  }
+
+  &[data-status="passed"] {
+    color: var(--color-success-text);
+  }
+
+  &[data-status="failed"] {
+    color: var(--color-danger-text);
+  }
+
+  &[data-status="skipped"] {
+    color: var(--color-warning-text);
+  }
+
+  &[data-status="running"] {
+    color: var(--color-info-text);
+
+    & [data-icon] {
+      animation: spin 1s linear infinite;
+    }
+  }
+}
+
+@keyframes spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+.stats {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-inline-start: auto;
+  font-size: var(--font-size-xs);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.statPassed {
+  color: var(--color-success-text);
+}
+
+.statFailed {
+  color: var(--color-danger-text);
+}
+
+.statSkipped {
+  color: var(--color-warning-text);
+}
+
+.tests {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  border-block-start: 1px solid var(--color-border);
+  list-style: none;
+}
+
+.test {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+
+  & + & {
+    border-block-start: 1px solid var(--color-border);
+  }
+}
+
+.testRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  inline-size: 100%;
+  min-block-size: var(--control-height-sm);
+  padding: var(--space-1) var(--space-3);
+}
+
+.testName {
+  flex: 1;
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.testDuration {
+  flex: none;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.testDetails {
+  padding-block: 0 var(--space-3);
+  padding-inline: calc(var(--space-3) + 0.875rem + var(--space-2)) var(--space-3);
+}
+
+.error {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-inline-size: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-2);
+  background-color: var(--color-danger-subtle);
+  box-shadow: inset 0 0 0 1px var(--color-danger-border);
+}
+
+.errorMessage {
+  margin: 0;
+  color: var(--color-danger-text);
+  font-weight: var(--font-weight-medium);
+}
+
+.errorStack {
+  margin: 0;
+  overflow-x: auto;
+  color: var(--color-danger-text);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  line-height: 1.6;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .passedSegment,
+  .failedSegment,
+  .skippedSegment,
+  .suiteTrigger,
+  .testTrigger,
+  .chevron,
+  .suite::details-content,
+  .testDetailsRoot::details-content {
+    transition: none;
+  }
+
+  .statusIcon[data-status="running"] [data-icon] {
+    animation: none;
+  }
+}
+
+.panel {
+  min-inline-size: 0;
+}

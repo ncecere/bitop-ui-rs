@@ -142,6 +142,13 @@ Topcoat's `view!` macro:
 - Options a gallery page passes by reference (`&[QuestionChoice]`) must outlive the view.
   Give such structs `const fn` builders so the page can hold them in a `const`; a string
   that is computed, such as a `data:` URL, goes in a `static LazyLock<String>`.
+- A part cannot render itself: the types of a component that calls itself never end.
+  Nest through plain functions that return `Child::new(view! { ... })` and call each
+  other, as `schema_display`'s property lists do. The caller's class goes in as
+  `class!(css::ROWS, extra)` with `extra = attrs.remove("class")`; a `class!` value has
+  no `to_string`.
+- `#[component]` rewrites the lifetimes of `&str` in an argument's type, which breaks a
+  function pointer argument (`fn(&str) -> bool`). Name the type with a `type` alias.
 - Markup that is already sanitised goes into a view as `(Unescaped::new_unchecked(html))`.
   Only HTML built by code that escapes every piece of text may go there; see
   `bitop-ui-ai`'s `markdown.rs`.
@@ -358,3 +365,23 @@ Checks:
   `SpeechRecognition`), and runs the rest of the state machine on stand-ins installed
   with `addInitScript` in a page of its own (`page.context().newPage()`): the runner
   reloads the test's page for axe, and the stand-ins would stay on it.
+- axe never finishes on a page with an `<iframe sandbox="">`: it cannot run in a frame
+  whose scripts are off, and waits for it. Gallery frames keep `allow-scripts`.
+- Reading `contentDocument` of a frame sandboxed without `allow-same-origin` logs a
+  console error in WebKit, which fails the page. Check the `sandbox` attribute instead;
+  read the frame's content with `page.frameLocator`, which works across origins.
+- axe's `landmark-unique` fails two regions with the same name, and two unnamed `<main>`s,
+  also when they are in different frames on the page. Give gallery examples of a
+  component that names a region by its content (a stack trace by its error) different
+  content, and name a frame page's `<main>`.
+- `getComputedStyle` gives the value a transition has reached, not the end value. A
+  check of a chevron's `rotate` waits for `getAnimations()` to finish first.
+- A `scroll` event comes a frame after a script scrolls. A check that scrolls a log that
+  follows its content, then adds to it, waits two frames between, or the log still
+  thinks the reader is at the bottom.
+- A `treeitem` named with `aria-label` fails `label-content-name-mismatch` once its folder
+  is open, as axe counts the nested items' text as the item's. Name tree items by their
+  row's text: the nested `group` is not part of a tree item's name.
+- A `toggle` listener added with `{ once: true }` right after a popover closed can be used
+  up by that close's queued `toggle` event. A check that times the next open records the
+  first `newState === "open"` without `once`.
