@@ -114,14 +114,15 @@ function paletteFilter(parts, query) {
   paletteActivate(parts, shown[0]);
 }
 
-// A palette starts each time with an empty search and its first item highlighted.
+// A palette starts each time with an empty search and its first item highlighted:
+// closing resets it, below. The toggle event of the open is queued, so keys pressed
+// since may already have moved the highlight; only set one if there is none.
 document.addEventListener(
   "toggle",
   (event) => {
     const parts = paletteParts(event.target);
     if (!parts || event.target !== parts.dialog || event.newState !== "open") return;
-    parts.input.value = "";
-    paletteFilter(parts, "");
+    if (!parts.list.querySelector("[data-active]")) paletteFilter(parts, parts.input.value);
   },
   true,
 );
