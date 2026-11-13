@@ -2,8 +2,11 @@
 //!
 //! The trigger is a button that opens a popover (the base set's popup) with a search
 //! box over a list of models. The library script adds the pattern of a searchable
-//! select: typing filters by every word, the arrow keys move through the models, Enter
-//! chooses, and Escape closes and returns focus to the trigger. The chosen model's
+//! select: typing filters by every word, the arrow keys (which wrap), Home and End move
+//! through the models, Enter chooses, and Escape closes and returns focus to the
+//! trigger. The trigger is a combobox with a dialog popup, as upstream's, and says
+//! whether it is open in `aria-expanded`. Capabilities are small outlined badges, or
+//! soft badges in their tone (`capability_tones`). The chosen model's
 //! `id` is submitted with the form under `name`, through a hidden input, and a
 //! `change` event is sent from that input.
 //!
@@ -262,8 +265,11 @@ pub async fn model_selector(
             <button
                 type="button"
                 popovertarget=(id)
+                role="combobox"
                 aria-label=(&trigger_label)
                 aria-haspopup="dialog"
+                aria-expanded="false"
+                aria-controls=(id)
                 data-label=(label)
                 data-size=(size.as_str())
                 disabled=(disabled)
@@ -288,7 +294,7 @@ pub async fn model_selector(
                 role="dialog"
                 aria-label=(label)
                 data-align="start"
-                class=(class!(popover_css::POPUP, css::POPUP))
+                class=(class!(popover_css::SURFACE, css::POPUP))
             >
                 <div class=(css::SEARCH)>
                     icon(

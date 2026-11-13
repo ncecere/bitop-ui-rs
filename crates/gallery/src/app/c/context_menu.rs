@@ -1,10 +1,11 @@
 use bitop_ui::components::{
     button::button,
     context_menu::{
-        MenuItemVariant, context_menu, context_menu_checkbox_item, context_menu_group,
+        MenuItemTone, context_menu, context_menu_checkbox_item, context_menu_group,
         context_menu_item, context_menu_radio_group, context_menu_radio_item,
         context_menu_separator, context_menu_submenu, context_menu_trigger,
     },
+    icon::{Icon, icon},
 };
 use topcoat::{
     Result,
@@ -15,10 +16,16 @@ use topcoat::{
 
 use crate::app::kit::{example, page_header};
 
+const FILE_ROW: &str = "display: flex; align-items: center; gap: var(--space-3); inline-size: min(100%, 24rem); padding: var(--space-3) var(--space-4); border-radius: var(--radius-control); background-color: var(--color-surface); box-shadow: var(--shadow-1); font-size: var(--font-size-md)";
+const OPTIONS_AREA: &str = "display: grid; place-items: center; inline-size: min(100%, 22rem); block-size: 9rem; border: 1px dashed var(--color-border-strong); border-radius: var(--radius-card); background-color: var(--color-surface); color: var(--color-text-muted); font-size: var(--font-size-sm); text-align: center";
+
 const AREA: &str = "display: grid; place-items: center; inline-size: 20rem; max-inline-size: 100%; block-size: 9rem; border: 1.5px dashed var(--color-border-strong); border-radius: var(--radius-card); color: var(--color-text-muted)";
 
 #[page]
 async fn show(cx: &Cx) -> Result<impl View> {
+    let file_id = element_id(cx);
+    let share_id = element_id(cx);
+    let options_id = element_id(cx);
     let canvas_id = element_id(cx);
     let row_id = element_id(cx);
     let off_id = element_id(cx);
@@ -27,6 +34,76 @@ async fn show(cx: &Cx) -> Result<impl View> {
 
     Ok(view! {
         page_header(slug: "context-menu")
+        example(
+            title: "File actions",
+            context_menu_trigger(
+                target: &file_id,
+                attrs: attributes! { style=(FILE_ROW) },
+                <span
+                    style="display: inline-flex; color: var(--color-text-muted); font-size: 1rem"
+                >
+                    icon(name: Icon::FileText)
+                </span>
+                "quarterly-report.pdf"
+                <span
+                    style="margin-inline-start: auto; color: var(--color-text-muted); font-size: var(--font-size-sm)"
+                >
+                    "2.4 MB"
+                </span>
+            )
+            context_menu(
+                id: &file_id,
+                label: "File actions",
+                context_menu_item(icon: Icon::Pencil, shortcut: "F2", "Rename")
+                context_menu_item(icon: Icon::Copy, shortcut: "⌘D", "Duplicate")
+                context_menu_item(
+                    href: "#file-actions",
+                    icon: Icon::Download,
+                    "Download"
+                )
+                context_menu_submenu(
+                    id: &share_id,
+                    label: "Share",
+                    icon: Icon::Share2,
+                    context_menu_item("Copy link")
+                    context_menu_item("Email…")
+                    context_menu_item("Slack…")
+                )
+                context_menu_separator()
+                context_menu_item(
+                    tone: MenuItemTone::Danger,
+                    icon: Icon::Trash2,
+                    shortcut: "⌫",
+                    "Move to trash"
+                )
+            )
+        )
+        example(
+            title: "Checkbox and radio items",
+            context_menu_trigger(
+                target: &options_id,
+                attrs: attributes! { style=(OPTIONS_AREA) },
+                "Right-click (or long-press) in this area"
+            )
+            context_menu(
+                id: &options_id,
+                label: "View options",
+                context_menu_group(
+                    label: "View",
+                    context_menu_checkbox_item(shortcut: "⌘⇧.", "Show hidden files")
+                    context_menu_checkbox_item(checked: true, "Show file extensions")
+                )
+                context_menu_separator()
+                context_menu_radio_group(
+                    label: "Sort by",
+                    context_menu_radio_item(value: "name", checked: true, "Name")
+                    context_menu_radio_item(value: "modified", "Date modified")
+                    context_menu_radio_item(value: "size", "Size")
+                )
+                context_menu_separator()
+                context_menu_item(disabled: true, "Paste (clipboard is empty)")
+            )
+        )
         example(
             title: "An area that can be focused",
             context_menu_trigger(
@@ -42,12 +119,16 @@ async fn show(cx: &Cx) -> Result<impl View> {
             context_menu(
                 id: &canvas_id,
                 label: "Canvas actions",
-                context_menu_item("Copy")
+                context_menu_item(icon: Icon::Copy, shortcut: "⌘C", "Copy")
                 context_menu_item("Paste")
                 context_menu_item(disabled: true, "Paste in place")
                 context_menu_item("Duplicate")
                 context_menu_separator()
-                context_menu_item(variant: MenuItemVariant::Danger, "Delete")
+                context_menu_item(
+                    tone: MenuItemTone::Danger,
+                    icon: Icon::Trash2,
+                    "Delete"
+                )
             )
         )
         example(

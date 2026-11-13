@@ -64,3 +64,8 @@
   position-try-fallbacks: flip-inline;
   margin: 0 var(--popover-gap);
 }
+
+/* Upstream's alignOffset of -4px for a menu aligned with the start of its button. */
+.menubar:not([data-orientation="vertical"]) .popup[popover][data-align="start"] {
+  margin-inline-start: -4px;
+}

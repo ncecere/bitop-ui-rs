@@ -51,7 +51,9 @@ export default async ({ page, check, axe, focused, settled, setDir }) => {
   check("escReturnsFocus", await page.evaluate(() => document.activeElement.getAttribute("title")), "Projects › Web › Releases");
   await more.click();
   await untilOpen(popup);
-  await page.waitForFunction(() => document.activeElement?.getAttribute("role") === "menuitem");
+  // A click focuses the menu itself, as upstream's; the first ArrowDown goes to the first item.
+  await page.waitForFunction(() => document.activeElement?.getAttribute("role") === "menu");
+  await page.keyboard.press("ArrowDown");
   await page.keyboard.press("ArrowDown");
   await page.keyboard.press("Enter");
   await page.waitForURL("**/c/breadcrumbs?p=web");

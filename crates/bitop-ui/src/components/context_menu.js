@@ -7,14 +7,18 @@ const contextTriggers = new WeakMap();
 let contextPointerDown = false;
 let contextKeyAt = 0;
 
-function openContextMenu(trigger, x, y) {
+function openContextMenu(trigger, x, y, byPointer) {
   const popup = document.getElementById(trigger.dataset.contextMenu);
   if (!popup) return;
   if (popup.matches(":popover-open")) popup.hidePopover();
   contextTriggers.set(popup, trigger);
+  // Opened by the pointer, focus goes to the menu, not its first item, as upstream.
+  if (byPointer) window.bitopUi.menu.focusMenu(popup);
   popup.showPopover();
   // Start-aligned at the pointer; on the other side of it where there is no room.
-  const { width, height } = popup.getBoundingClientRect();
+  // The layout size: the entry transition scales the popup at first.
+  const width = popup.offsetWidth;
+  const height = popup.offsetHeight;
   const rtl = getComputedStyle(trigger).direction === "rtl";
   let left = rtl ? x - width : x;
   if (left + width > innerWidth - CONTEXT_EDGE) left = x - width;
@@ -47,7 +51,7 @@ document.addEventListener("contextmenu", (event) => {
   // The browser's own event for a key press that was handled below. A mouse sends
   // button 2.
   if (event.button !== 2 && Date.now() - contextKeyAt < 500) return;
-  const show = () => openContextMenu(trigger, event.clientX, event.clientY);
+  const show = () => openContextMenu(trigger, event.clientX, event.clientY, true);
   if (!contextPointerDown && event.buttons === 0) {
     show();
     return;

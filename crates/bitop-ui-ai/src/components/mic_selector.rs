@@ -25,7 +25,7 @@
 use bitop_ui::components::{
     button::{ButtonSize, ButtonVariant, button},
     icon::{Icon, icon},
-    select::select,
+    select::native_select,
 };
 use topcoat::{
     Result,
@@ -106,7 +106,7 @@ pub async fn mic_selector(
         >
             <div class=(css::FIELD) data-mic-field="">
                 <label for=(id) class=(label_class)>(label)</label>
-                select(
+                native_select(
                     attrs: attributes! {
                         id=(id)
                         name=((!name.is_empty()).then_some(name))

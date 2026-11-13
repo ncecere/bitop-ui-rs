@@ -142,6 +142,7 @@ pub async fn breadcrumb_collapsed(
                 type="button"
                 popovertarget=(id)
                 aria-haspopup="menu"
+                aria-expanded="false"
                 title=((!title.is_empty()).then_some(title))
                 class=(class!(css::MORE, attrs.remove("class")))
                 (attrs)
@@ -149,8 +150,15 @@ pub async fn breadcrumb_collapsed(
                 <span aria-hidden="true">"…"</span>
                 <span class="sr-only">(label)</span>
             </button>
-            <div id=(id) popover="auto" class=(class!(popover_css::POPUP, css::MENU))>
-                <div role="menu" aria-label=(label) class=(menu_css::LIST)>(child)</div>
+            <div id=(id) popover="auto" class=(class!(popover_css::SURFACE, css::MENU))>
+                <div
+                    role="menu"
+                    tabindex="-1"
+                    aria-label=(label)
+                    class=(menu_css::LIST)
+                >
+                    (child)
+                </div>
             </div>
             icon(
                 name: Icon::ChevronRight,

@@ -1,55 +1,18 @@
+/* The surface, the rows, the separator and the group label are the popover module's
+   (upstream's popup.module.css). This is what upstream's menu.module.css adds. */
 .list {
   display: flex;
   flex-direction: column;
-  min-inline-size: 11rem;
-  margin: calc(-1 * var(--space-3));
-  padding: var(--space-1);
+  outline: 0;
 }
 
-.item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  border: 0;
-  border-radius: var(--radius-1);
-  background: none;
-  color: inherit;
-  font: inherit;
-  font-size: var(--font-size-md);
-  text-align: start;
-  text-decoration: none;
-  cursor: default;
-  user-select: none;
-
-  /* Keyboard and pointer share one highlight, as in native menus. */
-  &:hover,
-  &:focus-visible {
-    outline: none;
-    background: var(--color-surface-hover);
-  }
-
-  &[aria-disabled="true"] {
-    opacity: 0.5;
-    pointer-events: none;
-  }
-
-  &[data-variant="danger"] {
-    color: var(--color-danger);
-  }
-}
-
-.separator {
-  block-size: 1px;
-  margin: var(--space-1) calc(-1 * var(--space-1));
-  border: 0;
-  background: var(--color-border);
-}
-
-/* The text of a checkbox, radio or submenu item; it takes the room that is left. */
+/* The text of an item; it takes the room that is left. */
 .label {
   flex: 1;
   min-inline-size: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .group {
@@ -57,13 +20,20 @@
   flex-direction: column;
 }
 
-.groupLabel {
-  padding: var(--space-2) var(--space-3) var(--space-1);
-  color: var(--color-text-subtle);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
-  cursor: default;
-  user-select: none;
+/* Non-interactive content at the top, such as the signed-in person's name and email. */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-snug);
+
+  & strong {
+    color: var(--color-text);
+    font-weight: var(--font-weight-medium);
+  }
 }
 
 /* Checkbox and radio items: a fixed indicator column keeps labels aligned whether or
@@ -76,13 +46,23 @@
   justify-content: center;
   inline-size: 1rem;
   block-size: 1rem;
+  color: var(--color-text);
 
   & > * {
     visibility: hidden;
   }
 
-  .item[aria-checked="true"] > & > * {
+  [aria-checked="true"] > & > * {
     visibility: visible;
+  }
+
+  [aria-disabled="true"] > & {
+    color: currentColor;
+  }
+
+  & > [data-icon] {
+    inline-size: 1rem;
+    block-size: 1rem;
   }
 }
 
@@ -94,23 +74,23 @@
 }
 
 /* A submenu's item stays highlighted while its submenu is open. */
-.item[aria-expanded="true"] {
-  background: var(--color-surface-hover);
+.submenuTrigger[aria-expanded="true"]:not(:focus) {
+  background-color: var(--color-surface-hover);
 }
 
 .chevron {
   margin-inline-start: auto;
-  color: var(--color-text-muted);
 
   &:dir(rtl) {
     scale: -1 1;
   }
 }
 
-/* A submenu opens beside its item, its first item level with it. The attribute
-   selector outranks the popover module's rules. */
+/* A submenu opens beside its item, its first item level with it (upstream's
+   alignOffset of -4px), with no gap. */
 .submenu[popover] {
   position-area: self-inline-end span-self-block-end;
   position-try-fallbacks: flip-inline, flip-block, flip-inline flip-block;
-  margin: calc(-1 * var(--space-1) - 1px) 0;
+  margin: calc(-1 * var(--space-1)) 0;
+  translate: 0 0;
 }

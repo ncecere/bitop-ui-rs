@@ -1,88 +1,324 @@
+/* combobox: upstream's combobox.module.css. The rows, the surface and the group label
+   are the popover module's (upstream's popup.module.css). */
 .root {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+/* The control looks like a text input: a 1px --color-border-strong boundary (at
+   least 3:1) that becomes the focus ring while the input has focus or the list is
+   open. With several values the chips wrap inside the same boundary. */
+.control {
   position: relative;
   display: flex;
+  align-items: center;
+  inline-size: 100%;
   min-inline-size: 0;
+  min-block-size: var(--control-height-md);
+  box-sizing: border-box;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  background-color: var(--color-control);
+  box-shadow: var(--shadow-0);
+  color: var(--color-text);
+  cursor: text;
+  transition:
+    border-color var(--motion-duration-fast) var(--motion-ease-out),
+    box-shadow var(--motion-duration-fast) var(--motion-ease-out);
 
-  &::after {
-    content: "";
-    position: absolute;
-    inset-block: 0;
-    inset-inline-end: var(--space-2);
-    inline-size: 1rem;
-    background: var(--color-text-muted);
-    mask: var(--icon-chevron-down) center / contain no-repeat;
-    pointer-events: none;
+  @media (hover: hover) {
+    &:hover:not(:focus-within, [data-disabled]) {
+      border-color: var(--color-border-hover);
+    }
+  }
+
+  &:focus-within,
+  &[data-open] {
+    border-color: var(--color-focus-ring);
+    box-shadow: var(--shadow-focus-field);
+  }
+
+  &:has([aria-invalid="true"]) {
+    border-color: var(--color-danger);
+
+    &:focus-within {
+      box-shadow:
+        0 0 0 1px var(--color-danger),
+        0 0 0 4px color-mix(in srgb, var(--color-danger) 18%, transparent);
+    }
+  }
+
+  &[data-disabled] {
+    background-color: var(--color-control-disabled);
+    color: var(--color-text-subtle);
+    cursor: not-allowed;
+  }
+
+  &[data-size="sm"] {
+    min-block-size: var(--control-height-sm);
   }
 }
 
-/* The extra selectors here and on the popup make these rules win over the input's
-   and the popover's own, whatever order the files load in. */
-.root > .input {
-  padding-inline-end: var(--space-8);
+.input {
+  flex: 1 1 0;
+  align-self: stretch;
+  min-inline-size: 0;
+  padding: 0 var(--space-1) 0 var(--space-3);
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-normal);
+  outline: none;
+
+  &::placeholder {
+    color: var(--color-text-subtle);
+    opacity: 1;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+
+  .control[data-size="sm"] & {
+    padding-inline-start: 0.625rem;
+    font-size: var(--font-size-sm);
+  }
+
+  @media (pointer: coarse) {
+    font-size: var(--font-size-lg);
+  }
 }
 
-/* Shares the popover's look. The script names the input as the anchor
-   (--bitop-combobox) while the list is open. */
-[popover].popup {
-  position-anchor: --bitop-combobox;
-  inline-size: anchor-size(inline);
-  max-inline-size: none;
-  padding: var(--space-1);
-}
-
-.list {
+/* Several values: the chips and the input share one wrapping row. */
+.chips {
   display: flex;
-  flex-direction: column;
-  max-block-size: 16rem;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-border-strong) transparent;
+  flex: 1 1 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
+  min-inline-size: 0;
+  padding: var(--space-1) 0 var(--space-1) var(--space-1);
 }
 
-/* Shared with the command palette, which has the same kind of list. */
-.option {
+.chips > .chipInput {
+  flex: 1 1 6rem;
+  align-self: auto;
+  min-inline-size: 4rem;
+  block-size: 1.75rem;
+  padding-inline: var(--space-1);
+
+  .control[data-size="sm"] & {
+    block-size: 1.5rem;
+    padding-inline-start: var(--space-1);
+  }
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  max-inline-size: 100%;
+  block-size: 1.5rem;
+  padding-inline: var(--space-2) 2px;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-neutral-subtle);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  line-height: 1;
+  cursor: default;
+  outline: none;
+
+  /* Keyboard focus on a chip (ArrowLeft from the input): an outline, not just a tint. */
+  &:focus-visible,
+  &:focus {
+    box-shadow: var(--shadow-focus);
+  }
+
+  .control[data-size="sm"] & {
+    block-size: 1.25rem;
+  }
+}
+
+.chipText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chipRemove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+
+  & > [data-icon] {
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--color-surface-hover);
+      color: var(--color-text);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 0;
+  }
+
+  .control[data-size="sm"] & {
+    inline-size: 1rem;
+    block-size: 1rem;
+  }
+}
+
+.actions {
   display: flex;
   flex-shrink: 0;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
+  align-self: stretch;
+  padding-inline-end: var(--space-1);
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 1.75rem;
+  block-size: 1.75rem;
+  padding: 0;
   border: 0;
-  border-radius: var(--radius-1);
-  background: none;
-  color: var(--color-text);
-  font: inherit;
-  font-size: var(--font-size-md);
-  text-align: start;
-  text-decoration: none;
-  cursor: default;
-  user-select: none;
+  border-radius: var(--radius-2);
+  background: transparent;
+  color: var(--color-text-subtle);
+  cursor: pointer;
+  transition:
+    background-color var(--motion-duration-fast) var(--motion-ease-out),
+    color var(--motion-duration-fast) var(--motion-ease-out);
 
-  /* Focus stays in the text input; the script marks the option the keys are on. */
-  &[data-active] {
-    background: var(--color-surface-hover);
-  }
-
-  &[aria-selected="true"]::after {
-    content: "";
+  & > [data-icon] {
     inline-size: 1rem;
     block-size: 1rem;
-    margin-inline-start: auto;
-    background: currentColor;
-    mask: var(--icon-check) center / contain no-repeat;
   }
 
-  &[aria-disabled="true"] {
-    opacity: 0.5;
-    pointer-events: none;
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      background-color: var(--color-surface-hover);
+      color: var(--color-text);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: -2px;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
   }
 
   &[hidden] {
     display: none;
   }
+
+  .control[data-size="sm"] & {
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+  }
 }
 
-.empty {
-  padding: var(--space-2) var(--space-3);
+/* Anchored to the control: the script names it (--bitop-combobox) while the list is
+   open. */
+.popup[popover] {
+  position-anchor: --bitop-combobox;
+  inline-size: anchor-size(inline);
+  min-inline-size: anchor-size(inline);
+  max-inline-size: 100vw;
+  max-block-size: min(24rem, 100%);
+  overscroll-behavior: contain;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  outline: 0;
+  scroll-padding-block: var(--space-1);
+}
+
+.group[hidden] {
+  display: none;
+}
+
+/* A line between groups, also when the groups between them are hidden. */
+.group:not([hidden]) ~ .group:not([hidden]) {
+  margin-block-start: var(--space-1);
+  padding-block-start: var(--space-1);
+  border-block-start: 1px solid var(--color-border);
+}
+
+.item {
+  padding-inline-end: 2rem;
+}
+
+.itemIcon {
+  display: inline-flex;
   color: var(--color-text-muted);
-  font-size: var(--font-size-md);
+
+  & > [data-icon] {
+    inline-size: 1rem;
+    block-size: 1rem;
+  }
+}
+
+.itemText {
+  min-inline-size: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.hint {
+  margin-inline-start: auto;
+  color: var(--color-text-subtle);
+  font-size: var(--font-size-xs);
+}
+
+.indicator {
+  position: absolute;
+  inset-inline-end: var(--space-2);
+  display: none;
+
+  /* Not --color-primary: in dark that's under 3:1 on a highlighted option. */
+  color: var(--color-primary-subtle-text);
+
+  & > [data-icon] {
+    inline-size: 1rem;
+    block-size: 1rem;
+  }
+
+  [aria-selected="true"] > & {
+    display: inline-flex;
+  }
+}
+
+/* The empty message is always there (a live region); only pad it when it has text. */
+.empty:not(:empty) {
+  padding: var(--space-3) var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  text-align: center;
 }

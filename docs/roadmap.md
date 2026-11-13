@@ -205,13 +205,19 @@ Every component was compared with bitop-ui's docs site, side by side in a browse
 - [x] `popover`: title, description, `side`, opening on hover, focus moving in.
 - [x] `drawer`: the footer's buttons as wide as the content, as upstream's example.
 - [ ] `tabs`: pills, counts, icons, scrolling overflow, nav tabs, manual activation.
-- [ ] `menu`, `context-menu`, `menubar`: item icons, 32px rows; ArrowDown on a trigger
-  opens; hovering another menubar menu while one is open.
-- [ ] `select`: a styled list with icons, descriptions and a check, and the field props.
-- [ ] `combobox`: several values as chips, a clear button, free text, option hints and
-  icons, `size`, `auto_highlight`, `limit`.
-- [ ] `command`: a trigger with its shortcut, item icons, hints and shortcuts, the footer,
-  matching each word with ranking.
+- [x] `menu`, `context-menu`, `menubar`: item icons, shortcut hints, the danger tone,
+  `menu_header`, 32px rows on upstream's shared popup surface; ArrowDown and ArrowUp on
+  a trigger open on the first and last item, the trigger's `aria-expanded`; a click
+  focuses the menu, not an item, and the pointer moves the highlight; hovering another
+  menubar menu while one is open.
+- [x] `select`: a styled list with icons, hints and a check, and the field props; the
+  native select is `native_select`.
+- [x] `combobox`: several values as chips, a clear button, free text, option hints,
+  icons and groups, `size`, `auto_highlight`, `limit`.
+- [x] `command`: a trigger with its shortcut, item icons, hints and shortcuts, the Esc
+  button and the footer, matching each word with ranking.
+- [x] `model-selector`: Home and End, the trigger's combobox role and `aria-expanded`,
+  small outlined capability badges.
 - [ ] `checkbox` and `switch`: indeterminate, groups, descriptions, the switch's label,
   description and position, its size and off colour.
 - [ ] `field` and `input`: `Fieldset`, `Form`, `FormActions`; label and error sizes, the
@@ -221,9 +227,9 @@ Every component was compared with bitop-ui's docs site, side by side in a browse
 - [ ] `slider`: a range with two thumbs. `input-otp`: `mask` and `normalize`.
 - [ ] Smaller ones: `scroll-area` orientation, `pagination` colours, `checkpoint`,
   `empty-state` icon size, `bar-chart` solid fills and spacing, `save-bar` hiding when
-  the form is no longer dirty, `time`'s "—", `breadcrumbs`' "…", `model-selector`'s
-  End key and badges, `filter-bar`'s custom date range, `data-table`'s search icon,
-  `context` moving focus into its card, `chat-example`'s context meter.
+  the form is no longer dirty, `time`'s "—", `breadcrumbs`' "…", `filter-bar`'s custom
+  date range, `data-table`'s search icon, `context` moving focus into its card,
+  `chat-example`'s context meter.
 
 ## Known gaps in what is built
 
@@ -231,7 +237,22 @@ Every component was compared with bitop-ui's docs site, side by side in a browse
   They are being ported again from bitop-ui's source; see "Parity with bitop-ui" below.
 - There is also an `icon` component with a small set of Lucide icons, which bitop-ui gets from
   a React package.
-- `menu` items have no `shortcut` hint, and there is no `MenuHeader`.
+- Menus, selects and comboboxes are popovers in the top layer, not portalled into the
+  trigger's landmark; their gap to the trigger is the CSS variable `--popover-gap`, not
+  a `sideOffset` prop. A submenu opened by the pointer closes when the pointer rests
+  on a sibling item, rather than following Base UI's safe triangle.
+- `select`'s popup opens below the button, not over it with the chosen option level
+  with the button (Base UI's `alignItemWithTrigger`, which bitop-ui turns off too).
+  Its value is submitted through an input beside the button; without the script the
+  button does not open. It is not the customizable `<select>` (`appearance:
+  base-select`), which only Chromium draws. The button and the list are named with
+  `aria-label`, not by the label through `aria-labelledby`: the Playwright Firefox crash.
+- `combobox` has no `filter` function and no `filter={null}` for results a server
+  filtered as the person types: render the results as the items. Several values
+  cannot be `required`. Values are initial values; `onValueChange` is the `change`
+  event, and `bitop:change` carries the value or the list of values.
+- `command`'s commands are links and buttons, not `onSelect` callbacks; keywords are
+  one string separated by commas. There is no controlled `query` and no `finalFocus`.
 - A popup lines up with the start edge of the page, not of its own section, when a section's
   direction differs from the page's (see `direction`). Submenus follow their section.
 - `accordion` and `disclosure` are `<details>`: the heading of an accordion item is inside its

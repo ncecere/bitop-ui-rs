@@ -86,6 +86,11 @@ gives the behaviour and can be styled.
 - Module files are joined in alphabetical order. A rule that overrides another module's rule
   needs a more specific selector.
 - `composes` is not supported; the build fails if a module uses it.
+- Upstream's shared `popup.module.css` (the surface of menus and lists, their rows,
+  separators, group labels and shortcut hints) is in the popover module as `SURFACE`,
+  `ITEM`, `SEPARATOR`, `GROUP_LABEL` and `ITEM_SHORTCUT`. Its rules are under `:where()`,
+  so a component's own rules win over them whatever order the modules load in. A
+  surface does not take the `POPUP` class.
 
 ## Scripts
 
@@ -248,6 +253,9 @@ Scripts:
 - A timer started by a pointer event acts on what was true when it started. The menu's
   hover timer once closed a submenu that the keyboard had opened while it ran; it now notes
   which submenus are open when the pointer arrives and closes only those.
+- A popover that has just been shown is still scaled by its entry transition. A script
+  that places it from its size reads `offsetWidth` and `offsetHeight`, not
+  `getBoundingClientRect()`.
 - `scroll` does not bubble. To hear it from every scroller, listen on `document` with
   `capture: true`.
 - Media events (`timeupdate`, `play`, `volumechange`) do not bubble either. Listen on

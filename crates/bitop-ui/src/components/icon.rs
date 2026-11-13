@@ -93,6 +93,11 @@ pub enum Icon {
     Share2,
     Trash2,
     Bell,
+    FileClock,
+    Settings,
+    SlidersHorizontal,
+    Download,
+    Cpu,
 }
 
 impl Icon {
@@ -178,6 +183,11 @@ impl Icon {
             Self::Share2 => "share-2",
             Self::Trash2 => "trash-2",
             Self::Bell => "bell",
+            Self::FileClock => "file-clock",
+            Self::Settings => "settings",
+            Self::SlidersHorizontal => "sliders-horizontal",
+            Self::Download => "download",
+            Self::Cpu => "cpu",
         }
     }
 }

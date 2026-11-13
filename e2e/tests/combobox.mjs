@@ -1,48 +1,130 @@
-export default async ({ page, check, axe, settled, visible }) => {
-  const combo = page.getByRole("combobox", { name: "Model" });
-  const popup = page.locator("[data-combobox] > [popover]");
-  const value = () => page.locator("input[type=hidden][name=model]").inputValue();
-  const options = () => visible(popup.locator("[role=option]:not([hidden])"));
-  const active = () => visible(popup.locator("[data-active]"));
+export default async ({ page, check, axe, settled }) => {
+  const root = (id) => page.locator(`[data-combobox]:has(#${id})`);
+  const popupOf = (id) => root(id).locator(":scope > [popover]");
+  const isOpen = (id) => popupOf(id).evaluate((p) => p.matches(":popover-open"));
+  const labels = (id) => popupOf(id).locator("[role=option]:not([hidden])").evaluateAll((all) => all.map((o) => o.dataset.label));
+  const active = (id) => popupOf(id).locator("[data-active]").evaluateAll((all) => all.map((o) => o.dataset.label));
 
-  await combo.click();
-  check("opens", await popup.evaluate((p) => p.matches(":popover-open")));
-  check("expanded", await combo.getAttribute("aria-expanded"), "true");
-  await settled(popup);
-  const i = await combo.boundingBox();
-  const p = await popup.boundingBox();
-  check(
-    "anchored",
-    { below: p.y >= i.y + i.height, sameWidth: Math.abs(p.width - i.width) < 1, aligned: Math.abs(p.x - i.x) < 1 },
-    { below: true, sameWidth: true, aligned: true },
-  );
+  // One value, with a clear button: the input shows the label, the form gets the value.
+  const zone = page.getByRole("combobox", { name: "Time zone" });
+  const zoneValue = () => root("combobox-zone").locator("input[type=hidden][name=zone]").inputValue();
+  const clearZone = root("combobox-zone").getByRole("button", { name: "Clear selection" });
+  check("initial", [await zone.inputValue(), await zoneValue(), await clearZone.isVisible()], ["Berlin", "Europe/Berlin", true]);
+  check("buttons", await root("combobox-zone").locator("button").evaluateAll((all) => all.map((b) => [b.getAttribute("aria-label"), b.tabIndex].join(" "))), ["Clear selection -1", "Show options -1"]);
+  await zone.click();
+  check("opens", [await isOpen("combobox-zone"), await zone.getAttribute("aria-expanded")], [true, "true"]);
+  check("selectsText", await zone.evaluate((i) => [i.selectionStart, i.selectionEnd]), [0, 6]);
+  check("allShown", (await labels("combobox-zone")).length, 8);
+  check("chosenActive", await active("combobox-zone"), ["Berlin"]);
+  await settled(popupOf("combobox-zone"));
+  const control = await root("combobox-zone").locator("[data-combobox-control]").boundingBox();
+  const p = await popupOf("combobox-zone").boundingBox();
+  check("anchored", { gap: Math.round(p.y - control.y - control.height), sameWidth: Math.abs(p.width - control.width) < 1, aligned: Math.abs(p.x - control.x) < 1 }, { gap: 6, sameWidth: true, aligned: true });
+  check("hintAndCheck", await popupOf("combobox-zone").locator("[role=option][aria-selected=true]").evaluate((o) => [o.querySelector("span:nth-child(2)").textContent, getComputedStyle(o.lastElementChild).display]), ["UTC+1", "flex"]);
   check("axeOpen", await axe(), []);
-  await page.keyboard.type("atl");
-  check("filters", await options(), ["Atlas Large", "Atlas Small"]);
-  check("firstActive", await active(), ["Atlas Large"]);
+  await page.keyboard.type("lo");
+  check("filters", await labels("combobox-zone"), ["Los Angeles", "London"]);
+  check("noAutoHighlight", await active("combobox-zone"), []);
   await page.keyboard.press("ArrowDown");
-  check("arrow", await active(), ["Atlas Small"]);
-  check(
-    "activeDescendant",
-    await combo.evaluate((c) => document.getElementById(c.getAttribute("aria-activedescendant"))?.textContent.trim()),
-    "Atlas Small",
-  );
+  check("down", await active("combobox-zone"), ["Los Angeles"]);
+  check("activeDescendant", await zone.evaluate((c) => document.getElementById(c.getAttribute("aria-activedescendant"))?.dataset.label), "Los Angeles");
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("ArrowDown");
+  check("loopsThroughInput", await active("combobox-zone"), []);
+  await page.keyboard.press("ArrowDown");
+  check("thenFirst", await active("combobox-zone"), ["Los Angeles"]);
+  await page.keyboard.press("ArrowDown");
   await page.keyboard.press("Enter");
-  check("chosen", [await combo.inputValue(), await value()], ["Atlas Small", "atlas-small"]);
-  check("closed", await popup.evaluate((el) => !el.matches(":popover-open")));
-  check("keepsFocus", await page.evaluate(() => document.activeElement.getAttribute("role")), "combobox");
-  await page.keyboard.press("ArrowDown");
-  check("reopensOnSelected", await active(), ["Atlas Small"]);
-  await combo.fill("zzz");
-  check("empty", await popup.locator("[data-combobox-empty]").isVisible());
+  check("chosen", [await zone.inputValue(), await zoneValue(), await isOpen("combobox-zone")], ["London", "Europe/London", false]);
+  await zone.fill("zzz");
+  check("empty", await popupOf("combobox-zone").locator("[data-combobox-empty]").textContent(), "No results.");
   await page.keyboard.press("Escape");
-  check("escReverts", [await combo.inputValue(), await value()], ["Atlas Small", "atlas-small"]);
-  await combo.click();
-  await popup.getByText("Cirrus").click({ force: true });
-  check("skipsDisabled", await value(), "atlas-small");
-  await popup.getByText("Meridian").click();
-  check("clickChooses", [await combo.inputValue(), await value()], ["Meridian", "meridian"]);
-  await combo.fill("");
+  check("escReverts", [await zone.inputValue(), await zoneValue()], ["London", "Europe/London"]);
+  await root("combobox-zone").getByRole("button", { name: "Show options" }).click();
+  check("toggleOpens", [await isOpen("combobox-zone"), await page.evaluate(() => document.activeElement.id)], [true, "combobox-zone"]);
+  await popupOf("combobox-zone").getByText("Tokyo").click();
+  check("clickChooses", [await zone.inputValue(), await zoneValue()], ["Tokyo", "Asia/Tokyo"]);
+  await clearZone.click();
+  check("clears", [await zone.inputValue(), await zoneValue(), await clearZone.isVisible(), await page.evaluate(() => document.activeElement.id)], ["", "", false, "combobox-zone"]);
+  await page.keyboard.press("Enter");
+  check("enterDoesNotSubmit", new URL(page.url()).pathname, "/c/combobox");
+  await page.keyboard.press("Escape");
+
+  // Groups, a disabled option, auto_highlight and the empty text.
+  const region = page.getByRole("combobox", { name: "Function region" });
+  const regionValue = () => root("combobox-region").locator("input[type=hidden]").inputValue();
+  await region.click();
+  check("groups", await popupOf("combobox-region").locator("[role=group]").evaluateAll((all) => all.map((g) => g.getAttribute("aria-label"))), ["Americas", "Europe", "Asia Pacific"]);
+  await page.keyboard.type("o");
+  check("autoHighlight", await active("combobox-region"), ["Washington, D.C."]);
+  check("groupsHidden", await popupOf("combobox-region").locator("[role=group]:not([hidden])").evaluateAll((all) => all.map((g) => g.getAttribute("aria-label"))), ["Americas", "Europe", "Asia Pacific"]);
+  await region.fill("syd");
+  check("autoHighlightSkipsDisabled", await active("combobox-region"), []);
+  await popupOf("combobox-region").getByText("Sydney").click({ force: true });
+  check("skipsDisabled", await regionValue(), "");
+  await region.fill("frank");
+  await page.keyboard.press("Enter");
+  check("enterPicksHighlighted", [await region.inputValue(), await regionValue()], ["Frankfurt", "fra1"]);
+  await region.fill("nowhere");
+  check("emptyText", await popupOf("combobox-region").locator("[data-combobox-empty]").textContent(), "No region matches that name.");
+  await page.keyboard.press("Escape");
+
+  // Several values as chips.
+  const reviewers = page.getByRole("combobox", { name: "Reviewers" });
+  const chips = root("combobox-reviewers").locator("[data-combobox-chips]");
+  const chipTexts = () => chips.locator("> [data-value]").evaluateAll((all) => all.map((c) => c.textContent.trim()));
+  const formData = () => page.locator("[data-combobox-form]").evaluate((f) => [...new FormData(f)].map((pair) => pair.join("=")));
+  check("chips", [await chipTexts(), await chips.getAttribute("role"), await chips.getAttribute("aria-label")], [["Ana Silva", "Chen Wei"], "toolbar", "Selected reviewers"]);
+  check("chipsSubmit", await formData(), ["reviewers=ana", "reviewers=chen"]);
+  check("removeNamed", await page.getByRole("button", { name: "Remove Chen Wei" }).count(), 1);
+  check("multiselectable", await popupOf("combobox-reviewers").locator("[role=listbox]").getAttribute("aria-multiselectable"), "true");
+  await reviewers.click();
+  check("firstChosenActive", await active("combobox-reviewers"), ["Ana Silva"]);
+  await page.keyboard.type("ben");
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Enter");
+  check("adds", [await chipTexts(), await reviewers.inputValue(), await isOpen("combobox-reviewers")], [["Ana Silva", "Chen Wei", "Ben Okafor"], "", true]);
+  check("addsValue", await formData(), ["reviewers=ana", "reviewers=chen", "reviewers=ben"]);
+  await popupOf("combobox-reviewers").getByText("Ana Silva").click();
+  check("clickTogglesOff", await chipTexts(), ["Chen Wei", "Ben Okafor"]);
+  await page.keyboard.press("Backspace");
+  check("backspaceRemovesLast", await chipTexts(), ["Chen Wei"]);
+  await page.keyboard.press("ArrowLeft");
+  check("leftToChip", await page.evaluate(() => document.activeElement.dataset.value), "chen");
+  await page.keyboard.press("Delete");
+  check("deleteRemovesChip", [await chipTexts(), await chips.getAttribute("role"), await page.evaluate(() => document.activeElement.id)], [[], null, "combobox-reviewers"]);
+  check("placeholderBack", await reviewers.getAttribute("placeholder"), "Add people…");
+  await popupOf("combobox-reviewers").getByText("Dara Novak").click();
+  await page.getByRole("button", { name: "Remove Dara Novak" }).click();
+  check("removeButton", [await chipTexts(), await formData()], [[], []]);
+  await page.keyboard.press("Escape");
+  const labelsCombo = root("combobox-labels").locator("[data-combobox-control]");
+  // As upstream: a chip row is 32px inside the border.
+  check("small", await labelsCombo.evaluate((c) => [c.dataset.size, Math.round(c.getBoundingClientRect().height)]), ["sm", 34]);
+
+  // limit: at most three matches.
+  const city = page.getByRole("combobox", { name: "City" });
+  await city.click();
+  check("limit", await labels("combobox-limited"), ["New York", "Chicago", "Denver"]);
+  await page.keyboard.type("o");
+  check("limitWhileTyping", await labels("combobox-limited"), ["New York", "Chicago", "Los Angeles"]);
+  await page.keyboard.type("n");
+  check("limitedMatches", await labels("combobox-limited"), ["London"]);
+  await page.keyboard.press("Escape");
+
+  // Free text: any text is the value; a suggestion fills in its value.
+  const group = page.getByRole("combobox", { name: "Directory group" });
+  check("freeTextName", await group.getAttribute("name"), "group");
+  await group.click();
+  await page.keyboard.type("adv");
+  check("suggestions", await labels("combobox-group"), ["advising-staff"]);
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Enter");
+  check("suggestionChosen", [await group.inputValue(), await isOpen("combobox-group")], ["advising-staff", false]);
+  await group.fill("new-group");
+  check("noSuggestionCloses", await isOpen("combobox-group"), false);
   await page.keyboard.press("Tab");
-  check("clears", [await combo.inputValue(), await value()], ["", ""]);
+  check("keepsText", await group.inputValue(), "new-group");
+  await root("combobox-group").getByRole("button", { name: "Clear text" }).click();
+  check("clearText", await group.inputValue(), "");
 };
