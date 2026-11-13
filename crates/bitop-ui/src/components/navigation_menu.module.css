@@ -1,0 +1,249 @@
+.root {
+  position: relative;
+  min-inline-size: max-content;
+  color: var(--color-text);
+}
+
+.list {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  &[data-orientation="vertical"] {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.item {
+  position: relative;
+}
+
+/* Triggers and top-level links share one look. */
+.trigger,
+.item > .link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  block-size: var(--control-height-md);
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: var(--radius-control);
+  background-color: transparent;
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--motion-duration-fast) var(--motion-ease-out);
+
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      background-color: var(--color-surface-hover);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    color: var(--color-text-subtle);
+    cursor: not-allowed;
+  }
+}
+
+.trigger[aria-expanded="true"] {
+  background-color: var(--color-surface-active);
+}
+
+/* The current page: weight and an underline, not colour alone. */
+.item > .link[aria-current="page"] {
+  background-color: var(--color-primary-subtle);
+  color: var(--color-primary-subtle-text);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.35em;
+}
+
+.icon {
+  display: inline-flex;
+  color: var(--color-text-muted);
+  transition: rotate var(--motion-duration-normal) var(--motion-ease-out);
+
+  & [data-icon] {
+    inline-size: 0.875rem;
+    block-size: 0.875rem;
+  }
+
+  .trigger[aria-expanded="true"] & {
+    rotate: 180deg;
+  }
+}
+
+/* A [popover] element. The browser anchors it to the button that opened it. */
+.popup {
+  --nav-gap: var(--space-2);
+  --nav-duration: 300ms;
+  --nav-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  position-area: block-end span-inline-end;
+  position-try-fallbacks: flip-inline;
+  inset: auto;
+  margin: var(--nav-gap) 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-popover);
+  background-color: var(--color-surface-raised);
+  color: var(--color-text);
+  box-shadow: var(--shadow-3);
+  /* The bridge below is drawn outside the box. */
+  overflow: visible;
+
+  opacity: 0;
+  scale: 0.96;
+  transition:
+    opacity var(--motion-duration-normal) ease,
+    scale var(--motion-duration-normal) ease,
+    overlay var(--motion-duration-normal) allow-discrete,
+    display var(--motion-duration-normal) allow-discrete;
+
+  &:popover-open {
+    opacity: 1;
+    scale: 1;
+    transition-duration: var(--nav-duration);
+    transition-timing-function: var(--nav-ease);
+
+    @starting-style {
+      opacity: 0;
+      scale: 0.96;
+    }
+  }
+
+  /* Invisible bridge, so that moving the pointer from the trigger to the popup does
+     not cross a gap and close it. */
+  &::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: calc(var(--nav-gap) * -1);
+    block-size: var(--nav-gap);
+  }
+}
+
+.root[data-align="center"] .popup {
+  position-area: block-end;
+}
+
+.root[data-align="end"] .popup {
+  position-area: block-end span-inline-start;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: repeat(var(--nav-columns, 1), minmax(0, 1fr));
+  gap: var(--space-1);
+  inline-size: calc(100vw - var(--space-8));
+  padding: var(--space-2);
+
+  &[data-columns="2"] {
+    --nav-columns: 2;
+  }
+
+  &[data-columns="3"] {
+    --nav-columns: 3;
+  }
+
+  @media (min-width: 40rem) {
+    inline-size: max-content;
+    max-inline-size: min(40rem, calc(100vw - var(--space-8)));
+
+    &[data-columns="1"] {
+      max-inline-size: 22rem;
+    }
+  }
+
+  @media (max-width: 39.99rem) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Links inside a panel. */
+.content .link {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-inline-size: 12rem;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-2);
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-snug);
+  text-decoration: none;
+  outline: 0;
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--color-surface-hover);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: -2px;
+  }
+
+  &[aria-current="page"] {
+    background-color: var(--color-primary-subtle);
+  }
+
+  &[aria-current="page"] .linkTitle {
+    color: var(--color-primary-subtle-text);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+}
+
+.linkIcon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  border-radius: var(--radius-2);
+  background-color: var(--color-surface-sunken);
+  color: var(--color-text-muted);
+
+  & [data-icon] {
+    inline-size: 1rem;
+    block-size: 1rem;
+  }
+}
+
+.linkText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-inline-size: 0;
+}
+
+.linkTitle {
+  font-weight: var(--font-weight-medium);
+}
+
+.linkDescription {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-muted);
+}

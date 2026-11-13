@@ -1,0 +1,269 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  min-inline-size: 0;
+  /* Lets the panel's height run from 0 to auto where the browser can do that. */
+  interpolate-size: allow-keywords;
+}
+
+/* The panel opens through the box the browser puts around a <details>'s content. A
+   rule of its own: a browser that does not know the pseudo-element drops the rule. */
+.root::details-content {
+  inline-size: 100%;
+  block-size: 0;
+  overflow: clip;
+  transition:
+    block-size var(--motion-duration-normal) var(--motion-ease-out),
+    content-visibility var(--motion-duration-normal) allow-discrete;
+}
+
+.root[open]::details-content {
+  block-size: auto;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  block-size: var(--control-height-sm);
+  padding: 0 var(--space-2);
+  margin-inline-start: calc(var(--space-2) * -1);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color var(--motion-duration-fast) var(--motion-ease-out),
+    color var(--motion-duration-fast) var(--motion-ease-out);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--color-surface-hover);
+      color: var(--color-text);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+/* Safari draws the disclosure triangle with its own pseudo-element. */
+.trigger::-webkit-details-marker {
+  display: none;
+}
+
+.triggerIcon {
+  inline-size: 0.9375rem;
+  block-size: 0.9375rem;
+}
+
+.chevron {
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+  transition: rotate var(--motion-duration-fast) var(--motion-ease-out);
+
+  .root[open] > .trigger & {
+    rotate: 180deg;
+  }
+}
+
+.panel {
+  inline-size: 100%;
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-1) 0;
+  list-style: none;
+}
+
+.source {
+  display: flex;
+  min-inline-size: 0;
+  border-radius: var(--radius-3);
+
+  /* A source can be a focus target for citation chips. */
+  &[tabindex="-1"]:focus {
+    outline: none;
+  }
+
+  &[tabindex="-1"]:focus > .row,
+  &[data-highlighted] > .row {
+    box-shadow:
+      var(--shadow-ring),
+      0 0 0 2px var(--color-focus-ring);
+  }
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  inline-size: 100%;
+  padding: var(--space-3);
+  border-radius: var(--radius-3);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-ring);
+  color: inherit;
+  text-decoration: none;
+  transition:
+    background-color var(--motion-duration-fast) var(--motion-ease-out),
+    box-shadow var(--motion-duration-fast) var(--motion-ease-out);
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+button.row {
+  border: 0;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+/* A selectable card keeps its link beside it, at the top end. */
+.source[data-selectable] {
+  position: relative;
+
+  & > .row {
+    padding-inline-end: calc(var(--space-3) + 1.75rem);
+  }
+}
+
+.link {
+  position: absolute;
+  inset-block-start: var(--space-2);
+  inset-inline-end: var(--space-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 1.75rem;
+  block-size: 1.75rem;
+  border-radius: var(--radius-control);
+  color: var(--color-text-muted);
+
+  & > [data-icon] {
+    inline-size: 0.9375rem;
+    block-size: 0.9375rem;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--color-surface-hover);
+      color: var(--color-text);
+    }
+  }
+}
+
+@media (hover: hover) {
+  button.row:hover,
+  a.row:hover {
+    background-color: var(--color-control-hover);
+    box-shadow: var(--shadow-control-hover);
+  }
+}
+
+.icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: 1.75rem;
+  block-size: 1.75rem;
+  border-radius: var(--radius-2);
+  background-color: var(--color-neutral-subtle);
+  color: var(--color-text-muted);
+
+  & > [data-icon] {
+    inline-size: 0.9375rem;
+    block-size: 0.9375rem;
+  }
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-inline-size: 0;
+}
+
+.title {
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-snug);
+}
+
+.index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 1.125rem;
+  block-size: 1.125rem;
+  margin-inline-end: var(--space-2);
+  padding: 0 0.25rem;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-neutral-subtle);
+  color: var(--color-neutral-text);
+  font-size: 0.6875rem;
+  font-weight: var(--font-weight-semibold);
+  vertical-align: 0.1em;
+  font-variant-numeric: tabular-nums;
+}
+
+.external {
+  display: inline-block;
+  inline-size: 0.8125rem;
+  block-size: 0.8125rem;
+  margin-inline-start: 0.125rem;
+  vertical-align: -0.1em;
+  color: var(--color-text-muted);
+}
+
+.meta {
+  overflow: hidden;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.description {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chevron {
+    transition: none;
+  }
+
+  .root::details-content {
+    transition: none;
+  }
+}

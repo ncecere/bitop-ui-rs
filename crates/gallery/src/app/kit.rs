@@ -3,6 +3,7 @@
 use topcoat::{
     Result,
     context::Cx,
+    router::request::uri,
     view::{Child, View, component, view},
 };
 
@@ -44,3 +45,21 @@ pub async fn example(cx: &Cx, title: &str, #[default] child: Child<'_>) -> Resul
         </section>
     })
 }
+
+/// The raw query string of the request, without the `?`.
+pub fn query_string(cx: &Cx) -> String {
+    uri(cx).query().unwrap_or_default().to_owned()
+}
+
+/// The first value of a query parameter that needs no decoding, such as a page
+/// number or a column name.
+pub fn query_param(cx: &Cx, name: &str) -> Option<String> {
+    query_string(cx).split('&').find_map(|pair| {
+        let (key, value) = pair.split_once('=')?;
+        (key == name).then(|| value.to_owned())
+    })
+}
+
+/// A small landscape picture as a data URL, for examples that show an image without
+/// a request to another host.
+pub const PICTURE: &str = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 30'%3E%3Crect width='40' height='30' fill='%234f6bed'/%3E%3Ccircle cx='11' cy='9' r='5' fill='%23fde68a'/%3E%3Cpath d='M0 30 15 15 24 23 30 18 40 26V30z' fill='%23155e75'/%3E%3C/svg%3E";

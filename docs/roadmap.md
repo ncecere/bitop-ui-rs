@@ -1,7 +1,7 @@
 # Roadmap
 
 The target is every component in [bitop-ui](https://github.com/ncecere/bitop-ui): 120 in all.
-41 are built. The base set comes first, then the AI set as its own crate.
+92 are built. The base set comes first, then the AI set as its own crate.
 
 Names are bitop-ui's. A few live together here, as they do there: `switch` is in the `checkbox`
 module, `textarea` in `input`, `alert dialog` in `dialog`, and `app-shell` is `sidebar`.
@@ -9,7 +9,7 @@ module, `textarea` in `input`, `alert dialog` in `dialog`, and `app-shell` is `s
 Order of work: forms, overlays, navigation and layout, display and feedback, data and charts,
 then AI chat, agents and tools, code, and voice.
 
-## Base: forms (16 of 20)
+## Base: forms (20 of 20)
 
 Crate: `bitop-ui`.
 
@@ -24,51 +24,51 @@ Crate: `bitop-ui`.
 - [x] `input-group`
 - [x] `input-otp`
 - [x] `number-input`
-- [ ] `tag-input`
+- [x] `tag-input`
 - [x] `color-field`
 - [x] `field`
 - [x] `select`
 - [x] `combobox`
 - [x] `slider`
-- [ ] `calendar`
-- [ ] `date-picker`
-- [ ] `drop-zone`
+- [x] `calendar`
+- [x] `date-picker`
+- [x] `drop-zone`
 
-## Base: overlays (6 of 11)
+## Base: overlays (11 of 11)
 
 Crate: `bitop-ui`.
 
 - [x] `dialog`
-- [ ] `sheet`
-- [ ] `drawer`
+- [x] `sheet`
+- [x] `drawer`
 - [x] `popover`
-- [ ] `hover-card`
+- [x] `hover-card`
 - [x] `tooltip`
 - [x] `menu`
-- [ ] `context-menu`
-- [ ] `menubar`
+- [x] `context-menu`
+- [x] `menubar`
 - [x] `command-palette`
 - [x] `toast`
 
-## Base: navigation and layout (5 of 13)
+## Base: navigation and layout (13 of 13)
 
 Crate: `bitop-ui`.
 
 - [x] `app-shell`
-- [ ] `navigation-menu`
-- [ ] `breadcrumbs`
-- [ ] `pagination`
+- [x] `navigation-menu`
+- [x] `breadcrumbs`
+- [x] `pagination`
 - [x] `tabs`
-- [ ] `page-header`
-- [ ] `layout`
+- [x] `page-header`
+- [x] `layout`
 - [x] `separator`
 - [x] `scroll-area`
-- [ ] `resizable`
+- [x] `resizable`
 - [x] `aspect-ratio`
-- [ ] `direction`
-- [ ] `save-bar`
+- [x] `direction`
+- [x] `save-bar`
 
-## Base: display (9 of 18)
+## Base: display (18 of 18)
 
 Crate: `bitop-ui`.
 
@@ -76,32 +76,32 @@ Crate: `bitop-ui`.
 - [x] `badge`
 - [x] `card`
 - [x] `alert`
-- [ ] `item`
+- [x] `item`
 - [x] `kbd`
-- [ ] `marker`
+- [x] `marker`
 - [x] `text-link`
-- [ ] `time`
-- [ ] `description-list`
-- [ ] `stat-card`
+- [x] `time`
+- [x] `description-list`
+- [x] `stat-card`
 - [x] `empty-state`
-- [ ] `checklist`
-- [ ] `accordion`
-- [ ] `disclosure`
-- [ ] `carousel`
+- [x] `checklist`
+- [x] `accordion`
+- [x] `disclosure`
+- [x] `carousel`
 - [x] `copy-button`
 - [x] `copy-field`
 
-## Base: feedback (3 of 7)
+## Base: feedback (7 of 7)
 
 Crate: `bitop-ui`.
 
 - [x] `spinner`
-- [ ] `loader`
+- [x] `loader`
 - [x] `skeleton`
 - [x] `progress`
-- [ ] `meter`
-- [ ] `query-state`
-- [ ] `shimmer`
+- [x] `meter`
+- [x] `query-state`
+- [x] `shimmer`
 
 ## Base: utilities (2 of 2)
 
@@ -110,36 +110,36 @@ Crate: `bitop-ui`.
 - [x] `color-mode`
 - [x] `visually-hidden`
 
-## Data and charts (0 of 8)
+## Data and charts (8 of 8)
 
 Crate: `bitop-ui`.
 
-- [ ] `table`
-- [ ] `data-table`
-- [ ] `filter-bar`
-- [ ] `diff-viewer`
-- [ ] `chart`
-- [ ] `bar-chart`
-- [ ] `line-chart`
-- [ ] `sparkline`
+- [x] `table`
+- [x] `data-table`
+- [x] `filter-bar`
+- [x] `diff-viewer`
+- [x] `chart`
+- [x] `bar-chart`
+- [x] `line-chart`
+- [x] `sparkline`
 
-## AI: chat (0 of 13)
+## AI: chat (13 of 13)
 
 Crate: `bitop-ui-ai`.
 
-- [ ] `conversation`
-- [ ] `message`
-- [ ] `response`
-- [ ] `prompt-input`
-- [ ] `suggestion`
-- [ ] `model-selector`
-- [ ] `attachments`
-- [ ] `reasoning`
-- [ ] `sources`
-- [ ] `inline-citation`
-- [ ] `code-block`
-- [ ] `image`
-- [ ] `open-in-chat`
+- [x] `conversation`
+- [x] `message`
+- [x] `response`
+- [x] `prompt-input`
+- [x] `suggestion`
+- [x] `model-selector`
+- [x] `attachments`
+- [x] `reasoning`
+- [x] `sources`
+- [x] `inline-citation`
+- [x] `code-block`
+- [x] `image`
+- [x] `open-in-chat`
 
 ## AI: agents and tools (0 of 12)
 
@@ -190,7 +190,39 @@ Crate: `bitop-ui-ai`.
   Their look has not yet been compared part by part with bitop-ui's.
 - There is also an `icon` component with a small set of Lucide icons, which bitop-ui gets from
   a React package.
-- `alert` has no `ErrorAlert` yet (the mapping from an HTTP status to a title and message).
-- `color-mode` has the script and `bitopUi.setColorMode()`, but no toggle component.
+- `menu` items have no `shortcut` hint, and there is no `MenuHeader`.
+- A popup lines up with the start edge of the page, not of its own section, when a section's
+  direction differs from the page's (see `direction`). Submenus follow their section.
+- `accordion` and `disclosure` are `<details>`: the heading of an accordion item is inside its
+  `<summary>`, and the panel's height is animated only where the browser can do it. Firefox
+  opens and closes at once; Safari animates opening and closes at once.
+- `pagination`'s `paginator` renders links only, not buttons for a table paged in the browser.
+- `layout`'s stack and inline render a `<div>` or a `<ul>`, not any element.
+- `resizable` does not size panels that are added to a group after it was laid out.
+- `carousel` with several slides in view shows a dot for every slide, though the last few
+  cannot come to the start edge.
+- `drawer` has no snap points, and `navigation-menu` has one popup for each panel, not one
+  shared popup that changes size.
+- `date-picker` has no `DateRangePresets` (the toggle group that keeps a preset's ID for a
+  URL); the presets beside the calendar are there.
 - Toasts sit below modal dialogs.
 - The sidebar drawer on narrow screens does not trap focus.
+- The charts' data table has no `onOpenChange` or controlled `open`; listen for the native
+  `toggle` event. A lone point between gaps in a `sparkline` is not drawn, as upstream.
+- The AI chat set (`bitop-ui-ai`) renders on the server, so a few React-only parts of
+  upstream are other things here: callbacks (`onSelect`, `onSubmit`, `onStop`,
+  `onBranchChange`, `onOpen`, `onFileError`) are DOM events, form submissions or a status
+  line; `useConversation` is `bitopUi.conversation`; controlled `value`s are initial
+  values. Each module's documentation lists its differences.
+- `response` renders Markdown on the server with `pulldown-cmark`: there are no
+  `components`, `remarkPlugins`, `highlight` or `LazyResponse`. Relative and same-site
+  link and image URLs are refused, where upstream allows them.
+- `code-block` has no syntax highlighter, as upstream bundles none; the `<code>` has a
+  `language-…` class for one in the browser.
+- `model-selector` and `open-in-chat` have no provider icons, and `open-in-chat` no
+  custom trigger. `inline-citation`'s and `sources`' descriptions and quotes are text.
+- `message` branches are switched by the script among server-rendered versions; before
+  the script runs, CSS shows the chosen one only among the first ten.
+- `image` turns bytes into a `data:` URL on the server rather than an object URL. Its
+  loading placeholder is not shown on its gallery page, as nothing there loads slowly;
+  the check reaches it.

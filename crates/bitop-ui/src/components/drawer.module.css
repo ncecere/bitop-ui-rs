@@ -1,0 +1,272 @@
+/*
+ * Drawer, on the native <dialog>. While it is dragged the script sets
+ * --drawer-swipe-movement-x/y on it, and --drawer-swipe-progress (0 to 1) for the
+ * backdrop. Every read has a fallback, so the drawer renders the same without them.
+ */
+.popup {
+  --drawer-bleed: 3rem;
+  --drawer-tx: 0px;
+  --drawer-ty: 0px;
+  --drawer-closed: 0 0;
+  --drawer-duration: 450ms;
+  --drawer-ease: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* The browser centres a dialog with auto margins and caps its size; a drawer sits
+     against an edge. */
+  inset: auto;
+  margin: 0;
+  max-inline-size: none;
+  max-block-size: none;
+  padding: 0;
+  border: 0;
+  flex-direction: column;
+  min-block-size: 0;
+  background-color: var(--color-surface-raised);
+  color: var(--color-text);
+  box-shadow: var(--shadow-4);
+  font-size: var(--font-size-md);
+  /* The bleed below is drawn outside the box. */
+  overflow: visible;
+
+  /* The closed positions are plain percentages. WebKit leaves the drawer closed when
+     this starts from a calc() of a percentage and a length. */
+  translate: var(--drawer-closed);
+  transition:
+    translate var(--drawer-duration) var(--drawer-ease),
+    overlay var(--drawer-duration) allow-discrete,
+    display var(--drawer-duration) allow-discrete;
+
+  /* Only when open: a display value here would show the closed dialog. */
+  &[open] {
+    display: flex;
+    translate: var(--drawer-tx) var(--drawer-ty);
+
+    @starting-style {
+      translate: var(--drawer-closed);
+    }
+  }
+
+  &[data-swiping] {
+    transition-duration: 0ms;
+  }
+
+  /* Bleed: extends the surface past the attached edge, so that dragging it too far
+     never shows a gap. */
+  &::after {
+    content: "";
+    position: absolute;
+    background-color: inherit;
+    pointer-events: none;
+  }
+
+  &::backdrop {
+    background-color: var(--color-overlay);
+    opacity: 0;
+    transition:
+      opacity var(--drawer-duration) var(--drawer-ease),
+      overlay var(--drawer-duration) allow-discrete,
+      display var(--drawer-duration) allow-discrete;
+  }
+
+  &[open]::backdrop {
+    opacity: calc(1 - var(--drawer-swipe-progress, 0));
+
+    @starting-style {
+      opacity: 0;
+    }
+  }
+
+  &[data-swiping]::backdrop {
+    transition-duration: 0ms;
+  }
+}
+
+.popup[data-side="bottom"] {
+  --drawer-ty: var(--drawer-swipe-movement-y, 0px);
+  --drawer-closed: 0 100%;
+
+  inset-inline: 0;
+  bottom: 0;
+  inline-size: 100vw;
+  max-block-size: calc(100dvh - var(--space-11));
+  border-radius: var(--radius-dialog) var(--radius-dialog) 0 0;
+
+  &::after {
+    inset-inline: 0;
+    top: 100%;
+    block-size: var(--drawer-bleed);
+  }
+}
+
+.popup[data-side="top"] {
+  --drawer-ty: var(--drawer-swipe-movement-y, 0px);
+  --drawer-closed: 0 -100%;
+
+  inset-inline: 0;
+  top: 0;
+  inline-size: 100vw;
+  max-block-size: calc(100dvh - var(--space-11));
+  border-radius: 0 0 var(--radius-dialog) var(--radius-dialog);
+
+  &::after {
+    inset-inline: 0;
+    bottom: 100%;
+    block-size: var(--drawer-bleed);
+  }
+}
+
+/* The sides are physical: a right drawer is on the right in both directions. */
+.popup[data-side="left"],
+.popup[data-side="right"] {
+  --drawer-tx: var(--drawer-swipe-movement-x, 0px);
+
+  inset-block: 0;
+  inline-size: min(24rem, calc(100vw - var(--space-10)));
+  block-size: 100dvh;
+
+  &::after {
+    inset-block: 0;
+    inline-size: var(--drawer-bleed);
+  }
+}
+
+.popup[data-side="left"] {
+  --drawer-closed: -100% 0;
+
+  left: 0;
+  border-radius: 0 var(--radius-dialog) var(--radius-dialog) 0;
+
+  &::after {
+    right: 100%;
+  }
+}
+
+.popup[data-side="right"] {
+  --drawer-closed: 100% 0;
+
+  right: 0;
+  border-radius: var(--radius-dialog) 0 0 var(--radius-dialog);
+
+  &::after {
+    left: 100%;
+  }
+}
+
+/* Grab handle (decorative). The browser must not pan the page from it. */
+.handle {
+  flex-shrink: 0;
+  inline-size: 2.5rem;
+  block-size: 0.3125rem;
+  margin: var(--space-3) auto 0;
+  border-radius: var(--radius-full);
+  background-color: var(--color-border-strong);
+  cursor: grab;
+  touch-action: none;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.popup[data-side="top"] .handle {
+  order: 1;
+  margin: 0 auto var(--space-3);
+}
+
+.popup[data-side="left"] .handle,
+.popup[data-side="right"] .handle {
+  position: absolute;
+  top: 50%;
+  /* Above the content, which would otherwise cover it. */
+  z-index: 1;
+  inline-size: 0.3125rem;
+  block-size: 2.5rem;
+  margin: 0;
+  translate: 0 -50%;
+}
+
+.popup[data-side="left"] .handle {
+  right: var(--space-2);
+}
+
+.popup[data-side="right"] .handle {
+  left: var(--space-2);
+}
+
+.content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-block-size: 0;
+  overflow: hidden;
+  overscroll-behavior: contain;
+  border-radius: inherit;
+}
+
+.header {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-5) var(--space-6) var(--space-2);
+  touch-action: none;
+}
+
+.popup[data-side="bottom"] .header,
+.popup[data-side="top"] .header {
+  text-align: center;
+}
+
+.popup[data-closable] .header {
+  padding-inline-end: 3.5rem;
+}
+
+.popup[data-closable][data-side="bottom"] .header,
+.popup[data-closable][data-side="top"] .header {
+  padding-inline-start: 3.5rem;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+  letter-spacing: var(--letter-spacing-snug);
+  color: var(--color-text);
+}
+
+.description {
+  margin: 0;
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-muted);
+  text-wrap: balance;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-block-size: 0;
+  padding: var(--space-3) var(--space-6);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.footer {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-block-start: auto;
+  padding: var(--space-4) var(--space-6) max(var(--space-6), env(safe-area-inset-bottom));
+}
+
+.popup .close {
+  --button-height: 2rem;
+
+  position: absolute;
+  inset-block-start: var(--space-4);
+  inset-inline-end: var(--space-4);
+}

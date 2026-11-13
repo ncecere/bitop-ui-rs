@@ -118,6 +118,26 @@ pub const GROUPS: &[Group] = &[
                 "Copy field",
                 "A read-only value with a copy button."
             ),
+            entry!(
+                "tag-input",
+                "Tag input",
+                "A list of short text tags with an inline input."
+            ),
+            entry!(
+                "calendar",
+                "Calendar",
+                "A month grid for a day, several days or a range."
+            ),
+            entry!(
+                "date-picker",
+                "Date picker",
+                "A button that opens a calendar in a popover."
+            ),
+            entry!(
+                "drop-zone",
+                "Drop zone",
+                "Drop files, or choose them with a button."
+            ),
         ],
     },
     Group {
@@ -141,6 +161,27 @@ pub const GROUPS: &[Group] = &[
                 "Search actions and pages from the keyboard."
             ),
             entry!("toast", "Toast", "A brief message that dismisses itself."),
+            entry!(
+                "sheet",
+                "Sheet",
+                "A dialog attached to an edge of the screen."
+            ),
+            entry!("drawer", "Drawer", "An edge panel that can be swiped away."),
+            entry!(
+                "hover-card",
+                "Hover card",
+                "A preview of a link, shown on hover or focus."
+            ),
+            entry!(
+                "context-menu",
+                "Context menu",
+                "A menu that opens at the pointer on right-click."
+            ),
+            entry!(
+                "menubar",
+                "Menubar",
+                "A row of menus, as in a desktop application."
+            ),
         ],
     },
     Group {
@@ -152,6 +193,11 @@ pub const GROUPS: &[Group] = &[
                 "The application shell with a navigation sidebar."
             ),
             entry!("tabs", "Tabs", "Switch between panels on one page."),
+            entry!(
+                "navigation-menu",
+                "Navigation menu",
+                "Site navigation with panels of links."
+            ),
             entry!(
                 "separator",
                 "Separator",
@@ -166,6 +212,46 @@ pub const GROUPS: &[Group] = &[
                 "aspect-ratio",
                 "Aspect ratio",
                 "A box that keeps its proportions."
+            ),
+            entry!(
+                "breadcrumbs",
+                "Breadcrumbs",
+                "The pages above the current one."
+            ),
+            entry!(
+                "pagination",
+                "Pagination",
+                "Links to the pages of a long list."
+            ),
+            entry!(
+                "page-header",
+                "Page header",
+                "The title, description and actions of a page."
+            ),
+            entry!(
+                "layout",
+                "Layout",
+                "Stack, inline and container: spacing from the scale."
+            ),
+            entry!(
+                "resizable",
+                "Resizable",
+                "Panels with handles that resize them."
+            ),
+            entry!(
+                "direction",
+                "Direction",
+                "A section with its own reading direction."
+            ),
+            entry!(
+                "save-bar",
+                "Save bar",
+                "A form's actions, in reach while it has unsaved changes."
+            ),
+            entry!(
+                "color-mode",
+                "Color mode",
+                "Switch between light, dark and the system setting."
             ),
         ],
     },
@@ -183,7 +269,52 @@ pub const GROUPS: &[Group] = &[
                 "Empty state",
                 "What to show when there is nothing yet."
             ),
+            entry!(
+                "accordion",
+                "Accordion",
+                "Headings that each show and hide a panel."
+            ),
+            entry!(
+                "disclosure",
+                "Disclosure",
+                "A button that shows and hides a panel."
+            ),
+            entry!(
+                "carousel",
+                "Carousel",
+                "Slides on a track, with buttons and dots."
+            ),
             entry!("icon", "Icon", "The small icon set the components use."),
+            entry!(
+                "item",
+                "Item",
+                "A row with media, a title, a description and actions."
+            ),
+            entry!(
+                "marker",
+                "Marker",
+                "An inline note in a conversation or an activity feed."
+            ),
+            entry!(
+                "time",
+                "Time",
+                "A date or a relative time, in the visitor's locale."
+            ),
+            entry!(
+                "description-list",
+                "Description list",
+                "Labels and values, and a line of short facts."
+            ),
+            entry!(
+                "stat-card",
+                "Stat card",
+                "A metric tile with a change indicator."
+            ),
+            entry!(
+                "checklist",
+                "Checklist",
+                "Onboarding steps with done states."
+            ),
         ],
     },
     Group {
@@ -196,6 +327,142 @@ pub const GROUPS: &[Group] = &[
                 "A placeholder for content that is loading."
             ),
             entry!("progress", "Progress", "How far a task has got."),
+            entry!(
+                "loader",
+                "Loader",
+                "Three pulsing dots for a pending reply."
+            ),
+            entry!("meter", "Meter", "How much of a limit is used."),
+            entry!(
+                "query-state",
+                "Query state",
+                "Loading, error, empty or the content."
+            ),
+            entry!(
+                "shimmer",
+                "Shimmer",
+                "Text with a light sweeping across it."
+            ),
+        ],
+    },
+    Group {
+        title: "Data and charts",
+        entries: &[
+            entry!(
+                "table",
+                "Table",
+                "Rows and columns, with a caption and real headers."
+            ),
+            entry!(
+                "data-table",
+                "Data table",
+                "A table with sorting, selection, a columns menu and paging."
+            ),
+            entry!(
+                "filter-bar",
+                "Filter bar",
+                "Faceted filters with a chip for each active filter."
+            ),
+            entry!(
+                "diff-viewer",
+                "Diff viewer",
+                "Before and after, for text and JSON."
+            ),
+            entry!(
+                "chart",
+                "Chart",
+                "Series colours and patterns, the legend and the data table that charts share."
+            ),
+            entry!(
+                "bar-chart",
+                "Bar chart",
+                "Bars per point, overlapping or stacked, with a readout and a data table."
+            ),
+            entry!(
+                "line-chart",
+                "Line chart",
+                "Lines or areas over ordered points, with gaps for missing data."
+            ),
+            entry!(
+                "sparkline",
+                "Sparkline",
+                "A tiny inline trend for stat cards and table cells."
+            ),
+        ],
+    },
+    Group {
+        title: "AI: chat",
+        entries: &[
+            entry!(
+                "code-block",
+                "Code block",
+                "Code with a language, a copy button and line numbers."
+            ),
+            entry!(
+                "suggestion",
+                "Suggestion",
+                "Prompt starters as pill buttons."
+            ),
+            entry!(
+                "attachments",
+                "Attachments",
+                "File chips with a preview, the size and the upload state."
+            ),
+            entry!(
+                "sources",
+                "Sources",
+                "A collapsible list of the sources an answer used."
+            ),
+            entry!(
+                "inline-citation",
+                "Inline citation",
+                "A numbered chip after a claim that opens its sources."
+            ),
+            entry!(
+                "image",
+                "Image",
+                "A generated image with a loading placeholder and a fallback."
+            ),
+            entry!(
+                "reasoning",
+                "Reasoning",
+                "The model's thinking, open while it streams."
+            ),
+            entry!(
+                "message",
+                "Message",
+                "One turn of a chat, with actions, feedback and versions."
+            ),
+            entry!(
+                "response",
+                "Response",
+                "Markdown answers, safe to stream and to render untrusted."
+            ),
+            entry!(
+                "conversation",
+                "Conversation",
+                "The message log, which keeps the latest message in view."
+            ),
+            entry!(
+                "model-selector",
+                "Model selector",
+                "A searchable model picker, grouped by provider."
+            ),
+            entry!(
+                "open-in-chat",
+                "Open in chat",
+                "Links that open a prompt in other chat products."
+            ),
+            entry!(
+                "prompt-input",
+                "Prompt input",
+                "The chat composer: a growing text box, files, tools and send or stop."
+            ),
+            entry!(
+                "chat-example",
+                "Chat example",
+                "A whole chat screen built from these parts, with a canned reply."
+            ),
         ],
     },
 ];
@@ -223,6 +490,7 @@ async fn root(cx: &Cx, slot: Slot<'_>) -> Result<impl View> {
                 <meta name="viewport" content="width=device-width, initial-scale=1">
                 <title>"bitop-ui gallery"</title>
                 bitop_ui::head()
+                bitop_ui_ai::head()
                 <script type="module" src=(asset!("./client/gallery.js"))></script>
                 topcoat::runtime::script()
                 topcoat::dev::script()

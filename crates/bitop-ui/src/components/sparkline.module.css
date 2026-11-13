@@ -1,0 +1,49 @@
+/* The colour is --chart-color, from the chart tones (the --color-chart-* tokens). */
+.root {
+  --sparkline-height: 2.5rem;
+
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  min-width: 3rem;
+  height: var(--sparkline-height);
+  vertical-align: middle;
+
+  &[data-size="sm"] {
+    --sparkline-height: 1.5rem;
+  }
+}
+
+.svg {
+  position: absolute;
+  inset: 0.1875rem;
+  width: calc(100% - 0.375rem);
+  height: calc(100% - 0.375rem);
+  overflow: visible;
+}
+
+.line {
+  fill: none;
+  stroke: var(--chart-color);
+  stroke-width: 1.5px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.fill {
+  fill: var(--chart-color);
+  fill-opacity: 0.14;
+  stroke: none;
+}
+
+/* The last point, inside the same inset as the line, in physical units like it. */
+.last {
+  position: absolute;
+  left: calc(0.1875rem + (100% - 0.375rem) * var(--x, 0));
+  top: calc(0.1875rem + (100% - 0.375rem) * var(--y, 0));
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: var(--radius-full);
+  background-color: var(--chart-color);
+  translate: -50% -50%;
+}

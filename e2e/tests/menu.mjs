@@ -1,5 +1,5 @@
-export default async ({ page, check, axe, button, focused }) => {
-  const popup = page.locator("[popover]:has([role=menu])");
+export default async ({ page, check, axe, button, focused, settled, setDir }) => {
+  const popup = page.locator("[popover]:has([role=menu])").first();
   await button("Options").focus();
   await page.keyboard.press("Enter");
   await page.waitForTimeout(250);
@@ -21,4 +21,129 @@ export default async ({ page, check, axe, button, focused }) => {
   await page.waitForTimeout(250);
   check("closedOnSelect", await popup.evaluate((p) => !p.matches(":popover-open")));
   check("focusReturned", await focused(), "Options");
+
+  // Checkbox items, radio items, groups and submenus, in a form.
+  const view = page.locator("[popover]", { hasText: "Show sidebar" });
+  const exportMenu = page.locator("[data-submenu]", { hasText: "Markdown" });
+  const imageMenu = page.locator("[data-submenu]", { hasText: "PNG" }).last();
+  const open = (p) => p.evaluate((el) => el.matches(":popover-open"));
+  const untilOpen = async (p, want = true) =>
+    page.waitForFunction(([el, w]) => el.matches(":popover-open") === w, [await p.elementHandle(), want]);
+  // Focus moves into a menu a moment after it opens.
+  const untilFocused = (text) => page.waitForFunction((t) => document.activeElement?.textContent.trim() === t, text);
+  const item = (role, name) => view.getByRole(role, { name, exact: true });
+  const formData = () => page.locator("[data-menu-form]").evaluate((form) => [...new FormData(form)].map((pair) => pair.join("=")));
+  await page.evaluate(() => {
+    window.menuChanges = [];
+    document.addEventListener("change", (event) => window.menuChanges.push(event.target.textContent.trim()));
+  });
+
+  check("submitsInitially", await formData(), ["sidebar=on", "density=comfortable"]);
+  await button("View").focus();
+  await page.keyboard.press("Enter");
+  await untilOpen(view);
+  await untilFocused("Show sidebar");
+  check("checkboxRole", await item("menuitemcheckbox", "Show sidebar").getAttribute("aria-checked"), "true");
+  await page.keyboard.press("Space");
+  check("spaceUnchecks", [await item("menuitemcheckbox", "Show sidebar").getAttribute("aria-checked"), await open(view)], ["false", true]);
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Enter");
+  check("enterChecks", [await item("menuitemcheckbox", "Show minimap").getAttribute("aria-checked"), await open(view)], ["true", true]);
+  await page.keyboard.press("ArrowDown");
+  check("skipsDisabledCheckbox", await focused(), "Compact");
+  check("radioGroup", await view.getByRole("group", { name: "Density" }).getByRole("menuitemradio").count(), 3);
+  const radios = () => view.locator("[role=menuitemradio]").evaluateAll((all) => all.map((r) => r.getAttribute("aria-checked")));
+  check("radioInitial", await radios(), ["false", "true", "false"]);
+  await page.keyboard.press("Enter");
+  check("radioChooses", [await radios(), await open(view)], [["true", "false", "false"], true]);
+  await page.keyboard.press("Enter");
+  check("radioStaysChecked", await radios(), ["true", "false", "false"]);
+  await item("menuitemradio", "Spacious").click();
+  check("radioClick", [await radios(), await open(view)], [["false", "false", "true"], true]);
+  check("changeEvents", await page.evaluate(() => window.menuChanges), ["Show sidebar", "Show minimap", "Compact", "Spacious"]);
+  check("submits", await formData(), ["minimap=on", "density=spacious"]);
+  check("groupNamed", await view.getByRole("group", { name: "Share" }).getByRole("menuitem").count(), 3);
+
+  // A submenu: the arrow key that points at it opens it, the other one closes it.
+  const exportItem = item("menuitem", "Export as");
+  await page.keyboard.press("e");
+  check("submenuItem", [await focused(), await exportItem.getAttribute("aria-haspopup"), await exportItem.getAttribute("aria-expanded")], ["Export as", "menu", "false"]);
+  await page.keyboard.press("End");
+  check("endSkipsDisabledSubmenu", await focused(), "Export as");
+  await page.keyboard.press("ArrowRight");
+  await untilOpen(exportMenu);
+  await untilFocused("PDF");
+  check("rightOpens", [await focused(), await exportItem.getAttribute("aria-expanded"), await open(view)], ["PDF", "true", true]);
+  await settled(exportMenu);
+  let t = await exportItem.boundingBox();
+  let p = await exportMenu.boundingBox();
+  check("submenuBeside", { beside: p.x >= t.x + t.width - 1, near: p.x - t.x - t.width < 12, level: Math.abs(p.y - t.y) < 8 }, { beside: true, near: true, level: true });
+  check("submenuNamed", await page.getByRole("menu", { name: "Export as" }).count(), 1);
+  check("axeSubmenu", await axe(), []);
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("ArrowDown");
+  check("submenuKeys", await focused(), "Image");
+  await page.keyboard.press("ArrowDown");
+  check("submenuWrapsInItself", await focused(), "PDF");
+  await page.keyboard.press("End");
+  await page.keyboard.press("ArrowRight");
+  await untilOpen(imageMenu);
+  await untilFocused("PNG");
+  check("nested", [await open(view), await open(exportMenu), await open(imageMenu)], [true, true, true]);
+  await page.keyboard.press("ArrowLeft");
+  await untilOpen(imageMenu, false);
+  check("leftCloses", [await focused(), await open(exportMenu), await exportMenu.getByRole("menuitem", { name: "Image" }).getAttribute("aria-expanded")], ["Image", true, "false"]);
+  await page.keyboard.press("Escape");
+  await untilOpen(exportMenu, false);
+  check("escClosesOneLevel", [await focused(), await open(view)], ["Export as", true]);
+  await page.keyboard.press("Enter");
+  await untilOpen(exportMenu);
+  await untilFocused("PDF");
+  check("enterOpens", await focused(), "PDF");
+  await page.keyboard.press("Enter");
+  await untilOpen(view, false);
+  await untilFocused("View");
+  check("chooseClosesAll", [await open(exportMenu), await focused()], [false, "View"]);
+
+  // The pointer: pointing at the item opens its submenu, pointing at a sibling closes it.
+  await button("View").click();
+  await untilOpen(view);
+  await exportItem.hover();
+  await untilOpen(exportMenu);
+  check("hoverOpens", [await exportItem.getAttribute("aria-expanded"), await page.evaluate(() => !!document.activeElement.closest("[data-submenu]"))], ["true", false]);
+  await exportItem.click();
+  check("clickKeepsOpen", await open(exportMenu));
+  await exportMenu.getByRole("menuitem", { name: "Markdown" }).hover();
+  await page.keyboard.press("ArrowRight");
+  check("hoverThenKey", await open(exportMenu));
+  await item("menuitem", "Copy link").hover();
+  await untilOpen(exportMenu, false);
+  check("hoverSiblingCloses", [await open(view), await exportItem.getAttribute("aria-expanded")], [true, "false"]);
+  await exportItem.hover();
+  await untilOpen(exportMenu);
+  await exportMenu.getByRole("menuitem", { name: "Markdown" }).click();
+  await untilOpen(view, false);
+  check("clickInSubmenuClosesAll", [await open(view), await open(exportMenu)], [false, false]);
+  check("disabledSubmenu", await view.locator("[data-submenu-trigger][aria-disabled=true]").evaluate((el) => [el.textContent.trim(), getComputedStyle(el).pointerEvents]), ["Publish to", "none"]);
+
+  // Right to left: the submenu opens to the left, and the arrow keys swap.
+  await setDir("rtl");
+  await button("View").focus();
+  await page.keyboard.press("Enter");
+  await untilOpen(view);
+  await untilFocused("Show sidebar");
+  await page.keyboard.press("End");
+  await page.keyboard.press("ArrowRight");
+  check("rtlRightDoesNotOpen", await open(exportMenu), false);
+  await page.keyboard.press("ArrowLeft");
+  await untilOpen(exportMenu);
+  await untilFocused("PDF");
+  await settled(exportMenu);
+  t = await exportItem.boundingBox();
+  p = await exportMenu.boundingBox();
+  check("rtlSubmenuOnTheLeft", p.x + p.width <= t.x + 1);
+  await page.keyboard.press("ArrowRight");
+  await untilOpen(exportMenu, false);
+  check("rtlRightCloses", [await focused(), await open(view)], ["Export as", true]);
+  await page.keyboard.press("Escape");
 };

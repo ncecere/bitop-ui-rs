@@ -1,0 +1,184 @@
+.message {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  column-gap: var(--space-3);
+  row-gap: var(--space-2);
+  inline-size: 100%;
+  min-inline-size: 0;
+
+  &[data-from="user"] {
+    justify-items: end;
+  }
+
+  /* With an avatar: an avatar column and a body column, mirrored for the user. */
+  &:has(> .avatar) {
+    grid-template-columns: auto minmax(0, 1fr);
+
+    & > :not(.avatar) {
+      grid-column: 2;
+    }
+  }
+
+  &[data-from="user"]:has(> .avatar) {
+    grid-template-columns: minmax(0, 1fr) auto;
+
+    & > :not(.avatar) {
+      grid-column: 1;
+    }
+
+    & > .avatar {
+      grid-column: 2;
+    }
+  }
+}
+
+.avatar {
+  display: inline-flex;
+  grid-row: 1 / span 3;
+  margin-block-start: 0.125rem;
+
+  /* A custom tile colour with contrast-colour initials. */
+  &[data-color] > [role="img"] {
+    background: var(--message-avatar-color, var(--color-primary));
+    color: var(--color-primary-contrast);
+  }
+
+  /* A logo passed in place of the avatar. */
+  & > :not([role="img"]) ~ [role="img"] {
+    display: none;
+  }
+}
+
+.content {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+  line-height: 1.6;
+  overflow-wrap: break-word;
+
+  /* A user's bubble: a neutral tint. */
+  &[data-variant="bubble"],
+  .message[data-from="user"] > &:not([data-variant]) {
+    max-inline-size: min(36rem, 85%);
+    padding: 0.625rem var(--space-4);
+    border-radius: 1.25rem;
+    background-color: var(--color-neutral-subtle);
+    white-space: pre-wrap;
+  }
+
+  &[data-variant="plain"],
+  .message[data-from="assistant"] > &:not([data-variant]) {
+    inline-size: 100%;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.125rem;
+  margin-inline-start: calc(var(--space-2) * -1);
+  transition: opacity var(--motion-duration-fast) var(--motion-ease-out);
+
+  .message[data-from="user"] & {
+    margin-inline: 0 calc(var(--space-2) * -1);
+  }
+
+  /* Revealed on hover only where hover exists; keyboard focus always reveals. */
+  @media (hover: hover) {
+    &[data-visibility="hover"] {
+      opacity: 0;
+    }
+
+    .message:hover &[data-visibility="hover"],
+    &[data-visibility="hover"]:focus-within,
+    &[data-visibility="hover"]:has(:popover-open) {
+      opacity: 1;
+    }
+  }
+}
+
+.action[data-size] {
+  --button-height: var(--control-height-sm);
+
+  inline-size: var(--control-height-sm);
+  padding: 0;
+  color: var(--color-text-muted);
+
+  &:hover {
+    color: var(--color-text);
+  }
+
+  & [data-icon] {
+    inline-size: 1rem;
+    block-size: 1rem;
+  }
+
+  &[aria-pressed="true"] {
+    background-color: var(--color-surface-active);
+    color: var(--color-text);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 1px;
+  }
+}
+
+.branches {
+  display: contents;
+}
+
+.branchContent {
+  display: contents;
+
+  & > [hidden] {
+    display: none;
+  }
+}
+
+/* Before the script has run, CSS hides every version but the one the server chose,
+   among the first ten. */
+.branches:not([data-ready])[data-index="0"] > .branchContent > :not(:nth-child(1)),
+.branches:not([data-ready])[data-index="1"] > .branchContent > :not(:nth-child(2)),
+.branches:not([data-ready])[data-index="2"] > .branchContent > :not(:nth-child(3)),
+.branches:not([data-ready])[data-index="3"] > .branchContent > :not(:nth-child(4)),
+.branches:not([data-ready])[data-index="4"] > .branchContent > :not(:nth-child(5)),
+.branches:not([data-ready])[data-index="5"] > .branchContent > :not(:nth-child(6)),
+.branches:not([data-ready])[data-index="6"] > .branchContent > :not(:nth-child(7)),
+.branches:not([data-ready])[data-index="7"] > .branchContent > :not(:nth-child(8)),
+.branches:not([data-ready])[data-index="8"] > .branchContent > :not(:nth-child(9)),
+.branches:not([data-ready])[data-index="9"] > .branchContent > :not(:nth-child(10)) {
+  display: none;
+}
+
+.branch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.branchPage {
+  min-inline-size: 2.5rem;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.stepIcon:dir(rtl) {
+  scale: -1 1;
+}
+
+/* A class that sets display wins over the hidden attribute's own rule. */
+.actions[hidden],
+.message[hidden],
+.content[hidden] {
+  display: none;
+}

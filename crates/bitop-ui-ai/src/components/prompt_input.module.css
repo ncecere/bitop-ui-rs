@@ -1,0 +1,171 @@
+/* The composer card. Its edge is the text field's boundary, so it uses
+   --color-border-strong (3:1 at least) like other controls, and shows the focus ring
+   while the text box has focus. */
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  inline-size: 100%;
+  padding: var(--space-2);
+  border-radius: var(--radius-5);
+  background-color: var(--color-surface-raised);
+  box-shadow:
+    0 0 0 1px var(--color-border-strong),
+    var(--shadow-2);
+  transition: box-shadow var(--motion-duration-fast) var(--motion-ease-out);
+
+  &:has(.textarea:focus-visible) {
+    box-shadow:
+      0 0 0 1px var(--color-focus-ring),
+      var(--shadow-2),
+      var(--shadow-focus-field);
+  }
+
+  &[data-dragging] {
+    box-shadow:
+      var(--shadow-2),
+      0 0 0 2px var(--color-focus-ring);
+    background-color: var(--color-primary-subtle);
+  }
+}
+
+.attachments {
+  padding: var(--space-1) var(--space-1) 0;
+}
+
+.textareaWrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.textarea {
+  inline-size: 100%;
+  min-block-size: 2.75rem;
+  max-block-size: 14rem;
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-normal);
+  resize: none;
+  overflow-y: auto;
+  outline: 0;
+  field-sizing: content;
+
+  &::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+  }
+
+  /* Dimmed here, not on the form: text beside it must keep its contrast. */
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.counter {
+  align-self: flex-end;
+  padding: 0 var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-variant-numeric: tabular-nums;
+
+  &[data-limit] {
+    color: var(--color-danger-text);
+    font-weight: var(--font-weight-medium);
+  }
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
+  min-inline-size: 0;
+}
+
+.toolButton[data-variant] {
+  --button-height: var(--control-height-sm);
+
+  border-radius: var(--radius-pill);
+  color: var(--color-text-muted);
+
+  &[data-size="icon"] {
+    inline-size: var(--control-height-sm);
+    padding: 0;
+  }
+
+  &:hover {
+    color: var(--color-text);
+  }
+
+  & [data-icon] {
+    inline-size: 1rem;
+    block-size: 1rem;
+  }
+
+  &[aria-pressed="true"] {
+    background-color: var(--color-primary-subtle);
+    color: var(--color-primary-subtle-text);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 1px;
+  }
+}
+
+.submit[data-variant] {
+  --button-height: var(--control-height-sm);
+
+  margin-inline-start: auto;
+  border-radius: var(--radius-full);
+
+  &[data-size="icon"] {
+    inline-size: var(--control-height-sm);
+    padding: 0;
+  }
+
+  &[data-labelled] {
+    padding-inline: var(--space-3) var(--space-4);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* One icon per state: the arrow to send, a spinner while waiting for the first
+     token, the square to stop. */
+  &:not([data-mode="send"]) .sendIcon,
+  &:not([data-mode="stop"]) .stopIcon,
+  &[data-status="submitted"] .stopIcon,
+  &:not([data-status="submitted"]) .spinner {
+    display: none;
+  }
+}
+
+.sendIcon {
+  inline-size: 1rem;
+  block-size: 1rem;
+}
+
+.stopIcon {
+  inline-size: 0.75rem;
+  block-size: 0.75rem;
+}

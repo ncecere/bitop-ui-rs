@@ -1,0 +1,68 @@
+/* Sizes, the peak line, the readout and the axis are in chart.module.css, shared with bar-chart. */
+.root {
+  min-width: 0;
+}
+
+/* A domain's minimum other than 0, at the bottom of the scale. */
+.floor {
+  position: absolute;
+  bottom: var(--space-1);
+  left: 0;
+  font-size: var(--font-size-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+/* A tick: its value above a faint line at --y from the top (the floor's line is the axis). */
+.tick {
+  position: absolute;
+  inset-inline: 0;
+  bottom: calc(100% - var(--y, 100%));
+  padding-bottom: var(--space-1);
+  border-bottom: 1px dashed var(--color-border);
+  font-size: var(--font-size-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+  pointer-events: none;
+
+  &[data-floor] {
+    border-bottom: 0;
+  }
+}
+
+.line {
+  fill: none;
+  stroke: var(--chart-color);
+  stroke-width: 2px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+
+  &[data-pattern="dashed"] {
+    stroke-dasharray: 6px 4px;
+  }
+
+  &[data-pattern="dotted"] {
+    stroke-dasharray: 1px 4px;
+  }
+}
+
+.fill {
+  fill: var(--chart-color);
+  fill-opacity: 0.14;
+  stroke: none;
+}
+
+/* A dot, placed in physical units like the line, so it stays on it in right-to-left. */
+.point {
+  position: absolute;
+  left: var(--x, 0);
+  top: var(--y, 0);
+  width: 0.5rem;
+  height: 0.5rem;
+  border: 2px solid var(--color-surface);
+  border-radius: var(--radius-full);
+  background-color: var(--chart-color);
+  translate: -50% -50%;
+  pointer-events: none;
+}

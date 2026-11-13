@@ -12,6 +12,7 @@ publish = false
 
 [workspace.dependencies]
 bitop-ui = { path = "crates/bitop-ui" }
+bitop-ui-ai = { path = "crates/bitop-ui-ai" }
 bitop-ui-build = { path = "crates/bitop-ui-build" }
 
 # Topcoat is experimental; pin exactly and upgrade deliberately.

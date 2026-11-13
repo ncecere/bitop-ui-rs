@@ -46,26 +46,41 @@ for (const name of names) {
     button: (label) => page.getByRole("button", { name: label, exact: true }),
     focused: () => page.evaluate(() => document.activeElement?.textContent?.trim()),
     // Waits for an entry transition to end. Headless WebKit starts transitions late,
-    // so a fixed wait is not reliable.
+    // so a fixed wait is not reliable, and neither is one look at the style: before the
+    // transition starts, the style already has its end values. The element must also
+    // have stayed in one place for several frames. Gives up after thirty seconds, on an
+    // element that is not shown for example, so that the run does not hang.
     settled: (locator) =>
       locator.evaluate(
         (element) =>
-          new Promise((resolve) => {
+          new Promise((resolve, reject) => {
+            const started = performance.now();
+            let place = "";
+            let frames = 0;
             const poll = () => {
               const style = getComputedStyle(element);
               const still = ["none", "0px", "0px 0px"].includes(style.translate);
-              if (style.opacity === "1" && still) resolve();
+              const box = element.getBoundingClientRect();
+              const now = [box.x, box.y, box.width, box.height].join();
+              frames = now === place ? frames + 1 : 0;
+              place = now;
+              if (style.opacity === "1" && still && frames >= 6) resolve();
+              else if (performance.now() - started > 30_000) reject(new Error("the element did not settle"));
               else requestAnimationFrame(poll);
             };
             poll();
           }),
       ),
     // Colours change through transitions on some components; the promise resolves when
-    // they have ended, so that axe does not measure a colour half way.
+    // they have ended, so that axe does not measure a colour half way. A transition on
+    // an element that is not rendered, such as a field in a closed <details>, is left
+    // out: Firefox starts it and never runs it, so it would never end.
     setTheme: (mode) =>
       page.evaluate((m) => {
         window.bitopUi.setColorMode(m);
-        const running = document.getAnimations().filter((a) => a instanceof CSSTransition);
+        const running = document
+          .getAnimations()
+          .filter((a) => a instanceof CSSTransition && a.effect?.target?.checkVisibility() !== false);
         return Promise.allSettled(running.map((a) => a.finished)).then(() => undefined);
       }, mode),
     setDir: (dir) => page.evaluate((d) => (document.documentElement.dir = d), dir),
@@ -83,7 +98,9 @@ for (const name of names) {
     check("errors", errors, []);
   } catch (error) {
     total += 1;
-    failures.push(`${name}: ${String(error).split("\n").slice(0, 6).join("\n    ")}`);
+    // Name the line in the test file, so a timeout on CI says which wait it was.
+    const where = String(error.stack ?? "").split("\n").find((line) => line.includes(`/tests/${name}.mjs`));
+    failures.push(`${name}: ${String(error).split("\n").slice(0, 6).join("\n    ")}${where ? `\n    ${where.trim()}` : ""}`);
   }
   await context.close();
 }

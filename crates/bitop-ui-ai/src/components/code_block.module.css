@@ -1,0 +1,110 @@
+.root {
+  --code-max-height: none;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+  overflow: hidden;
+  border-radius: var(--radius-3);
+  background-color: var(--color-surface-sunken);
+  box-shadow: var(--shadow-ring);
+  font-size: var(--font-size-sm);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: 2.25rem;
+  padding-block: var(--space-1);
+  padding-inline: var(--space-3) var(--space-1);
+  border-block-end: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.language {
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-inline-start: auto;
+}
+
+/* The items keep their own height, so that the body scrolls the gutter and the code
+   together when a maximum height is set. */
+.body {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  max-block-size: var(--code-max-height);
+  overflow-y: auto;
+}
+
+.gutter {
+  flex: none;
+  padding-block: var(--space-3);
+  padding-inline: var(--space-3) var(--space-2);
+  color: var(--color-text-subtle);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  text-align: end;
+  white-space: pre;
+  user-select: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.pre {
+  flex: 1;
+  min-inline-size: 0;
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  overflow-x: auto;
+  color: var(--color-text);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  tab-size: 2;
+  white-space: pre;
+  border-end-start-radius: var(--radius-3);
+  border-end-end-radius: var(--radius-3);
+
+  .gutter + & {
+    padding-inline-start: var(--space-2);
+  }
+
+  & code {
+    font-family: inherit;
+    font-size: inherit;
+    background: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: -2px;
+  }
+
+  .root[data-wrap] & {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+}
+
+.floating {
+  position: absolute;
+  inset-block-start: var(--space-1);
+  inset-inline-end: var(--space-1);
+}
+
+.copy {
+  flex: none;
+}

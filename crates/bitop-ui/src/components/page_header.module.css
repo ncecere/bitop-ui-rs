@@ -1,0 +1,81 @@
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-block-end: var(--space-8);
+}
+
+.breadcrumbs {
+  min-inline-size: 0;
+}
+
+/* Actions line up with the title, not the end of a long description, so
+   they sit at the same height on every page. */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-inline-size: 0;
+  flex: 1 1 20rem;
+}
+
+.titleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* A long name with no spaces (a team, model or connection name) wraps instead of
+   widening the page. min-inline-size: 0 lets the heading shrink inside the flex row. */
+.title {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-display);
+  color: var(--color-text);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.description {
+  max-inline-size: 44rem; /* about 90 characters: one comfortable line length */
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  /* Never wider than the header: a wide control (date presets) scrolls inside instead. */
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+.facts {
+  min-inline-size: 0;
+}
+
+/* The slots are always rendered; hide the ones nothing was passed to. */
+.breadcrumbs:empty,
+.meta:empty,
+.actions:empty,
+.facts:empty {
+  display: none;
+}

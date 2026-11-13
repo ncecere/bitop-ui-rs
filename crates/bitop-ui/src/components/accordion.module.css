@@ -1,0 +1,155 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  /* Lets a panel's height run from 0 to auto where the browser can do that. */
+  interpolate-size: allow-keywords;
+
+  &[data-variant="outline"] {
+    border-radius: var(--radius-card);
+    background-color: var(--color-surface);
+    box-shadow: var(--shadow-ring);
+  }
+}
+
+.item {
+  border-block-end: 1px solid var(--color-border);
+
+  &:last-child {
+    border-block-end: 0;
+  }
+}
+
+.root[data-variant="plain"] .item:last-child {
+  border-block-end: 1px solid var(--color-border);
+}
+
+/* The panel opens and closes through the height of the box the browser puts around
+   a <details>'s content. Where that box cannot be styled, or a height cannot run to
+   auto, the panel opens at once. A rule of its own: a browser that does not know the
+   pseudo-element drops the whole rule. */
+.item::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition:
+    block-size var(--motion-duration-normal) var(--motion-ease-out),
+    content-visibility var(--motion-duration-normal) allow-discrete;
+}
+
+.item[open]::details-content {
+  block-size: auto;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  inline-size: 100%;
+  min-block-size: var(--control-height-lg);
+  padding: var(--space-3) var(--space-1);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--font-size-md);
+  text-align: start;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color var(--motion-duration-fast) var(--motion-ease-out);
+
+  .root[data-variant="outline"] & {
+    padding-inline: var(--space-4);
+  }
+
+  @media (hover: hover) {
+    &:hover:not([aria-disabled="true"]) .title {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+  }
+
+  &:focus-visible {
+    position: relative;
+    z-index: 1;
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: -2px;
+  }
+
+  &[aria-disabled="true"] {
+    color: var(--color-text-subtle);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+/* Safari draws the disclosure triangle with its own pseudo-element. */
+.trigger::-webkit-details-marker {
+  display: none;
+}
+
+.header {
+  flex: 1;
+  min-inline-size: 0;
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: normal;
+  line-height: inherit;
+}
+
+.title {
+  font-weight: var(--font-weight-medium);
+}
+
+.meta {
+  flex: none;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+
+  &:empty {
+    display: none;
+  }
+}
+
+.icon {
+  flex: none;
+  inline-size: 1rem;
+  block-size: 1rem;
+  color: var(--color-text-muted);
+  transition: rotate var(--motion-duration-normal) var(--motion-ease-out);
+
+  .item[open] > .trigger & {
+    rotate: 180deg;
+  }
+}
+
+.panel {
+  overflow: hidden;
+  font-size: var(--font-size-md);
+  color: var(--color-text-muted);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: 0 var(--space-1) var(--space-4);
+  line-height: var(--line-height-normal);
+
+  .root[data-variant="outline"] & {
+    padding-inline: var(--space-4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trigger,
+  .icon {
+    transition: none;
+  }
+
+  .item::details-content {
+    transition: none;
+  }
+}

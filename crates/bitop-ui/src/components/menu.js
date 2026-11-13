@@ -1,17 +1,87 @@
-const ITEM = '[role="menuitem"]:not([aria-disabled="true"])';
+// Menu: the ARIA menu keyboard pattern, checkbox and radio items, and submenus. The
+// same items are used by the context menu and the menubar.
 
+const ITEM =
+  ':is([role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]):not([aria-disabled="true"])';
+const SUB_TRIGGER = "[data-submenu-trigger]";
+
+// The items of this menu, without those of a submenu inside it.
 function menuItems(menu) {
-  return [...menu.querySelectorAll(ITEM)];
+  return [...menu.querySelectorAll(ITEM)].filter((item) => item.closest('[role="menu"]') === menu);
 }
 
+function menuOf(popup) {
+  return popup.matches('[role="menu"]') ? popup : popup.querySelector('[role="menu"]');
+}
+
+// The outermost popover around a menu. Closing it closes its submenus too.
+function rootPopup(element) {
+  let popup = element.closest("[popover]");
+  while (popup?.matches("[data-submenu]")) {
+    const parent = popup.parentElement?.closest("[popover]");
+    if (!parent) break;
+    popup = parent;
+  }
+  return popup;
+}
+
+function submenuOf(trigger) {
+  return document.getElementById(trigger.getAttribute("popovertarget"));
+}
+
+function submenuTrigger(popup) {
+  const trigger = popup.previousElementSibling;
+  return trigger?.matches(SUB_TRIGGER) ? trigger : undefined;
+}
+
+// Submenus that the pointer opened: focus stays on their item.
+const openedByPointer = new WeakSet();
+
+// Opens a submenu, with focus on its first item when the keyboard asked for it. The
+// click goes through the item, so that the browser anchors the popup to it.
+function openSubmenu(trigger, focusFirst) {
+  const popup = submenuOf(trigger);
+  if (!popup) return;
+  if (popup.matches(":popover-open")) {
+    if (focusFirst) menuItems(menuOf(popup))[0]?.focus();
+    return;
+  }
+  if (!focusFirst) openedByPointer.add(popup);
+  trigger.focus();
+  trigger.click();
+}
+
+function setChecked(item, checked) {
+  item.setAttribute("aria-checked", String(checked));
+  const input = item.querySelector('input[type="hidden"]');
+  if (input) input.disabled = !checked;
+}
+
+window.bitopUi.menu = { items: menuItems, setChecked };
+
+// beforetoggle is sent as the popover opens or closes, so aria-expanded is never behind.
+document.addEventListener(
+  "beforetoggle",
+  (event) => {
+    const popup = event.target;
+    if (!(popup instanceof HTMLElement) || !popup.matches("[data-submenu]")) return;
+    submenuTrigger(popup)?.setAttribute("aria-expanded", String(event.newState === "open"));
+  },
+  true,
+);
+
 // Opening a menu moves focus to its first item, as the ARIA menu pattern requires.
+// The toggle event is queued, so it can arrive after a script or the keyboard has
+// already moved focus into the menu; leave focus alone then, or keys typed in that
+// moment are undone.
 document.addEventListener(
   "toggle",
   (event) => {
     const popup = event.target;
     if (!(popup instanceof HTMLElement) || event.newState !== "open") return;
-    const menu = popup.matches('[role="menu"]') ? popup : popup.querySelector('[role="menu"]');
-    if (menu) menuItems(menu)[0]?.focus();
+    if (openedByPointer.delete(popup)) return;
+    const menu = menuOf(popup);
+    if (menu && !menu.contains(document.activeElement)) menuItems(menu)[0]?.focus();
   },
   true,
 );
@@ -26,8 +96,28 @@ document.addEventListener("keydown", (event) => {
   if (!menu) return;
 
   const items = menuItems(menu);
-  const index = items.indexOf(target.closest(ITEM));
+  const item = target.closest(ITEM);
+  const index = items.indexOf(item);
+  const popup = menu.closest("[popover]");
+  // The arrow key that points at a submenu opens it and the other one closes it.
+  const rtl = getComputedStyle(menu).direction === "rtl";
+  const openKey = rtl ? "ArrowLeft" : "ArrowRight";
+  const closeKey = rtl ? "ArrowRight" : "ArrowLeft";
   let next;
+
+  if (event.key === openKey && item?.matches(SUB_TRIGGER)) {
+    event.preventDefault();
+    openSubmenu(item, true);
+    return;
+  }
+  if ((event.key === closeKey || event.key === "Escape") && popup?.matches("[data-submenu]")) {
+    // Escape closes one level; the browser would return focus to what had it before
+    // the submenu opened, which is not its item when the pointer opened it.
+    event.preventDefault();
+    popup.hidePopover();
+    submenuTrigger(popup)?.focus();
+    return;
+  }
 
   switch (event.key) {
     case "ArrowDown":
@@ -44,21 +134,23 @@ document.addEventListener("keydown", (event) => {
       break;
     case "Tab":
       // A menu is one tab stop: Tab leaves it and closes it.
-      menu.closest("[popover]")?.hidePopover();
+      rootPopup(menu)?.hidePopover();
       return;
     default: {
       if (event.key.length !== 1 || event.ctrlKey || event.metaKey || event.altKey) return;
-      if (event.key === " " && !typed) return;
-      // Typeahead: keys typed within half a second build one search string.
+      // Typeahead: keys typed within half a second build one search string. A space
+      // is part of it only when one is being typed; otherwise it chooses the item.
       const now = Date.now();
-      typed = now - typedAt > 500 ? event.key : typed + event.key;
+      if (now - typedAt > 500) typed = "";
+      if (event.key === " " && !typed) return;
+      typed += event.key;
       typedAt = now;
       // Repeating one letter cycles through the items that start with it.
       const repeated = [...typed].every((char) => char === typed[0]);
       const search = (repeated ? typed[0] : typed).toLowerCase();
       const from = repeated ? index + 1 : Math.max(index, 0);
       const ordered = [...items.slice(from), ...items.slice(0, from)];
-      next = ordered.find((item) => item.textContent.trim().toLowerCase().startsWith(search));
+      next = ordered.find((other) => other.textContent.trim().toLowerCase().startsWith(search));
       if (!next) return;
     }
   }
@@ -67,11 +159,67 @@ document.addEventListener("keydown", (event) => {
   next?.focus();
 });
 
-// Choosing an item closes the menu. Items that open something else, such as a dialog,
-// still run their own command first because this listener is on the document.
+// Choosing an action closes the menu, submenus and all. Items that open something
+// else, such as a dialog, still run their own command first because this listener is
+// on the document. Checkbox and radio items change and keep the menu open.
 document.addEventListener("click", (event) => {
   if (!(event.target instanceof Element)) return;
   const item = event.target.closest(ITEM);
-  if (!item || item.hasAttribute("data-keep-open")) return;
-  item.closest('[role="menu"]')?.closest("[popover]")?.hidePopover();
+  const menu = item?.closest('[role="menu"]');
+  if (!menu) return;
+
+  if (item.matches(SUB_TRIGGER)) {
+    // The button would close a submenu that the pointer has already opened.
+    const popup = submenuOf(item);
+    if (popup?.matches(":popover-open")) {
+      event.preventDefault();
+      // Enter and Space send a click with no detail.
+      if (event.detail === 0) menuItems(menuOf(popup))[0]?.focus();
+    }
+    return;
+  }
+
+  const role = item.getAttribute("role");
+  if (role === "menuitemcheckbox") {
+    setChecked(item, item.getAttribute("aria-checked") !== "true");
+    item.dispatchEvent(new Event("change", { bubbles: true }));
+    return;
+  }
+  if (role === "menuitemradio") {
+    if (item.getAttribute("aria-checked") === "true") return;
+    const group = item.closest("[data-menu-radio-group]") ?? menu;
+    for (const other of group.querySelectorAll('[role="menuitemradio"]')) setChecked(other, other === item);
+    item.dispatchEvent(new Event("change", { bubbles: true }));
+    return;
+  }
+
+  if (item.hasAttribute("data-keep-open")) return;
+  rootPopup(menu)?.hidePopover();
+});
+
+// Pointing at a submenu's item opens it; pointing at another item of the same menu
+// closes it. Both wait a moment, so that the pointer can cross other items on its way
+// into the submenu.
+let hoverTimer;
+
+document.addEventListener("pointerover", (event) => {
+  if (event.pointerType === "touch" || !(event.target instanceof Element)) return;
+  const item = event.target.closest(ITEM);
+  const menu = item?.closest('[role="menu"]');
+  clearTimeout(hoverTimer);
+  if (!menu) return;
+  // Only the submenus that are open now: one that the keyboard opens while the timer
+  // runs stays open.
+  const siblings = menuItems(menu).filter(
+    (other) => other !== item && other.matches(`${SUB_TRIGGER}[aria-expanded="true"]`),
+  );
+  if (!siblings.length && !item.matches(SUB_TRIGGER)) return;
+  hoverTimer = setTimeout(() => {
+    if (!item.isConnected || !menu.closest("[popover]")?.matches(":popover-open")) return;
+    for (const other of siblings) {
+      const popup = submenuOf(other);
+      if (popup?.matches(":popover-open")) popup.hidePopover();
+    }
+    if (item.matches(SUB_TRIGGER)) openSubmenu(item, false);
+  }, 120);
 });

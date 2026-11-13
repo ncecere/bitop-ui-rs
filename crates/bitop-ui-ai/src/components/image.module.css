@@ -1,0 +1,108 @@
+.frame {
+  position: relative;
+  display: inline-flex;
+  box-sizing: border-box;
+  max-inline-size: 100%;
+  overflow: hidden;
+  vertical-align: top;
+
+  &[data-framed] {
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-ring);
+  }
+
+  &[data-aspect] {
+    aspect-ratio: var(--image-aspect, auto);
+    inline-size: 100%;
+  }
+
+  &[data-state="loading"] {
+    min-inline-size: 6rem;
+    min-block-size: 6rem;
+    background-color: var(--color-skeleton);
+    background-image: linear-gradient(90deg, transparent, var(--color-skeleton-shine), transparent);
+    background-repeat: no-repeat;
+    background-size: 50% 100%;
+    animation: shimmer 1.4s var(--motion-ease-in-out) infinite;
+  }
+
+  &[data-state="error"] {
+    min-block-size: 6rem;
+    background-color: var(--color-surface-sunken);
+  }
+}
+
+.img {
+  display: block;
+  inline-size: 100%;
+  max-inline-size: 100%;
+  block-size: auto;
+  transition: opacity var(--motion-duration-slow) var(--motion-ease-out);
+
+  .frame[data-aspect] & {
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  .frame[data-state="loading"] & {
+    opacity: 0;
+  }
+
+  .frame[data-state="error"] & {
+    display: none;
+  }
+}
+
+.fallback {
+  display: none;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  text-align: center;
+
+  .frame[data-state="error"] > & {
+    display: flex;
+  }
+
+  & > span {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+}
+
+.fallbackIcon {
+  flex: none;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+}
+
+.fallbackAlt {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+@keyframes shimmer {
+  from {
+    background-position: -50% 0;
+  }
+
+  to {
+    background-position: 150% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .frame[data-state="loading"] {
+    animation: none;
+    background-image: none;
+  }
+
+  .img {
+    transition: none;
+  }
+}

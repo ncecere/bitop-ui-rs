@@ -1,0 +1,142 @@
+.root {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-block-size: 0;
+}
+
+/* Not positioned, so that the scroll button (positioned against .root) stays put
+   instead of scrolling with the messages. */
+.viewport {
+  flex: 1;
+  min-block-size: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  outline: 0;
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-focus-ring);
+  }
+}
+
+/* Positioned, so that absolutely positioned descendants (such as .sr-only text in
+   messages) are clipped by the viewport instead of stretching the page. */
+.content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  inline-size: 100%;
+  max-inline-size: 48rem;
+  margin-inline: auto;
+  padding: var(--space-6) var(--space-4) var(--space-8);
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-block-size: 100%;
+  padding: var(--space-10) var(--space-4);
+  text-align: center;
+}
+
+.emptyIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 3rem;
+  block-size: 3rem;
+  margin-block-end: var(--space-2);
+  border-radius: var(--radius-4);
+  background-color: var(--color-primary-subtle);
+  color: var(--color-primary-subtle-text);
+
+  & [data-icon] {
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+  }
+}
+
+.emptyMedia {
+  display: inline-flex;
+  margin-block-end: var(--space-2);
+
+  &:empty {
+    display: none;
+  }
+
+  &:not(:empty) + .emptyIcon {
+    display: none;
+  }
+}
+
+.emptyTitle {
+  color: var(--color-text);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.emptyDescription {
+  max-inline-size: 32rem;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-md);
+}
+
+.emptyChildren {
+  display: flex;
+  justify-content: center;
+  inline-size: 100%;
+  max-inline-size: 40rem;
+  margin-block-start: var(--space-4);
+
+  &:empty {
+    display: none;
+  }
+}
+
+.scrollButton {
+  position: absolute;
+  inset-block-end: var(--space-4);
+  inset-inline-start: 50%;
+  z-index: var(--z-sticky);
+  display: inline-flex;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-3);
+  translate: -50% 0;
+
+  &:dir(rtl) {
+    translate: 50% 0;
+  }
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.scroll[data-variant] {
+  --button-bg: var(--color-control);
+  --button-bg-hover: var(--color-control-hover);
+
+  inline-size: var(--control-height-sm);
+  block-size: var(--control-height-sm);
+  padding: 0;
+  border-radius: var(--radius-full);
+}
+
+.scrollIcon {
+  inline-size: 1rem;
+  block-size: 1rem;
+}
+
+/* A class that sets display wins over the hidden attribute's own rule. */
+.content[hidden],
+.empty[hidden] {
+  display: none;
+}

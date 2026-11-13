@@ -1,0 +1,12 @@
+/* Both icons are in the button; the pressed state, which is dark mode, picks one. */
+.toggle {
+  & [data-icon] {
+    inline-size: 1rem;
+    block-size: 1rem;
+  }
+
+  &[aria-pressed="true"] [data-icon="sun"],
+  &:not([aria-pressed="true"]) [data-icon="moon"] {
+    display: none;
+  }
+}

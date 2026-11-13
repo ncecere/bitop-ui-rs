@@ -1,0 +1,99 @@
+.marker {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 1rem;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-snug);
+  color: var(--color-text-muted);
+  text-align: start;
+
+  &[data-variant="border"] {
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  &[data-variant="separator"] {
+    &::before,
+    &::after {
+      content: "";
+      flex: 1;
+      min-width: 0;
+      height: 1px;
+      background-color: var(--color-border);
+    }
+
+    &::before {
+      margin-inline-end: var(--space-1);
+    }
+
+    &::after {
+      margin-inline-start: var(--space-1);
+    }
+  }
+
+  &:is(a) {
+    color: var(--color-text-muted);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+    text-underline-offset: 3px;
+    border-radius: var(--radius-1);
+  }
+
+  &:is(a, button) {
+    font: inherit;
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+  }
+
+  &:is(button) {
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  &:is(a, button):hover {
+    color: var(--color-text);
+  }
+
+  &:is(a, button):focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+
+  & [data-icon] {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+.content {
+  min-width: 0;
+  overflow-wrap: break-word;
+
+  .marker[data-variant="separator"] & {
+    flex: none;
+    text-align: center;
+  }
+
+  & a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  & a:hover {
+    color: var(--color-text);
+  }
+}
